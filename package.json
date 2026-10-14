@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node --test",
     "build": "python3 generate_i18n.py && cp i18n-pt-br.js dist/ && cp patch-asar.js dist/",
-    "lint": "node -c patch-asar.js dist/patch-asar.js i18n-pt-br.js dist/i18n-pt-br.js tests/test-no-regression.js tests/test-path-resolver.js tests/test-quotas.js tests/test-translations.js tests/test-distro-matrix.js"
+    "lint": "node -c patch-asar.js dist/patch-asar.js i18n-pt-br.js dist/i18n-pt-br.js tests/test-no-regression.js tests/test-path-resolver.js tests/test-quotas.js tests/test-translations.js tests/test-distro-matrix.js tests/test-patch-lifecycle.js"
   },
   "repository": {
     "type": "git",
