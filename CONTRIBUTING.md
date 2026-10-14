@@ -66,18 +66,28 @@ Toda nova regra dinâmica ou correção crítica **deve** acompanhar um teste un
 
 ## 📝 Convenção de Mensagens de Commit
 
-Utilizamos o padrão [Conventional Commits](https://www.conventionalcommits.org/):
+Utilizamos o padrão [Conventional Commits](https://www.conventionalcommits.org/) com a **regra de ouro de legibilidade do Git & GitHub**:
 
-- `feat:` Nova funcionalidade ou lote de termos traduzidos.
-- `fix:` Correção de bug no instalador, patcher ou correção linguística de tradução.
-- `docs:` Alterações na documentação (README, guias).
+### 📏 Regra dos 50 Caracteres no Título
+- **Primeira linha (Assunto)**: Deve conter no **máximo 50 caracteres**. Isso evita que o GitHub corte o texto com reticências (`...`) na tabela de arquivos da página principal.
+- **Segunda linha**: Sempre em branco.
+- **Terceira linha em diante (Corpo opcional)**: Onde você pode detalhar livremente o contexto, motivos da mudança e notas técnicas.
+
+### Tipos de Commit
+- `feat:` Nova funcionalidade ou lote de termos traduzidos (máx. 50 caracteres).
+- `fix:` Correção de bug no instalador, patcher ou correção de termo.
+- `docs:` Alterações puramente em documentação (README, guias).
 - `test:` Inclusão ou ajuste de testes automatizados.
 - `refactor:` Refatoração interna que não altera o comportamento.
 
-**Exemplo:**
+### Como Escrever Mensagens Curtas e Detalhadas
+Use a flag `-m` duas vezes para separar o título curto do corpo detalhado:
+
 ```bash
-git commit -m "fix(i18n): corrige falso positivo da preposição 'no' em frases"
+git commit -m "feat(i18n): traduz modais e servidores MCP" -m "Tradução de 15 novos servidores MCP e seus parâmetros de configuração, mantendo compatibilidade com versões anteriores."
 ```
+
+Dessa forma, o GitHub exibe o título limpo e sem cortes na lista de arquivos, enquanto a descrição completa fica acessível nos detalhes do commit.
 
 ---
 
