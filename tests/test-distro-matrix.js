@@ -103,7 +103,8 @@ test('Compatibilidade Multi-Distro: Resolução de caminhos é agnóstica a gere
   for (const [key, family] of Object.entries(DISTRO_FAMILIES)) {
     assert.ok(family.supportedPaths.length > 0, `A família ${family.name} deve possuir caminhos mapeados`);
     for (const p of family.supportedPaths) {
-      assert.ok(p.endsWith(path.join('resources', 'app.asar')), `Caminho ${p} na família ${family.name} deve apontar para resources/app.asar`);
+      const normalized = p.replace(/\\/g, '/');
+      assert.ok(normalized.endsWith('resources/app.asar'), `Caminho ${p} na família ${family.name} deve apontar para resources/app.asar`);
     }
   }
 });
