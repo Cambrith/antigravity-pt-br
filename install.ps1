@@ -25,11 +25,11 @@ $Candidates = @(
     (Join-Path $env:LOCALAPPDATA "Programs\antigravity\resources\app.asar"),
     (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\resources\app.asar"),
     (Join-Path $env:ProgramFiles "Antigravity\resources\app.asar"),
-    (Join-Path ${env:ProgramFiles(x86)} "Antigravity\resources\app.asar")
+    $(if (${env:ProgramFiles(x86)}) { Join-Path ${env:ProgramFiles(x86)} "Antigravity\resources\app.asar" })
 )
 
 $AsarPath = ""
-foreach ($p in $Candidates) {
+foreach ($p in ($Candidates | Where-Object { $_ })) {
     if (Test-Path $p) {
         $AsarPath = $p
         break
