@@ -50,15 +50,6 @@ fi
 
 echo "✅ Antigravity localizado em: $ASAR_PATH"
 
-# 3. Criar diretório permanente e sincronizar arquivos
-echo "📦 Configurando arquivos permanentes em $CONFIG_I18N_DIR..."
-mkdir -p "$CONFIG_I18N_DIR"
-cp "$SCRIPT_DIR/i18n-pt-br.js" "$CONFIG_I18N_DIR/i18n-pt-br.js"
-cp "$SCRIPT_DIR/patch-asar.js" "$CONFIG_I18N_DIR/patch-asar.js"
-chmod +x "$CONFIG_I18N_DIR/patch-asar.js"
-
-# 4. Executar patch
-echo "🔧 Aplicando tradução no app.asar..."
 APP_BUNDLE="${ASAR_PATH%/Contents/Resources/app.asar}"
 if pgrep -x Antigravity >/dev/null 2>&1; then
     echo "❌ Encerre o Antigravity antes da instalação." >&2
@@ -69,6 +60,16 @@ if command -v codesign >/dev/null 2>&1 && codesign -dv "$APP_BUNDLE" >/dev/null 
     echo "Esta versão ainda não possui fluxo de reassinatura e teste em macOS validado." >&2
     exit 1
 fi
+
+# 3. Criar diretório permanente e sincronizar arquivos
+echo "📦 Configurando arquivos permanentes em $CONFIG_I18N_DIR..."
+mkdir -p "$CONFIG_I18N_DIR"
+cp "$SCRIPT_DIR/i18n-pt-br.js" "$CONFIG_I18N_DIR/i18n-pt-br.js"
+cp "$SCRIPT_DIR/patch-asar.js" "$CONFIG_I18N_DIR/patch-asar.js"
+chmod +x "$CONFIG_I18N_DIR/patch-asar.js"
+
+# 4. Executar patch
+echo "🔧 Aplicando tradução no app.asar..."
 node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH"
 
 echo ""
