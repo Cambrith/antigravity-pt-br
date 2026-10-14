@@ -304,6 +304,17 @@ EXACT_MAP = {
     "Failed to archive workspace": "Falha ao arquivar espaço de trabalho",
     "Failed to unarchive project: project management feature not available": "Falha ao desarquivar projeto: recurso de gerenciamento de projetos indisponível",
     "Failed to save project": "Falha ao salvar projeto",
+    "Failed to save project branch": "Falha ao salvar branch do projeto",
+    "Failed to save project branch:": "Falha ao salvar branch do projeto:",
+    "No git folder in this project matches the folder": "Nenhuma pasta git neste projeto corresponde à pasta",
+    "Failed to save project branch: No git folder in this project matches the folder": "Falha ao salvar branch do projeto: Nenhuma pasta git neste projeto corresponde à pasta",
+    "Branch name cannot start with a dash": "O nome da branch não pode começar com um traço",
+    "Invalid branch or ref format": "Formato de branch ou ref inválido",
+    "Branch actions": "Ações de branch",
+    "Grant create, update, or delete access to specific branches.": "Conceder acesso de criação, atualização ou exclusão a branches específicas.",
+    "Created a new branch on GitHub.": "Nova branch criada no GitHub.",
+    "Created a new branch on Origin.": "Nova branch criada na Origin.",
+    "The branch was pushed to GitLab.": "A branch foi enviada para o GitLab.",
     "Add context": "Adicionar contexto",
     "Actions": "Ações",
     "Media": "Mídia",
@@ -2904,6 +2915,10 @@ js_body = r'''(function() {
     }
     if ((m = /^Worktree from (.+?),\s*and reuse\s+(.+)$/i.exec(s))) {
       return `Worktree a partir de ${m[1]} e reutilizar ${m[2]}`;
+    }
+    if ((m = /^Failed to save project branch:\s*(.+)$/i.exec(s))) {
+      const trErr = translateString(m[1]) || m[1];
+      return `Falha ao salvar branch do projeto: ${trErr}`;
     }
     if ((m = /^Failed to create worktree:\s*(.+)$/i.exec(s))) {
       return `Falha ao criar worktree: ${m[1]}`;

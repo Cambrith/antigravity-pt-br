@@ -101,5 +101,17 @@ test('Tradução de Ambiente, Worktree e Início de Conversa', () => {
   assert.equal(tr('Creating worktree for the forked conversation...'), 'Criando worktree para a conversa bifurcada...');
   assert.equal(tr('Creating the forked conversation...'), 'Criando a conversa bifurcada...');
   assert.equal(tr('Forked conversation'), 'Conversa bifurcada');
+
+  // Erros e avisos de branch de projeto
+  assert.equal(
+    tr('Failed to save project branch: No git folder in this project matches the folder'),
+    'Falha ao salvar branch do projeto: Nenhuma pasta git neste projeto corresponde à pasta'
+  );
+  assert.equal(
+    tr('Failed to save project branch: branch does not exist'),
+    'Falha ao salvar branch do projeto: branch does not exist'
+  );
+  assert.equal(tr('Branch name cannot start with a dash'), 'O nome da branch não pode começar com um traço');
 });
+
 
