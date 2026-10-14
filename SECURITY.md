@@ -1,14 +1,14 @@
 # Política de Segurança
 
-A segurança e a privacidade dos usuários são prioridades absolutas no projeto **Antigravity pt-BR**.
+A segurança e a privacidade dos usuários são objetivos do projeto **Antigravity pt-BR**. A auditoria automatizada atual apenas detecta padrões conhecidos de segredos; não equivale a análise completa de segurança, auditoria independente ou garantia de ausência de vulnerabilidades.
 
 ---
 
 ## 🔒 Princípios de Segurança do Projeto
 
-1. **Zero Dependências de Terceiros no Patcher**: O patcher ASAR ([`patch-asar.js`](patch-asar.js)) utiliza exclusivamente os módulos nativos do runtime do Node.js (`fs`, `path`, `crypto`, `vm`, `os`). Isso elimina riscos de ataques à cadeia de suprimentos (supply chain attacks) via npm packages.
+1. **Zero Dependências de Terceiros no Patcher**: O patcher ASAR ([`patch-asar.js`](patch-asar.js)) utiliza exclusivamente os módulos nativos do runtime do Node.js (`fs`, `path`, `crypto`, `vm`, `os`). Isso reduz a superfície de dependências npm, mas não elimina todos os riscos de cadeia de suprimentos.
 2. **Sem Coleta de Telemetria**: O script de tradução opera 100% offline e localmente na sua máquina. Nenhum dado, prompt, token ou texto manipulado é transmitido para servidores externos.
-3. **Integridade de Arquivos Preservada**: O patcher recalcula os hashes de verificação SHA-256 e os blocos de integridade binária do ASAR do Electron para garantir conformidade com as verificações nativas da aplicação.
+3. **Controle de integridade**: O patcher calcula hashes SHA-256 do pacote original e do pacote traduzido e associa esses valores em um manifesto local. A restauração rejeita backups incompatíveis; isso não garante a integridade de assinaturas de código do sistema operacional. A instalação em aplicativos macOS assinados fica bloqueada.
 
 ---
 
