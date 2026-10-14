@@ -87,6 +87,42 @@ const GOLDEN_DIR = getGoldenConfigDir();
 const GOLDEN_I18N = path.join(GOLDEN_DIR, 'i18n-pt-br.js');
 const SOURCE_I18N = path.join(SCRIPT_DIR, 'i18n-pt-br.js');
 const TARGET_I18N = path.join(RESOURCES_DIR, 'i18n-pt-br.js');
+const BACKUP_PATH = `${ASAR_PATH}.bak-original`;
+const MANIFEST_PATH = `${ASAR_PATH}.cambrith-backup.json`;
+
+function sha256(buf) {
+  return crypto.createHash('sha256').update(buf).digest('hex');
+}
+
+function restoreOriginal() {
+  if (!fs.existsSync(MANIFEST_PATH) || !fs.existsSync(BACKUP_PATH)) {
+    throw new Error('Restauração bloqueada: backup legado sem manifesto verificável. Reinstale a mesma versão oficial para restaurar com segurança.');
+  }
+  const meta = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  if (meta.schemaVersion !== 1 ||
+      !/^[a-f0-9]{64}$/.test(meta.originalSha256 || '') ||
+      !/^[a-f0-9]{64}$/.test(meta.patchedSha256 || '')) {
+    throw new Error('Restauração bloqueada: manifesto inválido.');
+  }
+  const current = fs.readFileSync(ASAR_PATH);
+  const original = fs.readFileSync(BACKUP_PATH);
+  if (sha256(current) !== meta.patchedSha256) {
+    throw new Error('Restauração bloqueada: aplicativo alterado/atualizado após o patch. O backup pode ser de outra versão.');
+  }
+  if (sha256(original) !== meta.originalSha256) {
+    throw new Error('Restauração bloqueada: backup corrompido ou não correspondente.');
+  }
+  const tmp = `${ASAR_PATH}.restore-${process.pid}`;
+  try {
+    fs.writeFileSync(tmp, original, { flag: 'wx' });
+    fs.renameSync(tmp, ASAR_PATH);
+    fs.rmSync(MANIFEST_PATH);
+    if (fs.existsSync(TARGET_I18N)) fs.rmSync(TARGET_I18N);
+    log('Aplicativo original restaurado com hashes verificados.');
+  } finally {
+    if (fs.existsSync(tmp)) fs.rmSync(tmp);
+  }
+}
 
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
@@ -290,6 +326,21 @@ function run() {
     process.exit(1);
   }
 
+  if (process.argv.includes('--restore')) {
+    restoreOriginal();
+    return;
+  }
+
+  // Nunca interpretar um app já modificado como versão oficial limpa.
+  const initialBuf = fs.readFileSync(ASAR_PATH);
+  if (initialBuf.includes(Buffer.from('Cambrith pt-BR Localization Injection'))) {
+    if (process.argv.includes('--force')) {
+      throw new Error('Patch forçado bloqueado em instalação já modificada. Restaure uma versão original verificada antes de reaplicar.');
+    }
+    log('Tradução já presente. Nenhuma modificação necessária.');
+    return;
+  }
+
   // 1. Sincronizar cópia golden e cópia em resources
   try {
     const srcFile = fs.existsSync(SOURCE_I18N) ? SOURCE_I18N : (fs.existsSync(GOLDEN_I18N) ? GOLDEN_I18N : null);
@@ -297,7 +348,9 @@ function run() {
       if (!fs.existsSync(GOLDEN_DIR)) {
         fs.mkdirSync(GOLDEN_DIR, { recursive: true });
       }
-      fs.copyFileSync(srcFile, GOLDEN_I18N);
+      if (path.resolve(srcFile) !== path.resolve(GOLDEN_I18N)) {
+        fs.copyFileSync(srcFile, GOLDEN_I18N);
+      }
       if (fs.existsSync(RESOURCES_DIR)) {
         fs.copyFileSync(srcFile, TARGET_I18N);
       }
@@ -309,23 +362,8 @@ function run() {
 
   // 2. Ler ASAR e verificar assinatura
   const buf = fs.readFileSync(ASAR_PATH);
-  const isForce = process.argv.includes('--force');
-  if (buf.includes(Buffer.from(PATCH_SIGNATURE)) && !isForce) {
-    log(`O arquivo app.asar já está traduzido (${PATCH_SIGNATURE}).`);
-    return;
-  }
-
   log(`Aplicando tradução em ${ASAR_PATH}...`);
   const startMs = Date.now();
-
-  // Backup do original
-  const backupPath = `${ASAR_PATH}.bak-original`;
-  if (!fs.existsSync(backupPath) && !buf.includes(Buffer.from('Cambrith pt-BR Localization Injection'))) {
-    try {
-      fs.copyFileSync(ASAR_PATH, backupPath);
-      log(`Backup do arquivo original salvo em: ${backupPath}`);
-    } catch (_) {}
-  }
 
   const headerSize = buf.readUInt32LE(4);
   const jsonSize = buf.readUInt32LE(12);
@@ -342,6 +380,7 @@ function run() {
   };
 
   const chunks = [];
+  const patchedPaths = new Set();
   let currentOffset = 0;
 
   function traverse(node, relPath) {
@@ -360,9 +399,18 @@ function run() {
 
       if (patchers[relPath]) {
         const origStr = fileBuf.toString('utf8');
+        if (relPath === 'dist/preload.js' && !origStr.includes('electron_1.ipcRenderer')) {
+          throw new Error('Preload incompatível: API Electron esperada não encontrada.');
+        }
+        if (relPath === 'dist/utils.js' &&
+            !origStr.includes("win.webContents.on('did-finish-load', () => {") &&
+            !origStr.includes("win.webContents.on('dom-ready'")) {
+          throw new Error('Estrutura do gerenciador de janelas desconhecida; patch cancelado.');
+        }
         const patchedStr = patchers[relPath](origStr);
         new vm.Script(patchedStr, { filename: relPath });
         if (patchedStr !== origStr) {
+          patchedPaths.add(relPath);
           fileBuf = Buffer.from(patchedStr, 'utf8');
           node.size = fileBuf.length;
           node.integrity = calcIntegrity(fileBuf);
@@ -377,6 +425,11 @@ function run() {
   }
 
   traverse(header, '');
+  for (const required of ['dist/preload.js', 'dist/utils.js']) {
+    if (!patchedPaths.has(required)) {
+      throw new Error(`Versão incompatível: ponto de injeção ${required} não validado. Nenhum arquivo original foi substituído.`);
+    }
+  }
 
   const newJsonBuf = Buffer.from(JSON.stringify(header), 'utf8');
   const jsonLen = newJsonBuf.length;
@@ -392,8 +445,30 @@ function run() {
 
   const outBuf = Buffer.concat([headerBuf, ...chunks]);
   const tmpAsar = `${ASAR_PATH}.tmp-${process.pid}`;
-  fs.writeFileSync(tmpAsar, outBuf);
-  fs.renameSync(tmpAsar, ASAR_PATH);
+  const tmpBackup = `${BACKUP_PATH}.tmp-${process.pid}`;
+  const tmpMeta = `${MANIFEST_PATH}.tmp-${process.pid}`;
+  const metadata = {
+    schemaVersion: 1,
+    originalSha256: sha256(buf),
+    patchedSha256: sha256(outBuf),
+    createdAt: new Date().toISOString()
+  };
+
+  // Preparar todos os arquivos antes de modificar a instalação.
+  try {
+    fs.writeFileSync(tmpAsar, outBuf, { flag: 'wx' });
+    fs.writeFileSync(tmpBackup, buf, { flag: 'wx' });
+    fs.writeFileSync(tmpMeta, JSON.stringify(metadata, null, 2) + '\n', { flag: 'wx' });
+
+    // Renovar o backup para a versão OFICIAL em uso, nunca reutilizar backup antigo.
+    fs.renameSync(tmpBackup, BACKUP_PATH);
+    fs.renameSync(tmpMeta, MANIFEST_PATH);
+    fs.renameSync(tmpAsar, ASAR_PATH);
+  } finally {
+    for (const tmp of [tmpAsar, tmpBackup, tmpMeta]) {
+      if (fs.existsSync(tmp)) fs.rmSync(tmp);
+    }
+  }
 
   log(`Sucesso! app.asar traduzido e atualizado em ${Date.now() - startMs}ms.`);
 }
