@@ -18,7 +18,13 @@ fi
 # 2. Verificar se o app.asar perdeu a injeção da tradução (ex: atualização recente do Antigravity)
 if [[ -f "$ASAR" ]] && ! grep -q "Cambrith pt-BR Localization Injection v3" "$ASAR" 2>/dev/null; then
     if [[ -f "$PATCHER" ]]; then
-        node "$PATCHER" --asar="$ASAR" >/dev/null 2>&1
+        if ! pgrep -x antigravity >/dev/null 2>&1; then
+            if ! node "$PATCHER" --asar="$ASAR"; then
+                echo "AVISO: esta versão do Antigravity não foi modificada. Verifique a compatibilidade do tradutor." >&2
+            fi
+        else
+            echo "AVISO: Antigravity já aberto; nenhuma alteração de arquivos será feita." >&2
+        fi
     fi
 fi
 
