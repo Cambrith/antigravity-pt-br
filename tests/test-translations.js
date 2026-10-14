@@ -153,5 +153,33 @@ test('Tradução de Processos e Comandos em Execução (Running/Ran/Exploring/Ed
   assert.equal(tr('Done'), 'Concluído');
 });
 
+test('Tradução de Processos de Pensamento e Ações de Ferramentas (Thinking/Tool Actions)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Rótulos de Processo de Pensamento
+  assert.equal(tr('Thought Process'), 'Processo de raciocínio');
+  assert.equal(tr('Thinking Process'), 'Processo de pensamento');
+  assert.equal(tr('Thinking...'), 'Pensando...');
+
+  // Duração dinâmica de pensamento
+  assert.equal(tr('Thought for 10s'), 'Pensou por 10s');
+  assert.equal(tr('Thought for 1m 20s'), 'Pensou por 1m 20s');
+  assert.equal(tr('Thought for 2h 15m 30s'), 'Pensou por 2h 15m 30s');
+  assert.equal(tr('Thought for <1s'), 'Pensou por <1s');
+  assert.equal(tr('Thought for 15 seconds'), 'Pensou por 15 segundos');
+
+  // Ações de ferramentas comuns
+  assert.equal(tr('Analyzing directory'), 'Analisando diretório');
+  assert.equal(tr('Checking git status'), 'Verificando status do git');
+  assert.equal(tr('Running tests'), 'Executando testes');
+  assert.equal(tr('Searching code'), 'Pesquisando código');
+  assert.equal(tr('Executing command'), 'Executando comando');
+  assert.equal(tr('Executing script'), 'Executando script');
+  assert.equal(tr('Viewing file'), 'Visualizando arquivo');
+  assert.equal(tr('Writing to file'), 'Escrevendo no arquivo');
+});
+
+
 
 
