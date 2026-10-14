@@ -53,17 +53,21 @@ O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs
 > [!IMPORTANT]
 > **Pré-requisitos**:
 > - **Node.js** (v18 ou superior) instalado no sistema ([nodejs.org](https://nodejs.org/)).
-> - **Git** instalado ([git-scm.com](https://git-scm.com/)) **OU** baixar o projeto como arquivo **ZIP** caso não utilize o Git.
+> - O **Git** é opcional: todas as plataformas abaixo contam com opções de instalação com Git e sem Git (download direto via terminal).
 
 ### 🐧 No Linux
 
-Abra o terminal e execute:
-
+#### Opção 1: Via Git (Recomendado se já tiver o Git)
 ```bash
 git clone https://github.com/Cambrith/antigravity-pt-br.git
 cd antigravity-pt-br
 chmod +x install.sh
 ./install.sh
+```
+
+#### Opção 2: Sem Git (Download Direto via Terminal)
+```bash
+curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.tar.gz | tar -xz && cd antigravity-pt-br-main && chmod +x install.sh && ./install.sh
 ```
 
 *O instalador detecta automaticamente a instalação do Antigravity, salva o arquivo permanente e configura um inicializador com auto-recuperação pós-atualizações.*
@@ -73,13 +77,19 @@ chmod +x install.sh
 ### 🌐 No ChromeOS (Crostini)
 
 1. Ative o ambiente Linux nas Configurações do ChromeOS (*Avançado > Desenvolvedores > Ambiente de desenvolvimento Linux*).
-2. Abra o aplicativo **Terminal** e execute:
+2. Abra o aplicativo **Terminal** e escolha uma das opções:
 
+#### Opção 1: Via Git
 ```bash
 git clone https://github.com/Cambrith/antigravity-pt-br.git
 cd antigravity-pt-br
 chmod +x install.sh
 ./install.sh
+```
+
+#### Opção 2: Sem Git (Download Direto)
+```bash
+curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.tar.gz | tar -xz && cd antigravity-pt-br-main && chmod +x install.sh && ./install.sh
 ```
 
 ---
@@ -109,6 +119,7 @@ Invoke-WebRequest -Uri "https://github.com/Cambrith/antigravity-pt-br/archive/re
 
 ### 🍏 No macOS
 
+#### Opção 1: Via Git (Recomendado se já tiver o Git)
 Abra o Terminal e execute:
 
 ```bash
@@ -116,6 +127,13 @@ git clone https://github.com/Cambrith/antigravity-pt-br.git
 cd antigravity-pt-br
 chmod +x install-macos.sh
 ./install-macos.sh
+```
+
+#### Opção 2: Sem Git (Download Direto via Terminal)
+Abra o Terminal e execute:
+
+```bash
+curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.tar.gz | tar -xz && cd antigravity-pt-br-main && chmod +x install-macos.sh && ./install-macos.sh
 ```
 
 ---
