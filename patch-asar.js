@@ -456,7 +456,7 @@ function run() {
   try {
     fs.writeFileSync(tmpAsar, outBuf, { flag: 'wx' });
     fs.writeFileSync(tmpBackup, buf, { flag: 'wx' });
-    fs.writeFileSync(tmpMeta, JSON.stringify(metadata, null, 2) + '\\n', { flag: 'wx' });
+    fs.writeFileSync(tmpMeta, JSON.stringify(metadata, null, 2) + '\n', { flag: 'wx' });
 
     // Renovar o backup para a versão OFICIAL em uso, nunca reutilizar backup antigo.
     fs.renameSync(tmpBackup, BACKUP_PATH);
