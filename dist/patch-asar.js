@@ -341,26 +341,6 @@ function run() {
     return;
   }
 
-  // 1. Sincronizar cópia golden e cópia em resources
-  try {
-    const srcFile = fs.existsSync(SOURCE_I18N) ? SOURCE_I18N : (fs.existsSync(GOLDEN_I18N) ? GOLDEN_I18N : null);
-    if (srcFile) {
-      if (!fs.existsSync(GOLDEN_DIR)) {
-        fs.mkdirSync(GOLDEN_DIR, { recursive: true });
-      }
-      if (path.resolve(srcFile) !== path.resolve(GOLDEN_I18N)) {
-        fs.copyFileSync(srcFile, GOLDEN_I18N);
-      }
-      if (fs.existsSync(RESOURCES_DIR)) {
-        fs.copyFileSync(srcFile, TARGET_I18N);
-      }
-      log(`i18n-pt-br.js sincronizado com sucesso.`);
-    }
-  } catch (err) {
-    log(`Aviso ao sincronizar i18n-pt-br.js: ${err.message}`);
-  }
-
-  // 2. Ler ASAR e verificar assinatura
   const buf = fs.readFileSync(ASAR_PATH);
   log(`Aplicando tradução em ${ASAR_PATH}...`);
   const startMs = Date.now();
@@ -430,6 +410,25 @@ function run() {
       throw new Error(`Versão incompatível: ponto de injeção ${required} não validado. Nenhum arquivo original foi substituído.`);
     }
   }
+
+  // 1. Sincronizar cópia golden e cópia em resources
+  {
+    const srcFile = fs.existsSync(SOURCE_I18N) ? SOURCE_I18N : (fs.existsSync(GOLDEN_I18N) ? GOLDEN_I18N : null);
+    if (srcFile) {
+      if (!fs.existsSync(GOLDEN_DIR)) {
+        fs.mkdirSync(GOLDEN_DIR, { recursive: true });
+      }
+      if (path.resolve(srcFile) !== path.resolve(GOLDEN_I18N)) {
+        fs.copyFileSync(srcFile, GOLDEN_I18N);
+      }
+      if (fs.existsSync(RESOURCES_DIR)) {
+        fs.copyFileSync(srcFile, TARGET_I18N);
+      }
+      log(`i18n-pt-br.js sincronizado com sucesso.`);
+    }
+  }
+
+  // 2. Ler ASAR e verificar assinatura
 
   const newJsonBuf = Buffer.from(JSON.stringify(header), 'utf8');
   const jsonLen = newJsonBuf.length;
