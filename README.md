@@ -44,13 +44,13 @@ O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs
   - **macOS Sequoia (15)**, **Sonoma (14)**, **Ventura (13)** e **Monterey (12)**.
   - Compatível com **Apple Silicon** (M1, M2, M3, M4) e processadores **Intel (x86_64)**.
 
-👉 *Para consultar o catálogo massivo completo com todas as 385+ distribuições homologadas em cada família técnica, consulte [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).*
+👉 *Para consultar o catálogo massivo completo com todas as 395 distribuições Linux e 6 sistemas ChromeOS homologados por família técnica, consulte [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).*
 
 ---
 
 ## 📦 Instalação em Poucos Passos
 
-> **Pré-requisito único**: Ter o **Node.js** (v16 ou superior) instalado em seu computador.
+> **Pré-requisito único**: Ter o **Node.js** (v18 ou superior) instalado em seu computador.
 
 ### 🐧 No Linux
 

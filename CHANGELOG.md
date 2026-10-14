@@ -26,7 +26,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ### Adicionado
 - Versão inicial do sistema de localização para Google Antigravity.
-- Mais de 2.180 entradas de tradução exatas na interface, menus, diálogos e configurações.
+- Mais de 2.185 entradas de tradução exatas na interface, menus, diálogos e configurações.
 - Tradução de todos os 99 servidores MCP e seus parâmetros de configuração.
 - Patcher ASAR em Node.js puro sem dependências externas.
-- Instaladores automatizados para Linux (`install.sh`), macOS (`install-macos.sh`) e Windows (`install.ps1`).
+- Instaladores automatizados para Linux e ChromeOS (`install.sh`), macOS (`install-macos.sh`) e Windows (`install.ps1`).

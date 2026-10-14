@@ -7,7 +7,7 @@ O **Antigravity pt-BR** foi projetado com engenharia multiplataforma nativa para
 ## 🧭 Índice Geral de Plataformas
 
 - [🌐 ChromeOS e Sistemas Derivados (Crostini)](#-chromeos-e-sistemas-derivados-crostini) (6 sistemas)
-- [🐧 Linux (379 Distribuições Catalogadas por Família Técnica)](#-linux-distribuicoes-por-familia-tecnica):
+- [🐧 Linux (395 Distribuições Catalogadas por Família Técnica)](#-linux-distribuicoes-por-familia-tecnica):
   - [1. Família Debian e Derivados Diretos](#1-familia-debian-e-derivados-diretos) (123 distribuições)
   - [2. Família Ubuntu e Sabores Oficiais / Derivados](#2-familia-ubuntu-e-sabores-oficiais--derivados) (75 distribuições)
   - [3. Família Red Hat, Fedora, SUSE e RPM](#3-familia-red-hat-fedora-suse-e-rpm) (70 distribuições)

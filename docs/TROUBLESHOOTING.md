@@ -59,9 +59,10 @@ Ou use os scripts utilitários `scripts/uninstall.sh` e `scripts/uninstall.ps1`.
 ---
 
 ### 5. Node.js não encontrado
-O projeto requer o runtime do Node.js (versão 16 ou superior):
+O projeto requer o runtime do Node.js (versão 18 ou superior):
 - **Linux (Debian/Ubuntu)**: `sudo apt update && sudo apt install nodejs`
 - **Linux (Fedora)**: `sudo dnf install nodejs`
 - **Linux (Arch)**: `sudo pacman -S nodejs`
+- **ChromeOS**: No terminal do Crostini: `sudo apt update && sudo apt install nodejs`
 - **macOS**: `brew install node` ou baixe em [nodejs.org](https://nodejs.org)
 - **Windows**: Baixe o instalador oficial em [nodejs.org](https://nodejs.org)
