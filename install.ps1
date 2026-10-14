@@ -47,6 +47,11 @@ if (-not $AsarPath) {
 
 Write-Host " Antigravity localizado em: $AsarPath" -ForegroundColor Green
 
+if (Get-Process -Name "Antigravity" -ErrorAction SilentlyContinue) {
+    Write-Error "Feche o Antigravity antes de aplicar a tradução."
+    exit 1
+}
+
 # 3. Criar pasta e sincronizar
 Write-Host " Configurando arquivos permanentes em $ConfigI18nDir..." -ForegroundColor Cyan
 if (-not (Test-Path $ConfigI18nDir)) {
@@ -58,10 +63,6 @@ Copy-Item (Join-Path $ScriptDir "patch-asar.js") (Join-Path $ConfigI18nDir "patc
 
 # 4. Executar patch
 Write-Host " Aplicando tradução no app.asar..." -ForegroundColor Cyan
-if (Get-Process -Name "Antigravity" -ErrorAction SilentlyContinue) {
-    Write-Error "Feche o Antigravity antes de aplicar a tradução."
-    exit 1
-}
 & node (Join-Path $ConfigI18nDir "patch-asar.js") "--asar=$AsarPath"
 if ($LASTEXITCODE -ne 0) {
     Write-Error "O patcher falhou (código $LASTEXITCODE). Nenhum sucesso será anunciado."
