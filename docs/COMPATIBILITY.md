@@ -4,24 +4,20 @@ O **Antigravity pt-BR** opera de forma **100% agnóstica a distribuições Linux
 
 ---
 
-## 🧭 Índice Rápido de Categorias
+## 🧭 Índice Rápido por Famílias
 
-- [1. ChromeOS e Sistemas Derivados (Crostini)](#1-chromeos-e-sistemas-derivados-crostini) (6 sistemas)
-- [2. Família Debian e Derivados](#2-família-debian-e-derivados) (72 sistemas)
-- [3. Família Ubuntu e Sabores Oficiais](#3-família-ubuntu-e-sabores-oficiais) (30 sistemas)
-- [4. Família Red Hat, Fedora, SUSE e RPM](#4-família-red-hat-fedora-suse-e-rpm) (41 sistemas)
-- [5. Família Arch Linux e Derivados](#5-família-arch-linux-e-derivados) (24 sistemas)
-- [6. Família Slackware e Derivados Leves](#6-família-slackware-e-derivados-leves) (13 sistemas)
-- [7. Família Gentoo, Void e Source-Based](#7-família-gentoo-void-e-source-based) (29 sistemas)
-- [8. Independentes Modernas](#8-independentes-modernas) (5 sistemas)
-- [9. Segurança Ofensiva, Forense e Privacidade](#9-segurança-ofensiva-forense-e-privacidade) (48 sistemas)
-- [10. Jogos, Emulação e Multimídia](#10-jogos-emulação-e-multimídia) (37 sistemas)
-- [11. Servidores, Virtualização, Nuvem e Roteadores](#11-servidores-virtualização-nuvem-e-roteadores) (28 sistemas)
-- [12. Sistemas para Dispositivos Móveis e ARM](#12-sistemas-para-dispositivos-móveis-e-arm) (20 sistemas)
-- [13. Distribuições Históricas e Descontinuadas](#13-distribuições-históricas-e-descontinuadas) (33 sistemas)
+- [1. ChromeOS e Sistemas Derivados (Crostini)](#1-chromeos-e-sistemas-derivados-crostini) (6 distribuições)
+- [2. Família Debian e Derivados Diretos](#2-familia-debian-e-derivados-diretos) (107 distribuições)
+- [3. Família Ubuntu e Sabores Oficiais / Derivados](#3-familia-ubuntu-e-sabores-oficiais--derivados) (75 distribuições)
+- [4. Família Red Hat, Fedora, SUSE e RPM](#4-familia-red-hat-fedora-suse-e-rpm) (70 distribuições)
+- [5. Família Arch Linux e Derivados](#5-familia-arch-linux-e-derivados) (29 distribuições)
+- [6. Família Slackware e Derivados Leves](#6-familia-slackware-e-derivados-leves) (25 distribuições)
+- [7. Família Gentoo, Void e Baseadas em Código-Fonte](#7-familia-gentoo-void-e-baseadas-em-codigo-fonte) (25 distribuições)
+- [8. Distribuições Independentes e Outras Famílias](#8-distribuies-independentes-e-outras-familias) (48 distribuições)
 - [Outros Sistemas: Windows e macOS](#-outros-sistemas-operacionais-windows-e-macos)
 
-> 💡 **Sem repetições**: Cada uma das **386 distribuições** abaixo aparece em **apenas uma única categoria canônica**, permitindo busca rápida e navegação limpa.
+> 💡 **Estrutura Estritamente por Famílias Técnicas (Sem Repetições)**:
+> Cada uma das **385 distribuições** listadas abaixo pertence a **apenas uma única família canônica**, sem duplicatas e sem divisões artificiais por perfis de uso (jogos, segurança e servidores encontram-se agrupados em sua base de origem real).
 
 ---
 
@@ -29,9 +25,9 @@ O **Antigravity pt-BR** opera de forma **100% agnóstica a distribuições Linux
 
 O Google Antigravity no Linux segue a especificação padrão do ecossistema Electron:
 1. **Estrutura de Arquivos Padrão**: Os arquivos principais ficam em `resources/app.asar` (em `/opt/antigravity`, `~/.local/opt/antigravity` ou no contêiner Flatpak em `~/.var/app/com.google.Antigravity/`).
-2. **Persistência XDG**: O arquivo mestre é armazenado com segurança em `~/.config/Antigravity/i18n/`.
+2. **Persistência XDG**: O arquivo mestre de tradução é armazenado com segurança em `~/.config/Antigravity/i18n/`.
 
-Por utilizar Node.js nativo e manipular o arquivo ASAR diretamente, o patcher é universal.
+Por utilizar Node.js nativo e manipular o arquivo ASAR diretamente, o patcher é universal em qualquer distribuição Linux.
 
 ---
 
@@ -46,87 +42,85 @@ Por utilizar Node.js nativo e manipular o arquivo ASAR diretamente, o patcher é
 
 ---
 
-### 2. Família Debian e Derivados
+### 2. Família Debian e Derivados Diretos
 
-`4MLinux` • `AfagOS` • `AgarimOS` • `Akira` • `AnduinOS` • `antiX` • `Asmi` • `Austrumi` • `BRGV-OS` • `BunsenLabs` • `CROWZ` • `Crunchbangplusplus` • `Damn Small Linux` • `Debian` • `Devuan` • `Duff Linux` • `EasyOS` • `Elive` • `Emmabuntüs` • `Endless OS` • `Fatdog64` • `Feren OS` • `Finnix` • `FlickOS` • `FLOPPINUX` • `FunOS` • `gabeeOSLinux` • `GeckoLinux` • `Glacia OS` • `gNewSense` • `HoopoeLinux` • `Hos OS` • `Insanely Small Linux` • `KANOTIX` • `Kawaiintu` • `KLV-Airedale` • `Knoppix` • `Linoutrox` • `Linux 95` • `Linux Kamarada` • `Linux KDu` • `Linuxfx` • `MiniOS` • `MX Linux` • `NebiOS` • `Netrunner` • `Noid` • `Odyssey` • `Pardus` • `Pearl` • `Peropesis` • `PureOS` • `Q4OS` • `Quarkos` • `Rhino` • `Shift OS` • `siduction` • `Spaced` • `SparkyLinux` • `SpiralLinux` • `Spirit OS` • `Super Lite` • `Trisquel` • `Vanilla Dpup` • `Vantum` • `Vendefoul Wolf` • `VolnOS` • `Voyager` • `Vuu-do` • `wattOS` • `Winux` • `XXRI OS Lite`
+> 📦 **Gerenciadores de Pacotes**: `apt`, `dpkg`  
+> Inclui distribuições derivadas diretamente do Debian estável, testing e unstable, contemplando desktops, estações forenses/segurança, servidores e sistemas embarcados da árvore Debian.
+
+`AbeirOS` • `AfagOS` • `AgarimOS` • `Akira` • `Almighty` • `Anonym-OS` • `antiX` • `AnuBitux` • `Apertis` • `Armbian` • `Astra Linux` • `AV Linux` • `B1ackOS` • `BRGV-OS` • `BunsenLabs` • `CarotOS` • `Cerberix` • `Cix` • `Clear NDR` • `Clonezilla Live` • `Corel Linux` • `CROWZ` • `CrunchBang Linux` • `Crunchbangplusplus` • `Cyrethium` • `Debian` • `Devuan` • `DietPi` • `Dr.Parted Live` • `Dreamlinux` • `Droidian` • `Duff Linux` • `Dynebolic` • `Elive` • `Elive (versões antigas)` • `eLxr` • `Emmabuntüs` • `Finnix` • `FreedomBox` • `gabeeOSLinux` • `gNewSense` • `Gnoppix` • `Gooroom Platform` • `GParted Live` • `Hadron` • `HydraPWK` • `JRescue` • `Kali Linux` • `KANOTIX` • `Kicksecure` • `Knoppix` • `Libranet` • `LibraZiK` • `Linux 95` • `Linux Mint Debian Edition (LMDE)` • `Live Raizo` • `Malbian` • `Mariposa Rescue Disk` • `Maze` • `MEPIS` • `MinisCloud OS` • `Mobian` • `MoltOS` • `Musix` • `MX Linux` • `Noid` • `NoID Privacy` • `Odyssey` • `Open Secure-K OS` • `openmediavault` • `OSMC` • `Pardus` • `Parrot OS` • `PH4NTXM` • `Proxmox Backup Server` • `Proxmox VE` • `PureOS` • `Q4OS` • `Quirinux` • `Radxa OS` • `Raspberry Pi OS` • `SageOS` • `Securonis` • `siduction` • `SimplyMEPIS` • `SolusOS` • `Spaced` • `SparkyLinux` • `SpiralLinux` • `Spirit OS` • `StartOS` • `Storm Linux` • `T-PHANTOM` • `Tails` • `Trisquel` • `Vantum` • `Vendefoul Wolf` • `Volumio` • `Vuu-do` • `VyOS` • `wattOS` • `Whonix` • `Xandros` • `XBian` • `XXRI OS Lite` • `YunoHost` • `ZimaOS`
 
 ---
 
-### 3. Família Ubuntu e Sabores Oficiais
+### 3. Família Ubuntu e Sabores Oficiais / Derivados
 
-`Accessible-Coconut` • `ACIAH-Linux` • `Bodhi Linux` • `Deepin` • `Edubuntu` • `elementary OS` • `KDE neon` • `Kubuntu` • `Linux Lite` • `Linux Mint` • `Linux Mint Debian Edition (LMDE)` • `Lubuntu` • `Nitrux` • `Peppermint OS` • `Pop!_OS` • `Ubuntu` • `Ubuntu Budgie` • `Ubuntu Cinnamon` • `Ubuntu Kylin` • `Ubuntu MATE` • `Ubuntu Server` • `Ubuntu Studio` • `Ubuntu Sway` • `Ubuntu Unity` • `UbuntuDDE` • `Xubuntu` • `Zorin OS` • `Zorin OS Core` • `Zorin OS Lite` • `Zorin OS Pro`
+> 📦 **Gerenciadores de Pacotes**: `apt`, `snap`  
+> Inclui os sabores oficiais do Ubuntu, distribuições baseadas em Ubuntu LTS (como Mint, Pop!_OS e Zorin) e sistemas especializados criados sobre a base Canonical.
+
+`AbulÉdu` • `Accessible-Coconut` • `ACIAH-Linux` • `AnduinOS` • `ArtistX` • `Asmi` • `BackBox` • `Bodhi Linux` • `CAINE` • `Commodore OS` • `Deepin` • `DEFT Linux` • `DragonOS` • `Drauger OS` • `Edubuntu` • `elementary OS` • `Endless OS` • `Feren OS` • `FlickOS` • `Freespire` • `FunOS` • `Glacia OS` • `gOS` • `HoopoeLinux` • `Hos OS` • `Kawaiintu` • `KDE neon` • `Kodachi` • `Kubuntu` • `KXStudio` • `Linspire` • `Linux Kamarada` • `Linux KDu` • `Linux Lite` • `Linux Mint` • `Linuxfx` • `LinuxTV` • `Lubuntu` • `MODICIA` • `NebiOS` • `Netrunner` • `Nitrux` • `Pearl` • `Peppermint OS` • `PikaOS` • `Pop!_OS` • `Qlustar` • `Quarkos` • `Rescuezilla` • `Rhino` • `Santoku Linux` • `Shift OS` • `Tsurugi` • `Ubuntu` • `Ubuntu Budgie` • `Ubuntu Cinnamon` • `Ubuntu Kylin` • `Ubuntu Lomiri` • `Ubuntu MATE` • `Ubuntu Server` • `Ubuntu Studio` • `Ubuntu Sway` • `Ubuntu Touch` • `Ubuntu Unity` • `UbuntuDDE` • `VolnOS` • `Voyager` • `Winux` • `XIVA Studio` • `Xubuntu` • `Zentyal Server` • `Zorin OS` • `Zorin OS Core` • `Zorin OS Lite` • `Zorin OS Pro`
 
 ---
 
 ### 4. Família Red Hat, Fedora, SUSE e RPM
 
-`Aeon Desktop` • `AlmaLinux` • `AlmaLinux Kitten` • `ALT Linux` • `Amazon Linux` • `Anolis OS` • `Astra Linux` • `CentOS Stream` • `ClearOS` • `EuroLinux` • `Fedora` • `Fedora CoreOS` • `Fedora Design Suite` • `Fedora IoT` • `Fedora KDE` • `Fedora Kinoite` • `Fedora Server` • `Fedora Silverblue` • `Fedora Sway` • `Fedora Workstation` • `Kalpa Desktop` • `Mageia` • `MIRACLE Linux` • `openEuler` • `openKylin` • `OpenMandriva Lx` • `openRuyi` • `openSUSE Leap` • `openSUSE MicroOS` • `openSUSE Tumbleweed` • `Oracle Linux` • `Oracle Linux Server` • `Oreon` • `PCLinuxOS` • `Red Hat Enterprise Linux (RHEL)` • `Rocky Linux` • `Rocky Linux Sigma` • `ROSA` • `SUSE Linux Enterprise Desktop (SLED)` • `SUSE Linux Enterprise Server (SLES)` • `Ultramarine Linux`
+> 📦 **Gerenciadores de Pacotes**: `dnf`, `rpm`, `zypper`  
+> Reúne toda a linhagem empresarial e comunitária baseada em pacotes RPM: Fedora, RHEL, CentOS, AlmaLinux, Rocky Linux, openSUSE, Mageia e derivados.
+
+`Aeon Desktop` • `AlmaLinux` • `AlmaLinux Kitten` • `ALT Linux` • `Amazon Linux` • `Anolis OS` • `Ark Linux` • `Bazzite` • `BlueOnyx` • `Caelaris` • `Caldera OpenLinux` • `CentOS` • `CentOS Stream` • `ClearOS` • `CobaltX` • `EasyNAS` • `Elx` • `EuroLinux` • `Fedora` • `Fedora Asahi Remix` • `Fedora CoreOS` • `Fedora Design Suite` • `Fedora IoT` • `Fedora KDE` • `Fedora Kinoite` • `Fedora Server` • `Fedora Silverblue` • `Fedora Sway` • `Fedora Workstation` • `GeckoLinux` • `GLF OS` • `GlouOS` • `Kalpa Desktop` • `ludora` • `Lycoris Desktop/LX` • `Mageia` • `Mandrake Linux` • `Mandriva Linux` • `MIRACLE Linux` • `NawaOS` • `Netdeep Secure` • `NethServer` • `Nobara` • `NST` • `openEuler` • `openKylin` • `OpenMandriva Lx` • `openSUSE Leap` • `openSUSE MicroOS` • `openSUSE Tumbleweed` • `Oracle Linux` • `Oracle Linux Server` • `Oracle Unbreakable Linux` • `Oreon` • `PCLinuxOS` • `Qubes OS` • `Red Hat Enterprise Linux (RHEL)` • `ReignOS` • `Rocky Linux` • `Rocky Linux Sigma` • `ROSA` • `Scientific Linux` • `ShivaOS` • `SME Server` • `SUSE Linux Enterprise Desktop (SLED)` • `SUSE Linux Enterprise Server (SLES)` • `TurboLinux` • `Ultramarine Linux` • `XCP-ng` • `Yellow Dog Linux`
 
 ---
 
 ### 5. Família Arch Linux e Derivados
 
-`AbeirOS` • `Arch Linux` • `ArchBang` • `Archcraft` • `ArchEX` • `Archium` • `Archman` • `ArcoLinux` • `Artix Linux` • `BigLinux` • `CachyOS` • `EndeavourOS` • `Garuda Linux` • `Hyperbola GNU/Linux-libre` • `LangitKetujuh OS` • `LazyLinux` • `LyargoOS` • `Mabox Linux` • `Manjaro` • `Neko-Void` • `Obarun` • `Parabola GNU/Linux-libre` • `RebornOS` • `TROMjaro`
+> 📦 **Gerenciadores de Pacotes**: `pacman`, `yay`, `paru`  
+> Distribuições *rolling release* baseadas na arquitetura e filosofia do Arch Linux, incluindo sistemas para desktop, jogos (como SteamOS) e segurança avançada.
+
+`Antergos` • `Arch Linux` • `Archanoxy` • `ArchBang` • `Archcraft` • `ArchEX` • `Archium` • `Archman` • `ArcoLinux` • `Artix Linux` • `Asahi Linux` • `Athena OS` • `BigLinux` • `BlackArch Linux` • `BredOS` • `CachyOS` • `Chakra Linux` • `ChimeraOS` • `EndeavourOS` • `Garuda Linux` • `Hyperbola GNU/Linux-libre` • `Mabox Linux` • `Manjaro` • `Parabola GNU/Linux-libre` • `RebornOS` • `SteamFork` • `SteamOS` • `SystemRescue` • `TROMjaro`
 
 ---
 
 ### 6. Família Slackware e Derivados Leves
 
-`Absolute Linux` • `Porteus` • `PorteuX` • `Puppy Linux` • `Salix` • `Slackel` • `Slackware` • `Slax` • `SliTaz` • `Tiny Core Linux` • `Tiny Desktop Linux` • `VectorLinux` • `Zenwalk`
+> 📦 **Gerenciadores de Pacotes**: `slackpkg`, `pkgtool`, scripts utilitários  
+> A linhagem Linux mais tradicional e suas variantes modernas focadas em estabilidade, minimalismo e sistemas *live* ultraleves.
+
+`4MLinux` • `Absolute Linux` • `Austrumi` • `Damn Small Linux` • `EasyOS` • `Fatdog64` • `FLOPPINUX` • `Insanely Small Linux` • `KLV-Airedale` • `Linoutrox` • `MiniOS` • `Peropesis` • `Porteus` • `PorteuX` • `Puppy Linux` • `Salix` • `Slackel` • `Slackware` • `Slax` • `Super Lite` • `Tiny Core Linux` • `Vanilla Dpup` • `VectorLinux` • `Wifislax` • `Zenwalk`
 
 ---
 
-### 7. Família Gentoo, Void e Source-Based
+### 7. Família Gentoo, Void e Baseadas em Código-Fonte
 
-`Adélie Linux` • `AerynOS` • `Calculate Linux` • `Chimera Linux` • `CRUX` • `Dragora` • `Exherbo` • `Funtoo` • `Gentoo Linux` • `GNU Guix System` • `GoboLinux` • `Kwort` • `Linux From Scratch (LFS)` • `Lunar Linux` • `Macaroni OS` • `matrixOS` • `MocaccinoOS` • `NixOS` • `NuTyX` • `paldo` • `PantherX OS` • `Pisi Linux` • `PLD Linux` • `Redcore Linux` • `Source Mage` • `T2 SDE` • `Tucana` • `Venom Linux` • `Void Linux`
+> 📦 **Gerenciadores de Pacotes**: `portage` (`emerge`), `xbps`, compilação direta  
+> Distribuições centradas em compilação sob medida a partir do código-fonte, arquiteturas independentes como Void e sistemas avançados de alta performance.
 
----
-
-### 8. Independentes Modernas
-
-`Alpine Linux` • `Clear Linux` • `KaOS` • `openmamba` • `Solus`
+`Adélie Linux` • `AerynOS` • `Calculate Linux` • `Chimera Linux` • `CRUX` • `Daphile` • `Exherbo` • `Funtoo` • `Gentoo Linux` • `GoboLinux` • `Linux From Scratch (LFS)` • `Lunar Linux` • `Macaroni OS` • `MocaccinoOS` • `Neko-Void` • `Obarun` • `PBXware` • `Pentoo` • `Redcore Linux` • `Sabayon Linux` • `Source Mage` • `T2 SDE` • `Ututo` • `Venom Linux` • `Void Linux`
 
 ---
 
-### 9. Segurança Ofensiva, Forense e Privacidade
+### 8. Distribuições Independentes e Outras Famílias
 
-`Almighty` • `Anonym-OS` • `AnuBitux` • `Archanoxy` • `Athena OS` • `B1ackOS` • `BackBox` • `BlackArch Linux` • `CAINE` • `CarotOS` • `Cerberix` • `Clear NDR` • `Clonezilla Live` • `Cyrethium` • `DEFT Linux` • `Dr.Parted Live` • `Gnoppix` • `GParted Live` • `HydraPWK` • `JRescue` • `Kali Linux` • `Kicksecure` • `Kodachi` • `Live Raizo` • `Malbian` • `Mariposa Rescue Disk` • `Maze` • `MoltOS` • `Netdeep Secure` • `NoID Privacy` • `NST` • `Open Secure-K OS` • `Parrot OS` • `Pentoo` • `PH4NTXM` • `Qubes OS` • `Rescuezilla` • `SageOS` • `Santoku Linux` • `Securonis` • `ShredOS` • `Smoothwall Express` • `SystemRescue` • `T-PHANTOM` • `Tails` • `Tsurugi` • `Whonix` • `Wifislax`
+> 📦 **Gerenciadores de Pacotes**: `apk`, `nix`, `guix`, `eopkg`, `pisi`, etc.  
+> Sistemas operacionais construídos de forma autônoma sem herança direta das famílias anteriores (como Alpine, NixOS, GNU Guix, Solus e Clear Linux) e arquiteturas especializadas.
 
----
-
-### 10. Jogos, Emulação e Multimídia
-
-`ArtistX` • `AV Linux` • `Batocera.linux` • `Bazzite` • `Caelaris` • `ChimeraOS` • `CobaltX` • `Commodore OS` • `CoreELEC` • `Daphile` • `DragonOS` • `Drauger OS` • `Dynebolic` • `GLF OS` • `GlouOS` • `JELOS` • `KXStudio` • `Lakka` • `LibraZiK` • `LibreELEC` • `LinuxTV` • `ludora` • `MODICIA` • `NawaOS` • `Nobara` • `OSMC` • `PikaOS` • `Quirinux` • `Recalbox` • `ReignOS` • `ROCKNIX` • `ShivaOS` • `SteamFork` • `SteamOS` • `Volumio` • `XBian` • `XIVA Studio`
+`Alpine Linux` • `Android-x86` • `Batocera.linux` • `Bliss OS` • `Clear Linux` • `CoreELEC` • `Dragora` • `GNU Guix System` • `iodéOS` • `IPFire` • `JELOS` • `Kairos` • `KaOS` • `Kwort` • `Lakka` • `LangitKetujuh OS` • `LazyLinux` • `LibreELEC` • `LineageOS` • `LyargoOS` • `matrixOS` • `Murena` • `NethSecurity` • `NixOS` • `NuTyX` • `OpenHarmony` • `openmamba` • `openRuyi` • `OpenWrt` • `OPNsense` • `OviOS` • `paldo` • `PantherX OS` • `Pardus 2008` • `Pardus 2011` • `pfSense` • `Pisi Linux` • `PLD Linux` • `postmarketOS` • `Recalbox` • `ROCKNIX` • `ShredOS` • `SliTaz` • `Smoothwall Express` • `Solus` • `Tiny Desktop Linux` • `Tucana` • `Yoper`
 
 ---
 
-### 11. Servidores, Virtualização, Nuvem e Roteadores
+### 🖥️ Outros Sistemas Operacionais: Windows e macOS
 
-`BlueOnyx` • `Cix` • `EasyNAS` • `eLxr` • `FreedomBox` • `Gooroom Platform` • `Hadron` • `IPFire` • `Kairos` • `MinisCloud OS` • `NethSecurity` • `NethServer` • `openmediavault` • `OpenWrt` • `OPNsense` • `OviOS` • `PBXware` • `pfSense` • `Proxmox Backup Server` • `Proxmox VE` • `Qlustar` • `SME Server` • `StartOS` • `VyOS` • `XCP-ng` • `YunoHost` • `Zentyal Server` • `ZimaOS`
+O Antigravity pt-BR também possui suporte e instaladores dedicados para outros sistemas operacionais:
 
----
+- **Windows 10 / 11 (x64 / ARM64)**:
+  - Caminho padrão: `%LOCALAPPDATA%\Programs\antigravity\resources\app.asar`
+  - Persistência: `%APPDATA%\Antigravity\i18n\i18n-pt-br.js`
+  - Instalação via PowerShell:
+    ```powershell
+    .\install.ps1
+    ```
 
-### 12. Sistemas para Dispositivos Móveis e ARM
-
-`/e/OS` • `Android-x86` • `Apertis` • `Armbian` • `Asahi Linux` • `Bliss OS` • `BredOS` • `DietPi` • `Droidian` • `Fedora Asahi Remix` • `iodéOS` • `LineageOS` • `Mobian` • `Murena` • `OpenHarmony` • `postmarketOS` • `Radxa OS` • `Raspberry Pi OS` • `Ubuntu Lomiri` • `Ubuntu Touch`
-
----
-
-### 13. Distribuições Históricas e Descontinuadas
-
-`AbulÉdu` • `Antergos` • `Ark Linux` • `Caldera OpenLinux` • `CentOS` • `Chakra Linux` • `Corel Linux` • `CrunchBang Linux` • `Dreamlinux` • `Elive (versões antigas)` • `Elx` • `Freespire` • `gOS` • `Libranet` • `Linspire` • `Lycoris Desktop/LX` • `Mandrake Linux` • `Mandriva Linux` • `MEPIS` • `Musix` • `Oracle Unbreakable Linux` • `Pardus 2008` • `Pardus 2011` • `Sabayon Linux` • `Scientific Linux` • `SimplyMEPIS` • `SolusOS` • `Storm Linux` • `TurboLinux` • `Ututo` • `Xandros` • `Yellow Dog Linux` • `Yoper`
-
----
-
-## 🪟 Outros Sistemas Operacionais: Windows e macOS
-
-### Windows
-* **Windows 11** e **Windows 10** (64-bit e ARM64).
-* Caminho padrão: `%LOCALAPPDATA%\Programs\antigravity\resources\app.asar`.
-* Instalação simples via PowerShell: `.\install.ps1`.
-
-### macOS
-* **macOS 15 (Sequoia)**, **14 (Sonoma)**, **13 (Ventura)** e **12 (Monterey)**.
-* Compatível nativamente com **Apple Silicon** (M1, M2, M3, M4) e **Intel (x86_64)**.
-* Caminho padrão: `/Applications/Antigravity.app/Contents/Resources/app.asar`.
-* Instalação via Terminal: `./install-macos.sh`.
+- **macOS (Intel e Apple Silicon)**:
+  - Caminho padrão: `/Applications/Antigravity.app/Contents/Resources/app.asar`
+  - Persistência: `~/Library/Application Support/Antigravity/i18n/i18n-pt-br.js`
+  - Instalação via Terminal:
+    ```bash
+    ./install.sh
+    ```

@@ -27,15 +27,17 @@ Este projeto resolve essa barreira entregando:
 
 O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
 
-- **Linux (390+ Distribuições Homologadas por Família)**:
-  - **Família Debian / Ubuntu / Mint / Pop!_OS / Zorin**: Base `.deb`, `apt`, FHS padrão.
-  - **Família Red Hat / Fedora / RHEL / Alma / Rocky / openSUSE**: Base `.rpm`, `dnf`, `zypper`.
-  - **Família Arch Linux / Manjaro / EndeavourOS / Garuda / CachyOS**: Base `pacman`, AUR.
-  - **Família Slackware / Gentoo / Source-based / Void / Alpine / NixOS**: Instalações nativas e por repositório.
-  - **Sistemas de Jogos / Retrô / Servidores**: SteamOS, Bazzite, Nobara, Proxmox, etc.
+- **Linux e ChromeOS (385+ Distribuições Catalogadas Estritamente por Famílias Técnicas)**:
+  - **ChromeOS e Sistemas Derivados (Crostini)**: ChromeOS, ChromeOS Flex, ChromiumOS, CloudReady, FydeOS.
+  - **Família Debian e Derivados**: Debian, Devuan, Kali Linux, Parrot OS, Tails, Whonix, Proxmox VE, Raspberry Pi OS, MX Linux, etc.
+  - **Família Ubuntu e Sabores Oficiais / Derivados**: Ubuntu (Desktop/Server), Linux Mint, Pop!_OS, Zorin OS, elementary OS, KDE neon, Kubuntu, Xubuntu, etc.
+  - **Família Red Hat, Fedora, SUSE e RPM**: Fedora, RHEL, CentOS Stream, AlmaLinux, Rocky Linux, openSUSE (Leap/Tumbleweed), Mageia, etc.
+  - **Família Arch Linux e Derivados**: Arch Linux, Manjaro, EndeavourOS, SteamOS, Garuda Linux, CachyOS, BlackArch, etc.
+  - **Família Slackware e Derivados Leves**: Slackware, Salix, Porteus, Slax, Puppy Linux, Tiny Core, etc.
+  - **Família Gentoo, Void e Baseadas em Código-Fonte**: Gentoo, Funtoo, Calculate, Void Linux, LFS, etc.
+  - **Distribuições Independentes e Outras Famílias**: Alpine Linux, Solus, Clear Linux, NixOS, GNU Guix, OpenWrt, etc.
   - **Flatpak Universal**: Sandboxed (`com.google.Antigravity`).
   - Suporte completo a **Wayland** e **X11**.
-- **ChromeOS & Ambientes de Contêiner**:
   - **ChromeOS, ChromeOS Flex e FydeOS** via contêiner oficial Crostini (Linux).
 - **Windows**:
   - **Windows 11** e **Windows 10** (instalações por usuário em `%LOCALAPPDATA%` ou por máquina em `C:\Program Files`).
