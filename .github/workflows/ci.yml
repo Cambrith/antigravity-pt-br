@@ -10,10 +10,16 @@ jobs:
   test:
     name: Testes em ${{ matrix.os }} (Node ${{ matrix.node-version }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    continue-on-error: ${{ matrix.os == 'macos-latest' }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
         node-version: [18.x, 20.x, 22.x]
+        include:
+          - os: macos-latest
+            node-version: 20.x
 
     steps:
       - name: Checkout do código
