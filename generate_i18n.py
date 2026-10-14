@@ -1093,6 +1093,13 @@ EXACT_MAP = {
     "Ready": "Pronto",
     "Idle": "Ocioso",
     "Running": "Em execução",
+    "Running...": "Executando...",
+    "running": "executando",
+    "running...": "executando...",
+    "Working on": "Trabalhando em",
+    "Working on...": "Trabalhando em...",
+    "Executing": "Executando",
+    "Executing...": "Executando...",
     "In Progress": "Em andamento",
     "Pending": "Pendente",
     "Completed": "Concluído",
@@ -2509,9 +2516,38 @@ js_body = r'''(function() {
     if ((m = /^Worked for (\d+)m$/.exec(s))) return `Trabalhou por ${m[1]}m`;
     if ((m = /^Worked for (\d+)h (\d+)m$/.exec(s))) return `Trabalhou por ${m[1]}h ${m[2]}m`;
     if ((m = /^Worked for (\d+)h$/.exec(s))) return `Trabalhou por ${m[1]}h`;
-    if ((m = /^Exploring (\d+) files, running (\d+) commands$/.exec(s))) return `Explorando ${m[1]} arquivos, executando ${m[2]} comandos`;
-    if ((m = /^Exploring (\d+) files$/.exec(s))) return `Explorando ${m[1]} arquivos`;
-    if ((m = /^Running (\d+) commands$/.exec(s))) return `Executando ${m[1]} comandos`;
+    // Ações de execução de comandos e ferramentas em tempo real (Tool Group Collapsible)
+    function resolveCommandCount(cmdStr) {
+      return cmdStr.replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`);
+    }
+    function resolveFileCount(fileStr) {
+      return fileStr.replace(/(\d+)\s+files?/gi, (_, num) => `${num} ${num === '1' ? 'arquivo' : 'arquivos'}`).replace(/\bfiles\b/gi, 'arquivos');
+    }
+
+    if ((m = /^Exploring\s+(.+?),\s*running\s+(.+)$/i.exec(s))) {
+      return `Explorando ${resolveFileCount(m[1])}, executando ${resolveCommandCount(m[2])}`;
+    }
+    if ((m = /^Explored\s+(.+?),\s*ran\s+(.+)$/i.exec(s))) {
+      return `Explorou ${resolveFileCount(m[1])}, executou ${resolveCommandCount(m[2])}`;
+    }
+    if ((m = /^Exploring\s+(.+)$/i.exec(s))) {
+      return `Explorando ${resolveFileCount(m[1])}`;
+    }
+    if ((m = /^Explored\s+(.+)$/i.exec(s))) {
+      return `Explorou ${resolveFileCount(m[1])}`;
+    }
+    if ((m = /^Editing\s+(.+)$/i.exec(s))) {
+      return `Editando ${resolveFileCount(m[1])}`;
+    }
+    if ((m = /^Edited\s+(.+)$/i.exec(s))) {
+      return `Editou ${resolveFileCount(m[1])}`;
+    }
+    if ((m = /^Running\s+(.+)$/i.exec(s))) {
+      return `Executando ${resolveCommandCount(m[1])}`;
+    }
+    if ((m = /^Ran\s+(.+)$/i.exec(s))) {
+      return `Executou ${resolveCommandCount(m[1])}`;
+    }
     if ((m = /^Tools \((\d+)\)$/.exec(s))) return `Ferramentas (${m[1]})`;
     if ((m = /^Generation Steps \((\d+)\)$/.exec(s))) return `Etapas de geração (${m[1]})`;
     if ((m = /^Message History \((\d+)\)$/.exec(s))) return `Histórico de mensagens (${m[1]})`;

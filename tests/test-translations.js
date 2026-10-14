@@ -114,4 +114,44 @@ test('Tradução de Ambiente, Worktree e Início de Conversa', () => {
   assert.equal(tr('Branch name cannot start with a dash'), 'O nome da branch não pode começar com um traço');
 });
 
+test('Tradução de Processos e Comandos em Execução (Running/Ran/Exploring/Editing)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Comando individual ao iniciar e finalizar
+  assert.equal(
+    tr('Running python3 -c " with open(\'/tmp/antigravity_main.js\') as f: js = f.read()"'),
+    'Executando python3 -c " with open(\'/tmp/antigravity_main.js\') as f: js = f.read()"'
+  );
+  assert.equal(
+    tr('Ran python3 -c " with open(\'/tmp/antigravity_main.js\') as f: js = f.read()"'),
+    'Executou python3 -c " with open(\'/tmp/antigravity_main.js\') as f: js = f.read()"'
+  );
+
+  // Contadores de comandos
+  assert.equal(tr('Running 1 command'), 'Executando 1 comando');
+  assert.equal(tr('Running 2 commands'), 'Executando 2 comandos');
+  assert.equal(tr('Ran 1 command'), 'Executou 1 comando');
+  assert.equal(tr('Ran 3 commands'), 'Executou 3 comandos');
+
+  // Exploração e edição de arquivos
+  assert.equal(tr('Exploring files'), 'Explorando arquivos');
+  assert.equal(tr('Exploring 2 files'), 'Explorando 2 arquivos');
+  assert.equal(tr('Explored 2 files'), 'Explorou 2 arquivos');
+  assert.equal(tr('Editing files'), 'Editando arquivos');
+  assert.equal(tr('Editing src/index.ts'), 'Editando src/index.ts');
+  assert.equal(tr('Edited files'), 'Editou arquivos');
+  assert.equal(tr('Edited src/index.ts'), 'Editou src/index.ts');
+
+  // Ações compostas (exploração + comando)
+  assert.equal(tr('Exploring 2 files, running 1 command'), 'Explorando 2 arquivos, executando 1 comando');
+  assert.equal(tr('Explored 2 files, ran 1 command'), 'Explorou 2 arquivos, executou 1 comando');
+
+  // Estados pontuais
+  assert.equal(tr('Running...'), 'Executando...');
+  assert.equal(tr('Running'), 'Em execução');
+  assert.equal(tr('Done'), 'Concluído');
+});
+
+
 
