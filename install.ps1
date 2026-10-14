@@ -58,7 +58,15 @@ Copy-Item (Join-Path $ScriptDir "patch-asar.js") (Join-Path $ConfigI18nDir "patc
 
 # 4. Executar patch
 Write-Host " Aplicando tradução no app.asar..." -ForegroundColor Cyan
-& node (Join-Path $ConfigI18nDir "patch-asar.js") "--asar=$AsarPath" "--force"
+if (Get-Process -Name "Antigravity" -ErrorAction SilentlyContinue) {
+    Write-Error "Feche o Antigravity antes de aplicar a tradução."
+    exit 1
+}
+& node (Join-Path $ConfigI18nDir "patch-asar.js") "--asar=$AsarPath"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "O patcher falhou (código $LASTEXITCODE). Nenhum sucesso será anunciado."
+    exit 1
+}
 
 Write-Host ""
 Write-Host "========================================================" -ForegroundColor Green
