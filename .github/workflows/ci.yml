@@ -16,6 +16,9 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
       - name: Validar sintaxe dos scripts Bash
         if: runner.os != 'Windows'
         shell: bash
@@ -35,9 +38,6 @@ jobs:
               throw "Erros de sintaxe em $script : $($errors -join '; ')"
             }
           }
-
-      - name: Checkout do código
-        uses: actions/checkout@v4
 
       - name: Configurar Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
