@@ -23,7 +23,9 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          bash -n install.sh install-macos.sh scripts/uninstall.sh scripts/install-linux.sh scripts/install-macos.sh launcher/antigravity-launcher.sh
+          for script in install.sh install-macos.sh scripts/uninstall.sh scripts/install-linux.sh scripts/install-macos.sh launcher/antigravity-launcher.sh; do
+            bash -n "$script"
+          done
 
       - name: Validar sintaxe dos scripts PowerShell
         if: runner.os == 'Windows'
