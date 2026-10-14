@@ -1,0 +1,66 @@
+name: Relato de Problema (Bug)
+description: Crie um relatório para nos ajudar a reproduzir e corrigir um erro
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por dedicar seu tempo para relatar um problema! Por favor, preencha o formulário abaixo com o máximo de detalhes possível.
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema Operacional
+      description: Em qual sistema operacional o problema ocorreu?
+      options:
+        - Linux (Ubuntu / Debian / Pop!_OS / Mint)
+        - Linux (Fedora / RHEL / CentOS)
+        - Linux (Arch Linux / Manjaro)
+        - Linux (openSUSE)
+        - Linux (NixOS)
+        - Linux (Outro ou Flatpak)
+        - Windows 11
+        - Windows 10
+        - macOS (Apple Silicon M1/M2/M3/M4)
+        - macOS (Intel)
+    validations:
+      required: true
+  - type: input
+    id: antigravity-version
+    attributes:
+      label: Versão do Antigravity
+      description: Qual versão do Google Antigravity você está utilizando?
+      placeholder: "Ex: 2.0.x"
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Problema
+      description: Explique o que aconteceu de forma clara e concisa.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para Reproduzir
+      description: Como podemos reproduzir o erro?
+      placeholder: |
+        1. Abra o Antigravity
+        2. Clique em Configurações
+        3. Observe que o botão X ainda está em inglês
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que deveria ter acontecido?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou Mensagens de Erro do Terminal
+      description: Cole a saída do comando ou do terminal caso relevante.
+      render: shell

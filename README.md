@@ -1,38 +1,55 @@
 # Antigravity pt-BR — Tradução Completa da Interface para Português do Brasil
 
-[![Licença MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Suporte](https://img.shields.io/badge/plataformas-Linux%20%7C%20macOS%20%7C%20Windows-brightgreen.svg)](#instalação)
-[![Traduções](https://img.shields.io/badge/entradas-2.180%2B-blueviolet.svg)](#o-que-está-traduzido)
+[![CI Multiplataforma](https://github.com/Cambrith/antigravity-pt-br/actions/workflows/ci.yml/badge.svg)](https://github.com/Cambrith/antigravity-pt-br/actions)
+[![Segurança](https://github.com/Cambrith/antigravity-pt-br/actions/workflows/security.yml/badge.svg)](https://github.com/Cambrith/antigravity-pt-br/actions)
+[![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](LICENSE)
+[![Plataformas](https://img.shields.io/badge/suporte-Linux%20%7C%20Windows%20%7C%20macOS-brightgreen.svg)](docs/COMPATIBILITY.md)
+[![Traduções](https://img.shields.io/badge/entradas-2.185%2B-blueviolet.svg)](#-o-que-está-traduzido)
+[![Testes Automatizados](https://img.shields.io/badge/testes-100%25%20passando-success.svg)](tests/)
 
-Sistema completo de localização (i18n) em Português do Brasil para a interface do **Google Antigravity**, desenvolvido para ser multiplataforma, resiliente a atualizações e de fácil instalação.
-
----
-
-## 🌟 O que está traduzido?
-
-O projeto conta com mais de **2.180 entradas de tradução exata** e um motor inteligente de regras dinâmicas:
-
-- **Interface Principal e Configurações**: Menus de sistema, barra lateral, configurações de agente, temas, atalhos, painéis e diálogos modais.
-- **Catálogo Completo de Servidores MCP**: Todos os 99 servidores MCP pré-configurados e seus campos de configuração (tokens, chaves de API, variáveis de ambiente, portas e descrições).
-- **Avisos de Conexão e Rede**: Mensagens de aviso de modo offline ("Sem internet", "Conexão perdida", "Reconectando...").
-- **Cotas e Créditos de IA**: Alertas dinâmicos de limite de modelo, saldo de créditos de IA, avisos de renovação de plano com data/hora formatada.
-- **Formulário de Feedback e Suporte**: Todos os campos, opções de categoria, botões e instruções traduzidos integralmente.
-- **Plugins Google**: "Plugins criados com o Google", descrições e gerenciamento.
-- **Menus de Contexto e Bandeja**: Menus nativos de clique direito (Copiar, Colar, Recortar, Nova janela, etc.) e ícone na área de notificação do sistema.
-- **Datas e Tempos**: Formatação automática em português brasileiro (24 horas, dias da semana e meses).
+Sistema profissional, robusto e persistente de localização em Português do Brasil (pt-BR) para o **Google Antigravity**, projetado para funcionar de forma transparente no **Linux** (múltiplas distribuições), **Windows** e **macOS**.
 
 ---
 
-## 🚀 Instalação Rápida
+## 🎯 Propósito do Projeto
 
-### Pré-requisito
-É necessário ter o **Node.js** instalado em seu computador (versão 16 ou superior). Não requer ferramentas adicionais de compilação ou pacotes externos.
+O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
+
+Este projeto resolve essa barreira entregando:
+1. **Tradução Integral e Fiel**: Mais de 2.185 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
+3. **Multiplataforma Real**: Instaladores e patchers dedicados para Linux, macOS e Windows com zero dependências externas compiladas.
+4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.
 
 ---
 
-### 🐧 Linux
+## 🖥️ Matriz de Sistemas e Distribuições Homologadas
 
-Abra o terminal no diretório do repositório clonado e execute:
+O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
+
+- **Linux**:
+  - **Debian / Ubuntu / Linux Mint / Pop!_OS** (`.deb`, `.tar.gz`, diretório local).
+  - **Fedora / RHEL / CentOS** (`.rpm`, `.tar.gz`).
+  - **Arch Linux / Manjaro** (AUR, pacotes locais).
+  - **openSUSE** (Leap e Tumbleweed).
+  - **NixOS**.
+  - **Flatpak Universal** (`com.google.Antigravity`).
+  - Servidores gráficos **Wayland** e **X11**.
+- **Windows**:
+  - **Windows 11** e **Windows 10** (instalações por usuário em `%LOCALAPPDATA%` ou por máquina em `C:\Program Files`).
+- **macOS**:
+  - **macOS Sequoia (15)**, **Sonoma (14)**, **Ventura (13)** e **Monterey (12)**.
+  - Compatível com **Apple Silicon** (M1, M2, M3, M4) e processadores **Intel (x86_64)**.
+
+---
+
+## 📦 Instalação em Poucos Passos
+
+> **Pré-requisito único**: Ter o **Node.js** (v16 ou superior) instalado em seu computador.
+
+### 🐧 No Linux
+
+Abra o terminal e execute:
 
 ```bash
 git clone https://github.com/Cambrith/antigravity-pt-br.git
@@ -41,26 +58,13 @@ chmod +x install.sh
 ./install.sh
 ```
 
-O script localiza automaticamente a instalação do Antigravity, instala os arquivos persistentes e cria o inicializador com auto-recuperação.
+*O instalador detecta automaticamente a instalação do Antigravity, salva o arquivo permanente e configura um inicializador com auto-recuperação pós-atualizações.*
 
 ---
 
-### 🍏 macOS
+### 🪟 No Windows
 
-No terminal do macOS, execute:
-
-```bash
-git clone https://github.com/Cambrith/antigravity-pt-br.git
-cd antigravity-pt-br
-chmod +x install-macos.sh
-./install-macos.sh
-```
-
----
-
-### 🪟 Windows
-
-Abra o **PowerShell** no diretório do projeto e execute:
+Abra o **PowerShell** e execute:
 
 ```powershell
 git clone https://github.com/Cambrith/antigravity-pt-br.git
@@ -71,47 +75,82 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ---
 
-## 🛡️ Persistência após Atualizações
+### 🍏 No macOS
 
-O instalador utiliza uma arquitetura de persistência em camadas:
+Abra o Terminal e execute:
 
-1. **Cópia Golden Master**: O arquivo de tradução principal fica salvo no diretório de configuração do usuário (`~/.config/Antigravity/i18n` no Linux, `~/Library/Application Support/Antigravity/i18n` no macOS, `%APPDATA%\Antigravity\i18n` no Windows), garantindo que atualizações do software não apaguem as traduções.
-2. **Patcher ASAR em Node.js Puro**: Modifica o pacote Electron mantendo 100% dos arquivos descompactados e recalculando as somas de integridade SHA256 sem depender de pacotes npm externos.
-3. **Inicializador Automático (Linux)**: Um launcher detecta se o Antigravity foi atualizado e reaplica a tradução instantaneamente na próxima inicialização.
-
----
-
-## 🛠️ Personalização e Adição de Novos Termos
-
-Se desejar adicionar novos termos ou ajustar textos existentes:
-
-1. Abra o arquivo `generate_i18n.py` e adicione os termos no dicionário `EXACT_MAP` ou na função de regras dinâmicas.
-2. Execute o gerador:
-   ```bash
-   python3 generate_i18n.py
-   ```
-3. Reaplique a tradução:
-   ```bash
-   node patch-asar.js --force
-   ```
-
----
-
-## 📁 Estrutura do Repositório
-
-```text
-antigravity-pt-br/
-├── i18n-pt-br.js              # Script final de tradução (motor JS + mapas)
-├── generate_i18n.py           # Gerador Python contendo todos os termos fonte
-├── patch-asar.js              # Patcher de binário ASAR multiplataforma
-├── install.sh                 # Instalador automatizado para Linux
-├── install-macos.sh           # Instalador automatizado para macOS
-├── install.ps1                # Instalador automatizado para Windows
-├── launcher/
-│   └── antigravity-launcher.sh # Inicializador persistente com auto-reparo
-├── LICENSE                    # Licença MIT
-└── README.md                  # Documentação do projeto
+```bash
+git clone https://github.com/Cambrith/antigravity-pt-br.git
+cd antigravity-pt-br
+chmod +x install-macos.sh
+./install-macos.sh
 ```
+
+---
+
+## 🌟 O que está Traduzido?
+
+| Módulo / Recurso | Detalhes da Localização |
+|---|---|
+| **Interface e Configurações** | Menus de contexto nativo, barra lateral, configurações de agente, temas, atalhos, painéis e diálogos. |
+| **Catálogo de Servidores MCP** | Todos os 99 servidores MCP mapeados, incluindo campos de configuração (Tokens, API Keys, URLs e descrições). |
+| **Cotas e Créditos de IA** | Alertas de cotas semanais e de 5 horas, limites esgotados, opções de upgrade e renovações com data/hora formatada. |
+| **Avisos de Conexão e Rede** | Indicadores de modo offline ("Sem internet", "Conexão perdida", "Reconectando..."). |
+| **Formulário de Feedback** | 100% dos campos, categorias de relato de problemas, placeholders e botões de envio. |
+| **Datas e Tempos** | Conversão para padrão 24 horas (`17:26:38`), dias da semana e meses em português brasileiro. |
+
+---
+
+## 🛡️ Arquitetura e Engenharia de Persistência
+
+Para entender em detalhes como o patcher manipula o arquivo `app.asar` mantendo integridade SHA-256 e como o `MutationObserver` atua no ciclo de vida do Electron, consulte o documento:
+👉 **[Documentação de Arquitetura (docs/ARCHITECTURE.md)](docs/ARCHITECTURE.md)**
+
+---
+
+## 🧪 Qualidade e Testes Automatizados
+
+O repositório inclui uma suíte completa de testes unitários que garantem a qualidade e a ausência de regressões:
+
+```bash
+npm test
+```
+
+Os testes são executados automaticamente a cada Pull Request em **Linux, Windows e macOS** via **GitHub Actions CI**.
+
+---
+
+## 🔄 Desinstalação (Restauração do Original)
+
+O instalador cria automaticamente uma cópia de segurança (`app.asar.bak-original`) antes de aplicar qualquer alteração. Caso queira reverter:
+
+- **Linux / macOS**:
+  ```bash
+  chmod +x scripts/uninstall.sh
+  ./scripts/uninstall.sh
+  ```
+- **Windows**:
+  ```powershell
+  .\scripts\uninstall.ps1
+  ```
+
+Para mais soluções de problemas comuns, consulte o **[Guia de Resolução de Problemas (docs/TROUBLESHOOTING.md)](docs/TROUBLESHOOTING.md)**.
+
+---
+
+## 🤝 Como Contribuir
+
+Contribuições são muito bem-vindas! Se você encontrou um termo ainda não traduzido ou deseja melhorar uma frase existente:
+
+1. Leia o **[Guia de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md)**.
+2. Siga as orientações do **[Código de Conduta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)**.
+3. Se desejar reportar um termo não traduzido, use o [Template de Tradução](.github/ISSUE_TEMPLATE/translation_fix.yml).
+
+---
+
+## 🔒 Segurança
+
+Levamos a segurança e a privacidade a sério. Não coletamos telemetria e o patcher não utiliza pacotes npm externos. Para reportar vulnerabilidades de forma responsável, consulte nossa **[Política de Segurança (SECURITY.md)](SECURITY.md)**.
 
 ---
 

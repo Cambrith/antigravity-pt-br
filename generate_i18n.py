@@ -651,7 +651,6 @@ EXACT_MAP = {
     "Confirm": "Confirmar",
     "OK": "OK",
     "Yes": "Sim",
-    "No": "Não",
     "Apply": "Aplicar",
     "Save": "Salvar",
     "Save & Continue": "Salvar e continuar",
@@ -2348,6 +2347,10 @@ EXACT_MAP = {
     "Your AI credits balance is too low to continue.": "Seu saldo de créditos de IA está muito baixo para continuar.",
     "To continue using this model now, enable AI Credit overages.": "Para continuar usando este modelo agora, ative os excedentes de créditos de IA.",
     "this model": "este modelo",
+    "Personal Access Token": "Token de acesso pessoal",
+    "Personal access token": "Token de acesso pessoal",
+    "API Key": "Chave de API",
+    "API key": "Chave de API",
 }
 
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
@@ -2764,7 +2767,8 @@ js_body = r'''(function() {
       return `(Obrigatório) ${trInner}`;
     }
     if ((m = /^Your\s+(.+?)\s+(API Key|Token|Personal Access Token)\.?$/i.exec(s))) {
-      const trType = m[2].toLowerCase().includes('token') ? 'token' : 'chave de API';
+      const lower = m[2].toLowerCase();
+      const trType = lower.includes('personal access token') ? 'token de acesso pessoal' : (lower.includes('token') ? 'token' : 'chave de API');
       return `Seu ${trType} do ${m[1]}.`;
     }
     if ((m = /^Your\s+(.+?)\s+API\s+(Key|Token)$/i.exec(s))) {
@@ -2825,13 +2829,13 @@ js_body = r'''(function() {
     return null;
   }
 
-  const SKIP_TAGS = new Set(['PRE', 'CODE', 'SCRIPT', 'STYLE', 'TEXTAREA', 'SVG', 'PATH', 'MATH']);
+  const SKIP_TAGS = new Set(['PRE', 'CODE', 'SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'SVG', 'PATH', 'MATH']);
 
   function shouldSkipElement(el) {
     if (!el || el.nodeType !== 1) return true;
     if (SKIP_TAGS.has(el.tagName)) return true;
     if (el.isContentEditable) return true;
-    if (el.closest && el.closest('pre, code, script, style, textarea, [contenteditable="true"], .monaco-editor, .xterm, .katex')) return true;
+    if (el.closest && el.closest('pre, code, script, style, textarea, input, [contenteditable="true"], .monaco-editor, .xterm, .katex, [data-testid="user-input-step"], [data-testid="agent-input-box"]')) return true;
     return false;
   }
 
@@ -2840,6 +2844,15 @@ js_body = r'''(function() {
     if (!parent || shouldSkipElement(parent)) return;
     const val = node.nodeValue;
     if (!val || val.length > 4000) return;
+    const trimmed = val.trim();
+    if (trimmed === 'No') {
+      // Em português 'No' é uma palavra comum (em + o).
+      // Só traduz para 'Não' se estiver comprovadamente dentro de um botão de ação.
+      if (parent.tagName === 'BUTTON' || parent.getAttribute('role') === 'button' || (parent.closest && parent.closest('button, [role="button"]'))) {
+        node.nodeValue = val.replace('No', 'Não');
+      }
+      return;
+    }
     const tr = translateString(val);
     if (tr && tr !== val) {
       node.nodeValue = tr;

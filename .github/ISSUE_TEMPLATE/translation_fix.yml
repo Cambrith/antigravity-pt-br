@@ -1,0 +1,31 @@
+name: Sugestão ou Correção de Tradução
+description: Sugira uma nova tradução ou aprimoramento de um termo existente
+title: "[TRADUÇÃO]: "
+labels: ["translation", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ajude a manter a tradução impecável! Informe o termo em inglês e a tradução sugerida em Português do Brasil (pt-BR).
+  - type: input
+    id: original-term
+    attributes:
+      label: Termo Original em Inglês
+      placeholder: "Ex: Your weekly quota has been refreshed"
+    validations:
+      required: true
+  - type: input
+    id: suggested-translation
+    attributes:
+      label: Tradução Sugerida (pt-BR)
+      placeholder: "Ex: Sua cota semanal foi renovada"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Onde este termo aparece?
+      description: Informe a tela, modal, aba ou menu onde o texto é exibido.
+      placeholder: "Ex: Configurações > Aba Modelos > Card de Cotas"
+    validations:
+      required: true

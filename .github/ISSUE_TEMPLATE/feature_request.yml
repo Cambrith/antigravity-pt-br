@@ -1,0 +1,19 @@
+name: Sugestão de Recurso
+description: Sugira uma nova funcionalidade, automação ou melhoria para o instalador/patcher
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema sua sugestão resolve?
+      description: Uma descrição clara e concisa do problema ou limitação.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta
+      description: Como você imagina que esse recurso deveria funcionar?
+    validations:
+      required: true

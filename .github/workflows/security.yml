@@ -1,0 +1,28 @@
+name: Segurança e Integridade
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 0' # Semanal aos domingos
+
+jobs:
+  audit:
+    name: Auditoria de Segurança e Varredura
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Verificar se não há segredos ou tokens commitados
+        run: |
+          echo "Verificando se há chaves ou tokens sensíveis nos arquivos..."
+          if grep -rnE "ghp_[A-Za-z0-9]{36}|AIza[0-9A-Za-z-_]{35}|sk-[A-Za-z0-9]{32,}" . --exclude-dir=.git; then
+            echo "❌ Erro: Possível token ou credencial encontrada!"
+            exit 1
+          else
+            echo "✅ Nenhum token ou chave detectada no código-fonte."
+          fi
