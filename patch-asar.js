@@ -348,7 +348,9 @@ function run() {
       if (!fs.existsSync(GOLDEN_DIR)) {
         fs.mkdirSync(GOLDEN_DIR, { recursive: true });
       }
-      fs.copyFileSync(srcFile, GOLDEN_I18N);
+      if (path.resolve(srcFile) !== path.resolve(GOLDEN_I18N)) {
+        fs.copyFileSync(srcFile, GOLDEN_I18N);
+      }
       if (fs.existsSync(RESOURCES_DIR)) {
         fs.copyFileSync(srcFile, TARGET_I18N);
       }
