@@ -70,3 +70,36 @@ test('Tradução de Modelos e Níveis de Raciocínio', () => {
   assert.equal(tr('Claude Sonnet 4.6 (Thinking)'), 'Claude Sonnet 4.6 (Raciocínio)');
   assert.equal(tr('GPT-OSS 120B (Medium)'), 'GPT-OSS 120B (Médio)');
 });
+
+test('Tradução de Ambiente, Worktree e Início de Conversa', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Rótulos e Seletores de Ambiente
+  assert.equal(tr('Environment'), 'Ambiente');
+  assert.equal(tr('Select Environment'), 'Selecionar ambiente');
+  assert.equal(tr('Select Environment (Ctrl+.)'), 'Selecionar ambiente (Ctrl+.)');
+  assert.equal(tr('Select Worktree'), 'Selecionar worktree');
+  assert.equal(tr('Select Worktree (Ctrl+.)'), 'Selecionar worktree (Ctrl+.)');
+  assert.equal(tr('Environment: Local'), 'Ambiente: Local');
+
+  // Opções e descrições do dropdown
+  assert.equal(tr('Run in your current workspace'), 'Executar em seu espaço de trabalho atual');
+  assert.equal(tr('Run in a new worktree'), 'Executar em uma nova worktree');
+  assert.equal(tr('Run in a new git worktree'), 'Executar em uma nova worktree do git');
+  assert.equal(tr('Workspaces are not available for this project'), 'Espaços de trabalho não estão disponíveis para este projeto');
+  assert.equal(tr('Worktrees are available for Git repositories'), 'Worktrees estão disponíveis para repositórios Git');
+  assert.equal(tr('Search past worktrees...'), 'Pesquisar worktrees anteriores...');
+  assert.equal(tr('Search past workspaces...'), 'Pesquisar espaços de trabalho anteriores...');
+
+  // Strings dinâmicas
+  assert.equal(tr('Work locally on frontend, backend'), 'Trabalhar localmente em frontend, backend');
+  assert.equal(tr('Worktree from main'), 'Worktree a partir de main');
+  assert.equal(tr('Automatically create a new Fig workspace when the conversation starts'), 'Criar automaticamente um novo espaço de trabalho Fig quando a conversa iniciar');
+
+  // Conversas bifurcadas
+  assert.equal(tr('Creating worktree for the forked conversation...'), 'Criando worktree para a conversa bifurcada...');
+  assert.equal(tr('Creating the forked conversation...'), 'Criando a conversa bifurcada...');
+  assert.equal(tr('Forked conversation'), 'Conversa bifurcada');
+});
+

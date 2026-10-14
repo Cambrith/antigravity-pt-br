@@ -340,6 +340,50 @@ EXACT_MAP = {
     "Select Agent": "Selecionar agente",
     "Select Default Branch": "Selecionar branch padrão",
     "Select Environment": "Selecionar ambiente",
+    "Select Environment (": "Selecionar ambiente (",
+    "Select Worktree (": "Selecionar worktree (",
+    "Environment": "Ambiente",
+    "Unknown Environment": "Ambiente desconhecido",
+    "Unknown worktree": "Worktree desconhecida",
+    "Environment Actions": "Ações do ambiente",
+    "Environment Status": "Status do ambiente",
+    "Archive Environment": "Arquivar ambiente",
+    "Fork Environment Notice": "Aviso de ambiente bifurcado",
+    "Invalid environment name": "Nome de ambiente inválido",
+    "Creating environment...": "Criando ambiente...",
+    "Loading worktrees...": "Carregando worktrees...",
+    "No environments found": "Nenhum ambiente encontrado",
+    "New Fig Workspace": "Novo espaço de trabalho Fig",
+    "New Fig Share?": "Novo compartilhamento Fig?",
+    "New Fig Share": "Novo compartilhamento Fig",
+    "Start in a new Fig share (go/fig-shares)": "Iniciar em um novo compartilhamento Fig (go/fig-shares)",
+    "Run in your current workspace": "Executar em seu espaço de trabalho atual",
+    "Run in a new worktree": "Executar em uma nova worktree",
+    "Run in a new git worktree": "Executar em uma nova worktree do git",
+    "Run in a new jj workspace or Fig share": "Executar em um novo espaço de trabalho jj ou compartilhamento Fig",
+    "Clone current workspace into a new independent workspace": "Clonar espaço de trabalho atual em um novo espaço de trabalho independente",
+    "This is a CitC workspace (Fig share)": "Este é um espaço de trabalho CitC (compartilhamento Fig)",
+    "Workspaces are not available for this project": "Espaços de trabalho não estão disponíveis para este projeto",
+    "Worktrees are available for Git repositories": "Worktrees estão disponíveis para repositórios Git",
+    "Worktrees are not available for this project": "Worktrees não estão disponíveis para este projeto",
+    "Worktrees are a git feature. This folder is shared as is.": "Worktrees são um recurso do Git. Esta pasta é compartilhada como está.",
+    "Search past worktrees...": "Pesquisar worktrees anteriores...",
+    "Search past workspaces...": "Pesquisar espaços de trabalho anteriores...",
+    "Failed to create worktree:": "Falha ao criar worktree:",
+    "Create a JJ worktree": "Criar uma worktree JJ",
+    "JJ worktree": "Worktree JJ",
+    "No main workspace URI found for JJ worktree selector": "Nenhum URI de espaço de trabalho principal encontrado para o seletor de worktree JJ",
+    "Your environment has expired. Please renew it to continue.": "Seu ambiente expirou. Renove-o para continuar.",
+    "Your environment is active, but you can renew it if needed.": "Seu ambiente está ativo, mas você pode renová-lo se necessário.",
+    "Your environment will expire soon. Please renew it to continue.": "Seu ambiente expirará em breve. Renove-o para continuar.",
+    "Inline PDF preview is not available in this environment.": "A visualização de PDF integrada não está disponível neste ambiente.",
+    "Cog workspace creation is not available in this environment.": "A criação de espaço de trabalho Cog não está disponível neste ambiente.",
+    "ABFS workspace creation is not available in this environment.": "A criação de espaço de trabalho ABFS não está disponível neste ambiente.",
+    "Creating worktree for the forked conversation...": "Criando worktree para a conversa bifurcada...",
+    "Creating CitC workspace for the forked conversation...": "Criando espaço de trabalho CitC para a conversa bifurcada...",
+    "Creating the forked conversation...": "Criando a conversa bifurcada...",
+    "Forked conversation": "Conversa bifurcada",
+    "New chats will be grouped by workspace.": "Novos chats serão agrupados por espaço de trabalho.",
     "Select Worktree": "Selecionar worktree",
     "Select branch": "Selecionar branch",
     "Select category to search...": "Selecionar categoria para pesquisar...",
@@ -947,6 +991,13 @@ EXACT_MAP = {
     "No customizations match your search.": "Nenhuma personalização corresponde à sua busca.",
     "Ask anything, @ to mention, / for actions": "Pergunte qualquer coisa, @ para mencionar, / para ações",
     "Ask anything, @ to mention": "Pergunte qualquer coisa, @ para mencionar",
+    "Ask anything...": "Pergunte qualquer coisa...",
+    "Ask anything": "Pergunte qualquer coisa",
+    "Type a message...": "Digite uma mensagem...",
+    "Send a message...": "Envie uma mensagem...",
+    "What would you like to build?": "O que você gostaria de construir?",
+    "What would you like to do?": "O que você gostaria de fazer?",
+    "Ask a question or describe a task...": "Faça uma pergunta ou descreva uma tarefa...",
     "Add a message...": "Adicione uma mensagem...",
     "Write a comment...": "Escreva um comentário...",
     "Pick a suggestion below to get started, or ask me anything.": "Escolha uma sugestão abaixo para começar ou pergunte qualquer coisa.",
@@ -2569,8 +2620,11 @@ js_body = r'''(function() {
     if ((m = /^Current workspace:\s*(.+)$/i.exec(s))) {
       return `Espaço de trabalho atual: ${m[1]}`;
     }
-    if ((m = /^Select model,\s*currently:\s*(.+)$/i.exec(s))) {
-      return `Selecionar modelo, atual: ${m[1]}`;
+    if ((m = /^Select model,\s*current(?:ly)?:\s*(.+)$/i.exec(s))) {
+      let model = m[1].trim();
+      const effortMap = { thinking: "Raciocínio", low: "Baixo", medium: "Médio", high: "Alto", max: "Máximo" };
+      model = model.replace(/\b(Thinking|Low|Medium|High|Max)\b/gi, (match) => effortMap[match.toLowerCase()] || match);
+      return `Selecionar modelo, atual: ${model}`;
     }
     if ((m = /^Load earlier messages,\s*showing\s+(\d+)\s+of\s+(\d+)$/i.exec(s))) {
       return `Carregar mensagens anteriores, exibindo ${m[1]} de ${m[2]}`;
@@ -2739,6 +2793,27 @@ js_body = r'''(function() {
       const trEffort = effortMap[m[2].toLowerCase()] || m[2];
       return `${m[1]} (${trEffort})`;
     }
+    if ((m = /^(.+?)\s+(Low|Medium|High|Max|Thinking)$/i.exec(s))) {
+      const effortMap = {
+        thinking: "Raciocínio",
+        low: "Baixo",
+        medium: "Médio",
+        high: "Alto",
+        max: "Máximo"
+      };
+      const trEffort = effortMap[m[2].toLowerCase()] || m[2];
+      return `${m[1]} ${trEffort}`;
+    }
+    if ((m = /^(Low|Medium|High|Max|Thinking)$/i.exec(s))) {
+      const effortMap = {
+        thinking: "Raciocínio",
+        low: "Baixo",
+        medium: "Médio",
+        high: "Alto",
+        max: "Máximo"
+      };
+      return effortMap[m[1].toLowerCase()] || m[1];
+    }
 
     // Plugins Build with Google / Dinâmico
     if ((m = /^Build with (.+?) Plugins$/i.exec(s))) {
@@ -2801,6 +2876,42 @@ js_body = r'''(function() {
       }
     }
 
+    // Ambiente e Worktree Dinâmicos
+    if ((m = /^Environment:\s*(.+)$/i.exec(s))) {
+      const trEnv = translateString(m[1]) || m[1];
+      return `Ambiente: ${trEnv}`;
+    }
+    if ((m = /^Select Environment\s*\((.+?)\)$/i.exec(s))) {
+      return `Selecionar ambiente (${m[1]})`;
+    }
+    if ((m = /^Select Worktree\s*\((.+?)\)$/i.exec(s))) {
+      return `Selecionar worktree (${m[1]})`;
+    }
+    if ((m = /^Work locally on\s+(.+)$/i.exec(s))) {
+      return `Trabalhar localmente em ${m[1]}`;
+    }
+    if ((m = /^Worktree from\s+(.+)$/i.exec(s))) {
+      return `Worktree a partir de ${m[1]}`;
+    }
+    if ((m = /^Work in\s+(.+)$/i.exec(s))) {
+      return `Trabalhar em ${m[1]}`;
+    }
+    if ((m = /^Automatically create a new (.+?) workspace when the conversation starts$/i.exec(s))) {
+      return `Criar automaticamente um novo espaço de trabalho ${m[1]} quando a conversa iniciar`;
+    }
+    if ((m = /^Automatically create a new (.+?) workspace when the conversation starts,\s*and reuse\s+(.+)$/i.exec(s))) {
+      return `Criar automaticamente um novo espaço de trabalho ${m[1]} quando a conversa iniciar e reutilizar ${m[2]}`;
+    }
+    if ((m = /^Worktree from (.+?),\s*and reuse\s+(.+)$/i.exec(s))) {
+      return `Worktree a partir de ${m[1]} e reutilizar ${m[2]}`;
+    }
+    if ((m = /^Failed to create worktree:\s*(.+)$/i.exec(s))) {
+      return `Falha ao criar worktree: ${m[1]}`;
+    }
+    if ((m = /^No such environment:\s*(.+)$/i.exec(s))) {
+      return `Nenhum ambiente encontrado: ${m[1]}`;
+    }
+
     // Avisos de Rede e Desconexão Dinâmicos
     if ((m = /^(?:Connection lost|Lost connection)\.?\s*Reconnecting\.\.\.$/i.exec(s))) {
       return "Conexão perdida. Reconectando...";
@@ -2835,7 +2946,7 @@ js_body = r'''(function() {
     if (!el || el.nodeType !== 1) return true;
     if (SKIP_TAGS.has(el.tagName)) return true;
     if (el.isContentEditable) return true;
-    if (el.closest && el.closest('pre, code, script, style, textarea, input, [contenteditable="true"], .monaco-editor, .xterm, .katex, [data-testid="user-input-step"], [data-testid="agent-input-box"]')) return true;
+    if (el.closest && el.closest('pre, code, script, style, textarea, input, [contenteditable="true"], .monaco-editor, .xterm, .katex, [data-testid="user-input-step"]')) return true;
     return false;
   }
 
@@ -3021,6 +3132,7 @@ js_body = r'''(function() {
 '''
 
 out_paths = [
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "i18n-pt-br.js"),
     "/home/cambrith/.local/opt/antigravity/resources/i18n-pt-br.js",
     "/home/cambrith/.config/Antigravity/i18n/i18n-pt-br.js",
 ]

@@ -6,6 +6,31 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.2.0] - 2026-10-14
+
+### Adicionado
+- **Tradução Completa de Seletores de Ambiente e Worktree**:
+  - Localização dos seletores de ambiente ao iniciar conversa (`Environment: Local` $\rightarrow$ `Ambiente: Local`, `Select Environment` $\rightarrow$ `Selecionar ambiente`, `Select Worktree` $\rightarrow$ `Selecionar worktree`).
+  - Tooltips com atalho de teclado (`Select Environment (Ctrl+.)` e variações).
+  - Itens e descrições explicativas dos ambientes (`Run in your current workspace`, `Run in a new worktree`, `Run in a new git worktree`, `Run in a new jj workspace or Fig share`, etc.).
+  - Avisos contextuais de suporte a repositórios e projetos (`Workspaces are not available for this project`, `Worktrees are available for Git repositories`, `Worktrees are a git feature. This folder is shared as is.`).
+  - Buscas e listas de worktrees anteriores (`Search past worktrees...`, `Search past workspaces...`, `Previous Worktrees`, `No environments found`, `No previous worktrees`).
+  - Notificações de criação e bifurcação de conversas (`Creating worktree for the forked conversation...`, `Creating CitC workspace for the forked conversation...`, `Forked conversation`).
+- **Tradução Dinâmica de Níveis de Esforço de Raciocínio**:
+  - Mapeamento dinâmico de modelos com esforço: Baixo, Médio, Alto, Máximo e Raciocínio (ex.: `Gemini 3.8 Flash Médio`, `Claude Sonnet 4.6 (Raciocínio)`).
+- **Tradução de Detalhamento de Tokens e Orçamento**:
+  - Cobertura completa para `Show breakdown` / `Hide breakdown` com suporte ao plural dinâmico (`Mostrar 2 detalhamentos`, `Ocultar detalhamento`).
+  - Avisos de limites de tokens de regras e exclusão de ferramentas MCP.
+- **Tradução de Barra de Mensagens e Placeholders**:
+  - Placeholders dinâmicos de prompt e ações (`Ask anything, @ to mention, / for actions`, `Type a message...`, `What would you like to build?`, etc.).
+  - Preservação estrita do conteúdo digitado pelo usuário (`[contenteditable="true"]`).
+
+### Modificado
+- Total de entradas no dicionário estático expandido para mais de 2.235 termos.
+- Adicionados testes unitários automatizados para validação de tradução de ambientes e início de conversa.
+
+---
+
 ## [1.1.0] - 2026-10-14
 
 ### Adicionado
