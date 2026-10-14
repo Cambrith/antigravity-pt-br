@@ -66,7 +66,11 @@ fi
 
 # 4. Executar patch no app.asar
 echo "🔧 Aplicando tradução no app.asar..."
-node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH" --force
+if pgrep -x antigravity >/dev/null 2>&1; then
+    echo "❌ Feche o Antigravity antes de modificar seus arquivos." >&2
+    exit 1
+fi
+node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH"
 
 # 5. Configurar inicializador persistente (Launcher)
 if [ -d "$LOCAL_BIN" ] && [ -f "$SCRIPT_DIR/launcher/antigravity-launcher.sh" ]; then
