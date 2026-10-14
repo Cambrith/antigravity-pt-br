@@ -27,19 +27,23 @@ Este projeto resolve essa barreira entregando:
 
 O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
 
-- **Linux**:
-  - **Debian / Ubuntu / Linux Mint / Pop!_OS** (`.deb`, `.tar.gz`, diretório local).
-  - **Fedora / RHEL / CentOS** (`.rpm`, `.tar.gz`).
-  - **Arch Linux / Manjaro** (AUR, pacotes locais).
-  - **openSUSE** (Leap e Tumbleweed).
-  - **NixOS**.
-  - **Flatpak Universal** (`com.google.Antigravity`).
-  - Servidores gráficos **Wayland** e **X11**.
+- **Linux (390+ Distribuições Homologadas por Família)**:
+  - **Família Debian / Ubuntu / Mint / Pop!_OS / Zorin**: Base `.deb`, `apt`, FHS padrão.
+  - **Família Red Hat / Fedora / RHEL / Alma / Rocky / openSUSE**: Base `.rpm`, `dnf`, `zypper`.
+  - **Família Arch Linux / Manjaro / EndeavourOS / Garuda / CachyOS**: Base `pacman`, AUR.
+  - **Família Slackware / Gentoo / Source-based / Void / Alpine / NixOS**: Instalações nativas e por repositório.
+  - **Sistemas de Jogos / Retrô / Servidores**: SteamOS, Bazzite, Nobara, Proxmox, etc.
+  - **Flatpak Universal**: Sandboxed (`com.google.Antigravity`).
+  - Suporte completo a **Wayland** e **X11**.
+- **ChromeOS & Ambientes de Contêiner**:
+  - **ChromeOS, ChromeOS Flex e FydeOS** via contêiner oficial Crostini (Linux).
 - **Windows**:
   - **Windows 11** e **Windows 10** (instalações por usuário em `%LOCALAPPDATA%` ou por máquina em `C:\Program Files`).
 - **macOS**:
   - **macOS Sequoia (15)**, **Sonoma (14)**, **Ventura (13)** e **Monterey (12)**.
   - Compatível com **Apple Silicon** (M1, M2, M3, M4) e processadores **Intel (x86_64)**.
+
+👉 *Consulte o catálogo completo com todos os nomes de distribuições em [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).*
 
 ---
 
