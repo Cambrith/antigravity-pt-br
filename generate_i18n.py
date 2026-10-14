@@ -2456,25 +2456,37 @@ js_body = r'''(function() {
     if ((m = /^(\d+) files? changed$/.exec(s))) return `${m[1]} ${m[1] === '1' ? 'arquivo alterado' : 'arquivos alterados'}`;
 
     // Quota patterns
-    if ((m = /^You have used some of your (.+?) limit, it will fully refresh in (.+?)\.?$/.exec(s))) {
-      const limitType = m[1] === 'weekly' ? 'semanal' : m[1] === '5-hour' ? 'de 5 horas' : m[1] === 'daily' ? 'diário' : m[1];
+    function resolveLimitName(lim) {
+      const l = (lim || '').toLowerCase().trim();
+      if (l === 'weekly') return 'semanal';
+      if (l === '5-hour') return 'de 5 horas';
+      if (l === 'daily') return 'diário';
+      if (l === 'monthly') return 'mensal';
+      return lim;
+    }
+
+    if ((m = /^You have used some of your (.+?) limit, it (?:will )?(?:fully )?refresh(?:es)? in (.+?)\.?$/i.exec(s))) {
+      const limitType = resolveLimitName(m[1]);
       return `Você usou parte do seu limite ${limitType}; ele será totalmente renovado em ${translateDuration(m[2])}.`;
     }
-    if ((m = /^You have reached your (.+?) limit, it will fully refresh in (.+?)\.?$/.exec(s))) {
-      const limitType = m[1] === 'weekly' ? 'semanal' : m[1] === '5-hour' ? 'de 5 horas' : m[1] === 'daily' ? 'diário' : m[1];
+    if ((m = /^You have reached your (.+?) limit, it (?:will )?(?:fully )?refresh(?:es)? in (.+?)\.?$/i.exec(s))) {
+      const limitType = resolveLimitName(m[1]);
       return `Você atingiu o seu limite ${limitType}; ele será totalmente renovado em ${translateDuration(m[2])}.`;
     }
-    if ((m = /^You have hit your (.+?) limit, so the weekly limit does not currently apply\. Your \1 limit will refresh in (.+?)\.?$/.exec(s))) {
-      const limitType = m[1] === '5-hour' ? 'de 5 horas' : m[1] === 'weekly' ? 'semanal' : m[1];
-      return `Você atingiu o seu limite ${limitType}, portanto o limite semanal não se aplica no momento. Seu limite ${limitType} será renovado em ${translateDuration(m[2])}.`;
+    if ((m = /^You have hit your (.+?) limit, it (?:will )?(?:fully )?refresh(?:es)? in (.+?)\. If on a supported paid plan, you can use AI credits in the interim( or upgrade to a higher tier)?\.?$/i.exec(s))) {
+      const limitType = resolveLimitName(m[1]);
+      const upgrade = m[3] ? " ou fazer upgrade para um plano superior." : ".";
+      return `Você atingiu o seu limite ${limitType}; ele será renovado em ${translateDuration(m[2])}. Se estiver em um plano pago compatível, você poderá usar créditos de IA nesse período${upgrade}`;
     }
-    if ((m = /^You have hit your (.+?) limit, it will refresh in (.+?)\. If on a supported paid plan, you can use AI credits in the interim\.?$/.exec(s))) {
-      const limitType = m[1] === '5-hour' ? 'de 5 horas' : m[1] === 'weekly' ? 'semanal' : m[1];
-      return `Você atingiu o seu limite ${limitType}; ele será renovado em ${translateDuration(m[2])}. Se estiver em um plano pago compatível, você poderá usar créditos de IA nesse período.`;
+    if ((m = /^You have hit your (.+?) limit, (?:so )?the (.+?) limit does not currently apply\. Your (.+?) limit will (?:fully )?refresh(?:es)? in (.+?)\.?$/i.exec(s))) {
+      const l1 = resolveLimitName(m[1]);
+      const l2 = resolveLimitName(m[2]);
+      const l3 = resolveLimitName(m[3]);
+      return `Você atingiu o seu limite ${l1}, portanto o limite ${l2} não se aplica no momento. Seu limite ${l3} será totalmente renovado em ${translateDuration(m[4])}.`;
     }
-    if ((m = /^You have hit your (.+?) limit, it will refresh in (.+?)\.?$/.exec(s))) {
-      const limitType = m[1] === '5-hour' ? 'de 5 horas' : m[1] === 'weekly' ? 'semanal' : m[1];
-      return `Você atingiu o seu limite ${limitType}; ele será renovado em ${translateDuration(m[2])}.`;
+    if ((m = /^You have hit your (.+?) limit, it (?:will )?(?:fully )?refresh(?:es)? in (.+?)\.?$/i.exec(s))) {
+      const limitType = resolveLimitName(m[1]);
+      return `Você atingiu o seu limite ${limitType}; ele será totalmente renovado em ${translateDuration(m[2])}.`;
     }
     if ((m = /^Resets in (.+)$/.exec(s))) {
       let rest = m[1]
