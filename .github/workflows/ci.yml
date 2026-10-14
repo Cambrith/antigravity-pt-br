@@ -16,6 +16,26 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
+      - name: Validar sintaxe dos scripts Bash
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          bash -n install.sh install-macos.sh scripts/uninstall.sh scripts/install-linux.sh scripts/install-macos.sh launcher/antigravity-launcher.sh
+
+      - name: Validar sintaxe dos scripts PowerShell
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($script in @('install.ps1', 'scripts/install-windows.ps1', 'scripts/uninstall.ps1')) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script).Path, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              throw "Erros de sintaxe em $script : $($errors -join '; ')"
+            }
+          }
+
       - name: Checkout do código
         uses: actions/checkout@v4
 
