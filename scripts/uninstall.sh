@@ -31,11 +31,16 @@ for res in "${CANDIDATES[@]}"; do
   app_dir="${res%/resources}"
   # Preservar lançadores que não pertençam a este projeto.
   launcher="$HOME/.local/bin/antigravity"
-  if [[ -f "$launcher" ]] && grep -qF 'Antigravity Persistent Localization Launcher' "$launcher"; then
+  if [[ -L "$launcher" ]]; then
+    echo "Launcher é um link simbólico; preservado para revisão manual." >&2
+  elif [[ -f "$launcher" ]] && grep -qF 'Antigravity Persistent Localization Launcher' "$launcher"; then
     if [[ -x "$app_dir/antigravity" ]]; then
+      # Preservar o script que existia antes da restauração, sem sobrescrever cópias anteriores.
+      snapshot="${launcher}.cambrith-uninstall-$(date +%Y%m%d%H%M%S).bak"
+      cp -p -- "$launcher" "$snapshot"
       printf '#!/usr/bin/env bash\nexec "%s" "$@"\n' "$app_dir/antigravity" > "$launcher"
       chmod +x "$launcher"
-      echo "Launcher do tradutor substituído por um encaminhador para o aplicativo original."
+      echo "Launcher original salvo em $snapshot; inicializador agora aponta ao app sem tradução."
     else
       echo "Launcher preservado; verifique manualmente o atalho após restaurar." >&2
     fi
