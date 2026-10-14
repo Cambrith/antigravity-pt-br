@@ -1,33 +1,37 @@
-# ========================================================
-# Desinstalador da Tradução Antigravity pt-BR (Windows PowerShell)
-# ========================================================
-
-Write-Host "========================================================" -ForegroundColor Cyan
-Write-Host "   Desinstalador da Tradução do Antigravity - Windows" -ForegroundColor Cyan
-Write-Host "========================================================" -ForegroundColor Cyan
-
+# Desinstalação com verificação de hashes e da versão efetivamente instalada
+$ErrorActionPreference = "Stop"
+$Patcher = Join-Path (Split-Path -Parent $PSScriptRoot) "patch-asar.js"
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+    Write-Error "Node.js é necessário para validar o backup."
+    exit 1
+}
+if (Get-Process -Name "Antigravity" -ErrorAction SilentlyContinue) {
+    Write-Error "Feche o Antigravity antes de restaurar."
+    exit 1
+}
 $Candidates = @(
     (Join-Path $env:LOCALAPPDATA "Programs\antigravity\resources"),
-    (Join-Path $env:ProgramFiles "Antigravity\resources"),
-    (Join-Path ${env:ProgramFiles(x86)} "Antigravity\resources")
+    (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\resources"),
+    (Join-Path $env:ProgramFiles "Antigravity\resources")
 )
-
+if ($env:ProgramFiles -and ${env:ProgramFiles(x86)}) {
+    $Candidates += (Join-Path ${env:ProgramFiles(x86)} "Antigravity\resources")
+}
 $Restored = $false
-foreach ($res in $Candidates) {
+foreach ($res in ($Candidates | Select-Object -Unique)) {
     $bak = Join-Path $res "app.asar.bak-original"
-    $asar = Join-Path $res "app.asar"
-    $i18n = Join-Path $res "i18n-pt-br.js"
     if (Test-Path $bak) {
-        Write-Host "Restaurando backup original em $asar..." -ForegroundColor Cyan
-        Copy-Item $bak $asar -Force
-        if (Test-Path $i18n) { Remove-Item $i18n -Force }
+        $asar = Join-Path $res "app.asar"
+        & node $Patcher "--asar=$asar" --restore
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Restauração bloqueada: backup inválido ou de outra versão."
+            exit 1
+        }
         $Restored = $true
-        Write-Host " Backup original restaurado com sucesso!" -ForegroundColor Green
     }
 }
-
 if (-not $Restored) {
-    Write-Host " Nenhum backup app.asar.bak-original encontrado automaticamente." -ForegroundColor Yellow
+    Write-Error "Nenhum backup validável encontrado; nada foi alterado."
+    exit 1
 }
-
-Write-Host "Desinstalação concluída. Reinicie o Antigravity." -ForegroundColor Green
+Write-Host "Restauração segura concluída." -ForegroundColor Green
