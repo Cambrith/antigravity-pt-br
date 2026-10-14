@@ -1082,6 +1082,32 @@ EXACT_MAP = {
     "Thinking...": "Pensando...",
     "Thinking for": "Pensando por",
     "Thought Process": "Processo de raciocínio",
+    "Thinking Process": "Processo de pensamento",
+    "Thought": "Pensamento",
+    "Thinking": "Pensando",
+    "Thinking...": "Pensando...",
+    "Tool Action": "Ação da ferramenta",
+    "Tool Summary": "Resumo da ferramenta",
+    "Analyzing directory": "Analisando diretório",
+    "Directory analysis": "Análise de diretório",
+    "Searching the web": "Pesquisando na web",
+    "Web search": "Pesquisa na web",
+    "Checking git status": "Verificando status do git",
+    "Git status check": "Verificação de status do git",
+    "Running tests": "Executando testes",
+    "Test execution": "Execução de testes",
+    "Searching code": "Pesquisando código",
+    "Code search": "Pesquisa de código",
+    "Viewing file": "Visualizando arquivo",
+    "File viewing": "Visualização de arquivo",
+    "Editing file": "Editando arquivo",
+    "File editing": "Edição de arquivo",
+    "Writing to file": "Escrevendo no arquivo",
+    "File writing": "Escrita de arquivo",
+    "Executing command": "Executando comando",
+    "Command execution": "Execução de comando",
+    "Executing script": "Executando script",
+    "Script execution": "Execução de script",
     "Working": "Trabalhando",
     "Working...": "Trabalhando...",
     "Worked for": "Trabalhou por",
@@ -2508,6 +2534,11 @@ js_body = r'''(function() {
 
   function translateDynamic(s) {
     let m;
+    if ((m = /^Thought for (\d+)h\s*(\d+)m\s*(\d+)s$/i.exec(s))) return `Pensou por ${m[1]}h ${m[2]}m ${m[3]}s`;
+    if ((m = /^Thought for (\d+)h\s*(\d+)m$/i.exec(s))) return `Pensou por ${m[1]}h ${m[2]}m`;
+    if ((m = /^Thought for (\d+)h$/i.exec(s))) return `Pensou por ${m[1]}h`;
+    if ((m = /^Thought for <1s$/i.exec(s))) return "Pensou por <1s";
+    if ((m = /^Thought for (\d+)\s+seconds?$/i.exec(s))) return `Pensou por ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}`;
     if ((m = /^Thought for (\d+)s$/.exec(s))) return `Pensou por ${m[1]}s`;
     if ((m = /^Thought for (\d+)m (\d+)s$/.exec(s))) return `Pensou por ${m[1]}m ${m[2]}s`;
     if ((m = /^Thought for (\d+)m$/.exec(s))) return `Pensou por ${m[1]}m`;

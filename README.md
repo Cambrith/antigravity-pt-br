@@ -50,7 +50,10 @@ O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs
 
 ## 📦 Instalação em Poucos Passos
 
-> **Pré-requisito único**: Ter o **Node.js** (v18 ou superior) instalado em seu computador.
+> [!IMPORTANT]
+> **Pré-requisitos**:
+> - **Node.js** (v18 ou superior) instalado no sistema ([nodejs.org](https://nodejs.org/)).
+> - **Git** instalado ([git-scm.com](https://git-scm.com/)) **OU** baixar o projeto como arquivo **ZIP** caso não utilize o Git.
 
 ### 🐧 No Linux
 
@@ -83,6 +86,7 @@ chmod +x install.sh
 
 ### 🪟 No Windows
 
+#### Opção 1: Via Git (Recomendado se já tiver o Git)
 Abra o **PowerShell** e execute:
 
 ```powershell
@@ -91,6 +95,15 @@ cd antigravity-pt-br
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\install.ps1
 ```
+
+#### Opção 2: Sem Git (Download Direto via PowerShell)
+Se você não tem o Git instalado, abra o **PowerShell** e cole o comando único abaixo:
+
+```powershell
+Invoke-WebRequest -Uri "https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.zip" -OutFile "$HOME\antigravity.zip"; Expand-Archive -Path "$HOME\antigravity.zip" -DestinationPath "$HOME" -Force; cd "$HOME\antigravity-pt-br-main"; Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\install.ps1
+```
+
+*(Ou baixe manualmente clicando no botão verde **Code** > **Download ZIP** no topo da página do GitHub, extraia a pasta e execute o script `install.ps1` no PowerShell).*
 
 ---
 
