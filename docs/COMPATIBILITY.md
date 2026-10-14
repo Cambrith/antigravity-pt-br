@@ -1,6 +1,6 @@
-# Matriz Completa de Compatibilidade Multiplataforma
+# Catálogo de Plataformas e Matriz de Compatibilidade Planejada
 
-O **Antigravity pt-BR** foi projetado com engenharia multiplataforma nativa para operar de maneira transparente no **Linux**, **ChromeOS**, **Windows** e **macOS**.
+O **Antigravity pt-BR** possui scripts para Linux, ChromeOS (via contêiner), Windows e macOS. A lista abaixo é um **catálogo de distribuições potencialmente compatíveis**, não uma lista de sistemas testados individualmente. Validação real confirmada até o momento: instalação de tradução no CachyOS do mantenedor. Testes unitários em runners GitHub Actions não garantem execução real do aplicativo.
 
 ---
 
@@ -19,7 +19,7 @@ O **Antigravity pt-BR** foi projetado com engenharia multiplataforma nativa para
 - [🍏 macOS (Apple Silicon e Intel)](#-apple-macos)
 
 > 💡 **Estrutura Estritamente por Famílias Técnicas (Sem Repetições)**:
-> Cada uma das **395 distribuições Linux** e dos **6 sistemas ChromeOS** listados abaixo pertence a **apenas uma única categoria canônica**, sem duplicatas e sem divisões artificiais por perfis de uso (jogos, segurança e servidores encontram-se agrupados em sua base de origem real).
+> Cada uma das **395 entradas Linux catalogadas** e das **6 variantes ChromeOS listadas** listados abaixo pertence a **apenas uma única categoria canônica**, sem duplicatas e sem divisões artificiais por perfis de uso (jogos, segurança e servidores encontram-se agrupados em sua base de origem real).
 
 ---
 
@@ -38,11 +38,11 @@ O ChromeOS é suportado como plataforma de primeira classe através do ambiente 
 
 ## 🐧 Linux (Distribuições por Família Técnica)
 
-O Google Antigravity no Linux segue a especificação padrão do ecossistema Electron:
+As instalações do Antigravity examinadas no Linux utilizam estrutura Electron, mas os caminhos podem variar conforme o pacote:
 1. **Estrutura de Arquivos Padrão**: Os arquivos principais ficam em `resources/app.asar` (em `/opt/antigravity`, `~/.local/opt/antigravity` ou no contêiner Flatpak em `~/.var/app/com.google.Antigravity/`).
 2. **Persistência XDG**: O arquivo mestre de tradução é armazenado com segurança em `~/.config/Antigravity/i18n/`.
 
-Por utilizar Node.js nativo e manipular o arquivo ASAR diretamente, o patcher é universal em qualquer distribuição Linux.
+O uso de Node.js permite portabilidade do código, mas não comprova compatibilidade universal. Permissões, formatos de instalação e versão do aplicativo precisam ser validados em cada ambiente.
 
 ### 1. Família Debian e Derivados Diretos
 
