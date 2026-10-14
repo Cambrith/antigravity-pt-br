@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout do repositório
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Verificar se não há segredos ou tokens commitados
         run: |
