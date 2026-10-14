@@ -50,6 +50,17 @@ fi
 
 echo "✅ Antigravity localizado em: $ASAR_PATH"
 
+APP_BUNDLE="${ASAR_PATH%/Contents/Resources/app.asar}"
+if pgrep -x Antigravity >/dev/null 2>&1; then
+    echo "❌ Encerre o Antigravity antes da instalação." >&2
+    exit 1
+fi
+if command -v codesign >/dev/null 2>&1 && codesign -dv "$APP_BUNDLE" >/dev/null 2>&1; then
+    echo "❌ Instalação interrompida: bundle macOS assinado. Alterar app.asar invalida a assinatura." >&2
+    echo "Esta versão ainda não possui fluxo de reassinatura e teste em macOS validado." >&2
+    exit 1
+fi
+
 # 3. Criar diretório permanente e sincronizar arquivos
 echo "📦 Configurando arquivos permanentes em $CONFIG_I18N_DIR..."
 mkdir -p "$CONFIG_I18N_DIR"
@@ -59,7 +70,7 @@ chmod +x "$CONFIG_I18N_DIR/patch-asar.js"
 
 # 4. Executar patch
 echo "🔧 Aplicando tradução no app.asar..."
-node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH" --force
+node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH"
 
 echo ""
 echo "========================================================"

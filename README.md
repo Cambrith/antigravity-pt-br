@@ -7,25 +7,29 @@
 [![Traduções](https://img.shields.io/badge/entradas-2.185%2B-blueviolet.svg)](#-o-que-está-traduzido)
 [![Testes Automatizados](https://img.shields.io/badge/testes-100%25%20passando-success.svg)](tests/)
 
-Sistema profissional, robusto e persistente de localização em Português do Brasil (pt-BR) para o **Google Antigravity**, projetado para funcionar de forma transparente no **Linux** (múltiplas distribuições), **ChromeOS**, **Windows** e **macOS**.
+Projeto comunitário experimental de localização em Português do Brasil (pt-BR) para o **Google Antigravity**, projetado para funcionar de forma transparente no **Linux** (múltiplas distribuições), **ChromeOS**, **Windows** e **macOS**.
 
 ---
+
+> **Estado de validação (outubro de 2026):** a aplicação da tradução foi observada no Linux/CachyOS do mantenedor. A CI verifica lógica e sintaxe em runners de Linux, Windows e macOS, mas **não executa a interface real do Antigravity nesses três sistemas**. Os instaladores de Windows e macOS continuam experimentais. A instalação em aplicativos macOS assinados é bloqueada preventivamente até existir uma estratégia de assinatura validada. Não execute em uma instalação que não possa ser restaurada/reinstalada.
+>
+> **Backups anteriores a esta correção:** cópias `app.asar.bak-original` sem manifesto SHA-256 são intencionalmente recusadas pelo novo desinstalador. Não restaure esses backups manualmente após atualizar o Antigravity: podem pertencer a outra versão.
 
 ## 🎯 Propósito do Projeto
 
 O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
 
 Este projeto resolve essa barreira entregando:
-1. **Tradução Integral e Fiel**: Mais de 2.185 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
-2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
+1. **Tradução ampla, em validação**: Mais de 2.185 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+2. **Reaplicação controlada**: o inicializador tenta reaplicar a tradução, mas versões que não contêm os pontos de injeção esperados são recusadas, preservando o pacote oficial.
 3. **Multiplataforma Real**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
 4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.
 
 ---
 
-## 🖥️ Matriz de Sistemas e Distribuições Homologadas
+## 🖥️ Sistemas catalogados e estado da compatibilidade
 
-O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
+Há caminhos e fluxos previstos para as plataformas a seguir; isso NÃO implica homologação em todas elas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
 
 - **Linux (Principais Distribuições do Mercado por Família)**:
   - **Família Debian**: Debian, MX Linux, Kali Linux, Raspberry Pi OS.
@@ -44,7 +48,7 @@ O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs
   - **macOS Sequoia (15)**, **Sonoma (14)**, **Ventura (13)** e **Monterey (12)**.
   - Compatível com **Apple Silicon** (M1, M2, M3, M4) e processadores **Intel (x86_64)**.
 
-👉 *Para consultar o catálogo massivo completo com todas as 395 distribuições Linux e 6 sistemas ChromeOS homologados por família técnica, consulte [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).*
+👉 *Para consultar o catálogo massivo completo com todas as 395 entradas de distribuições Linux e 6 variantes ChromeOS catalogadas (sem homologação individual), consulte [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).*
 
 ---
 
@@ -135,13 +139,13 @@ O repositório inclui uma suíte completa de testes unitários que garantem a qu
 npm test
 ```
 
-Os testes são executados automaticamente a cada Pull Request em **Linux, Windows e macOS** via **GitHub Actions CI**.
+Os testes unitários são executados automaticamente a cada Pull Request em runners de **Linux, Windows e macOS** via **GitHub Actions CI**. Isso não substitui testes end-to-end no aplicativo real nem testes de assinatura no macOS.
 
 ---
 
 ## 🔄 Desinstalação (Restauração do Original)
 
-O instalador cria automaticamente uma cópia de segurança (`app.asar.bak-original`) antes de aplicar qualquer alteração. Caso queira reverter:
+O instalador cria uma cópia de segurança (`app.asar.bak-original`) e um manifesto (`app.asar.cambrith-backup.json`) que vincula, por SHA-256, a cópia ao pacote efetivamente modificado. A restauração só ocorre quando os hashes correspondem. Caso queira reverter:
 
 - **Linux / macOS**:
   ```bash

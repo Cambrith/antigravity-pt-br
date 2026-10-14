@@ -19,6 +19,28 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Validar sintaxe dos scripts Bash
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          for script in install.sh install-macos.sh scripts/uninstall.sh scripts/install-linux.sh scripts/install-macos.sh launcher/antigravity-launcher.sh; do
+            bash -n "$script"
+          done
+
+      - name: Validar sintaxe dos scripts PowerShell
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($script in @('install.ps1', 'scripts/install-windows.ps1', 'scripts/uninstall.ps1')) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script).Path, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              throw "Erros de sintaxe em $script : $($errors -join '; ')"
+            }
+          }
+
       - name: Configurar Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
