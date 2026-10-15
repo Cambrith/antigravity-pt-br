@@ -21,7 +21,9 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Tratamento dinâmico com prefixo e tradução do motivo de erro para seleção de branch (`Failed to save project branch: <detalhes>`).
   - Validação e avisos de formato de branch (`Branch name cannot start with a dash`, `Invalid branch or ref format`, etc.).
 - **Regras e Tradução de Pensamentos e Ações do Agente (Thinking / Tool Actions)**:
-  - Implementado arquivo oficial de diretrizes [`AGENTS.md`](file:///home/cambrith/.gemini/antigravity/scratch/antigravity-pt-br/AGENTS.md) exigindo que os pensamentos internos do modelo (`thinking` / `<thought>`) sejam gerados estritamente em Português do Brasil (pt-BR).
+  - Implementadas diretrizes oficiais [`AGENTS.md`](file:///home/cambrith/.gemini/antigravity/scratch/antigravity-pt-br/AGENTS.md) e [`GEMINI.md`](file:///home/cambrith/.gemini/antigravity/scratch/antigravity-pt-br/GEMINI.md) globais em `~/.gemini/config/`, assegurando que todo o fluxo de pensamento interno (`thinking` / `<thought>`), decisões e mensagens durante a execução de tarefas sejam gerados estritamente em Português do Brasil (pt-BR) desde o primeiro token.
+  - Integração automática da configuração de diretrizes do agente nos instaladores de Linux, macOS e Windows.
+  - Tradução dinâmica em tempo real no frontend de sentenças analíticas e de fluxo do modelo (análise de arquivos, seções, servidores MCP e scripts).
   - Tradução de parâmetros de ações de ferramentas (`toolAction` e `toolSummary`) para português brasileiro (ex.: `Analisando diretório`, `Verificando status do git`, `Executando testes`), com preservação estrita de comandos e códigos técnicos originais (`CommandLine`, código-fonte, caminhos).
   - Localização de rótulos e durações de pensamento (`Thought Process`, `Thinking Process`, `Thinking...`, `Pensou por 15 segundos`, etc.).
 - **Tradução de Processos e Comandos em Tempo Real (Running/Ran/Exploring/Editing)**:

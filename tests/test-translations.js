@@ -180,6 +180,53 @@ test('Tradução de Processos de Pensamento e Ações de Ferramentas (Thinking/T
   assert.equal(tr('Writing to file'), 'Escrevendo no arquivo');
 });
 
+test('Tradução de Sentenças Dinâmicas de Raciocínio e Pensamento Analítico', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  assert.equal(
+    tr('Analysis focuses on the "What is Translated?" section of the README.md file.'),
+    'A análise se concentra na seção "What is Translated?" do arquivo README.md.'
+  );
+  assert.equal(
+    tr('This section details the localized modules, specifically the interface elements and MCP server catalog.'),
+    'Esta seção detalha localized modules, especificamente interface elements and MCP server catalog.'
+  );
+  assert.equal(
+    tr('The catalog includes configuration fields for the 18 servers.'),
+    'O catálogo inclui campos de configuração para os 18 servidores.'
+  );
+  assert.equal(
+    tr('Analyzing new features implemented since the last table update.'),
+    'Analisando os novos recursos implementados desde a última atualização da tabela.'
+  );
+  assert.equal(
+    tr('Focus is on environment selection enhancements, including worktree options and associated Git compatibility notices.'),
+    'O foco está nas melhorias de seleção de ambiente, incluindo opções de worktree e avisos de compatibilidade Git associados.'
+  );
+  assert.equal(
+    tr('Executing a Python script that reads a JavaScript file and uses regular expressions.'),
+    'Executando um script Python que lê um arquivo JavaScript e usa expressões regulares.'
+  );
+  assert.equal(
+    tr('The script likely aims to process or extract information from the JavaScript content.'),
+    'O script provavelmente visa processar ou extrair informações do conteúdo JavaScript.'
+  );
+  assert.equal(
+    tr("Upon completion, the script's execution status is available for inspection."),
+    "Após a conclusão, o status de execução do script estará disponível para inspeção."
+  );
+  assert.equal(
+    tr('Investigating project configuration files'),
+    'Investigando project configuration files'
+  );
+  assert.equal(
+    tr('Reviewing test execution logs'),
+    'Revisando test execution logs'
+  );
+});
+
+
 
 
 

@@ -56,6 +56,21 @@ if (-not (Test-Path $ConfigI18nDir)) {
 Copy-Item (Join-Path $ScriptDir "i18n-pt-br.js") (Join-Path $ConfigI18nDir "i18n-pt-br.js") -Force
 Copy-Item (Join-Path $ScriptDir "patch-asar.js") (Join-Path $ConfigI18nDir "patch-asar.js") -Force
 
+# 3.1 Configurar regras globais de pensamento e comportamento do agente (pt-BR)
+$GeminiConfigDir = Join-Path $env:USERPROFILE ".gemini\config"
+if (-not (Test-Path $GeminiConfigDir)) {
+    New-Item -ItemType Directory -Path $GeminiConfigDir -Force | Out-Null
+}
+$AgentsMdSource = Join-Path $ScriptDir "AGENTS.md"
+if (-not (Test-Path $AgentsMdSource)) {
+    $AgentsMdSource = Join-Path (Split-Path -Parent $ScriptDir) "AGENTS.md"
+}
+if (Test-Path $AgentsMdSource) {
+    Copy-Item $AgentsMdSource (Join-Path $GeminiConfigDir "AGENTS.md") -Force
+    Copy-Item $AgentsMdSource (Join-Path $GeminiConfigDir "GEMINI.md") -Force
+    Write-Host "🤖 Diretrizes do agente (pensamentos, ações e respostas em pt-BR) configuradas em $GeminiConfigDir." -ForegroundColor Green
+}
+
 # 4. Executar patch
 Write-Host " Aplicando tradução no app.asar..." -ForegroundColor Cyan
 & node (Join-Path $ConfigI18nDir "patch-asar.js") "--asar=$AsarPath" "--force"

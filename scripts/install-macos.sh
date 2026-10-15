@@ -57,6 +57,19 @@ cp "$SCRIPT_DIR/i18n-pt-br.js" "$CONFIG_I18N_DIR/i18n-pt-br.js"
 cp "$SCRIPT_DIR/patch-asar.js" "$CONFIG_I18N_DIR/patch-asar.js"
 chmod +x "$CONFIG_I18N_DIR/patch-asar.js"
 
+# 3.1 Configurar regras globais de pensamento e comportamento do agente (pt-BR)
+GEMINI_CONFIG_DIR="$HOME/.gemini/config"
+mkdir -p "$GEMINI_CONFIG_DIR"
+if [ -f "$SCRIPT_DIR/AGENTS.md" ]; then
+    cp "$SCRIPT_DIR/AGENTS.md" "$GEMINI_CONFIG_DIR/AGENTS.md"
+    cp "$SCRIPT_DIR/AGENTS.md" "$GEMINI_CONFIG_DIR/GEMINI.md"
+    echo "🤖 Diretrizes do agente (pensamentos, ações e respostas em pt-BR) configuradas em $GEMINI_CONFIG_DIR."
+elif [ -f "$SCRIPT_DIR/../AGENTS.md" ]; then
+    cp "$SCRIPT_DIR/../AGENTS.md" "$GEMINI_CONFIG_DIR/AGENTS.md"
+    cp "$SCRIPT_DIR/../AGENTS.md" "$GEMINI_CONFIG_DIR/GEMINI.md"
+    echo "🤖 Diretrizes do agente (pensamentos, ações e respostas em pt-BR) configuradas em $GEMINI_CONFIG_DIR."
+fi
+
 # 4. Executar patch
 echo "🔧 Aplicando tradução no app.asar..."
 node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH" --force

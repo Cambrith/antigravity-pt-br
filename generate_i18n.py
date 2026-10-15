@@ -2579,6 +2579,42 @@ js_body = r'''(function() {
     if ((m = /^Ran\s+(.+)$/i.exec(s))) {
       return `Executou ${resolveCommandCount(m[1])}`;
     }
+
+    // Sentenças de raciocínio, análise e fluxo do modelo
+    if ((m = /^Analysis (?:focuses|centers) on (?:the )?["']?(.+?)["']? section of the (.+?) file\.?$/i.exec(s))) {
+      return `A análise se concentra na seção "${m[1]}" do arquivo ${m[2]}.`;
+    }
+    if ((m = /^This section details the (.+?), specifically the (.+?)\.?$/i.exec(s))) {
+      return `Esta seção detalha ${m[1]}, especificamente ${m[2]}.`;
+    }
+    if ((m = /^This section details the (.+?)\.?$/i.exec(s))) {
+      return `Esta seção detalha ${m[1]}.`;
+    }
+    if ((m = /^The catalog includes configuration fields for the (\d+) servers\.?$/i.exec(s))) {
+      return `O catálogo inclui campos de configuração para os ${m[1]} servidores.`;
+    }
+    if ((m = /^Analyzing new features implemented since the last table update\.?$/i.exec(s))) {
+      return "Analisando os novos recursos implementados desde a última atualização da tabela.";
+    }
+    if ((m = /^Focus is on environment selection enhancements, including (.+?) options and associated Git compatibility notices\.?$/i.exec(s))) {
+      return `O foco está nas melhorias de seleção de ambiente, incluindo opções de ${m[1]} e avisos de compatibilidade Git associados.`;
+    }
+    if ((m = /^Executing a Python script that reads a JavaScript file and uses regular expressions\.?$/i.exec(s))) {
+      return "Executando um script Python que lê um arquivo JavaScript e usa expressões regulares.";
+    }
+    if ((m = /^The script likely aims to process or extract information from the JavaScript content\.?$/i.exec(s))) {
+      return "O script provavelmente visa processar ou extrair informações do conteúdo JavaScript.";
+    }
+    if ((m = /^Upon completion, the script's execution status is available for inspection\.?$/i.exec(s))) {
+      return "Após a conclusão, o status de execução do script estará disponível para inspeção.";
+    }
+    if ((m = /^Investigating\s+(.+)$/i.exec(s))) {
+      return `Investigando ${m[1]}`;
+    }
+    if ((m = /^Reviewing\s+(.+)$/i.exec(s))) {
+      return `Revisando ${m[1]}`;
+    }
+
     if ((m = /^Tools \((\d+)\)$/.exec(s))) return `Ferramentas (${m[1]})`;
     if ((m = /^Generation Steps \((\d+)\)$/.exec(s))) return `Etapas de geração (${m[1]})`;
     if ((m = /^Message History \((\d+)\)$/.exec(s))) return `Histórico de mensagens (${m[1]})`;
@@ -3215,6 +3251,7 @@ js_body = r'''(function() {
 
 out_paths = [
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "i18n-pt-br.js"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist", "i18n-pt-br.js"),
     "/home/cambrith/.local/opt/antigravity/resources/i18n-pt-br.js",
     "/home/cambrith/.config/Antigravity/i18n/i18n-pt-br.js",
 ]
