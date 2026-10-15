@@ -33,11 +33,14 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Tradução dinâmica de paginação em listas e envios de mídia (`See all (16)` $\rightarrow$ `Ver tudo (16)`, `See more (5)` $\rightarrow$ `Ver mais (5)`).
 - **Correção e Robustez no Cabeçalho da Página de Plugins**:
   - Tratamento aprimorado para o parágrafo descritivo de plugins (`Plugins are packaged collections of skills and MCPs...`), cobrindo fragmentação de nós e links do React para configurações.
+- **Tradução de Tooltips de Documentação e Atalhos Interativos (Click to Open Docs)**:
+  - Localização completa de tooltips exibidos ao passar o mouse sobre ícones de ajuda e documentação (`Click to Open Docs` $\rightarrow$ `Clique para abrir a documentação`, `Click to open documentation`, `Open Docs` $\rightarrow$ `Abrir documentação`, `View Documentation` $\rightarrow$ `Ver documentação`).
+  - Suporte estático e dinâmico a ações de clique e atalhos em Title Case e sentence case (`Click to Learn More` $\rightarrow$ `Clique para saber mais`, `Click to Copy` $\rightarrow$ `Clique para copiar`, `Click to Expand` $\rightarrow$ `Clique para expandir`, `Click to Collapse` $\rightarrow$ `Clique para recolher`, `Click to Refresh` $\rightarrow$ `Clique para atualizar`, `Click to Retry` $\rightarrow$ `Clique para tentar novamente`).
 - **Suíte de Testes Expandida**:
-  - Suíte de testes unitários automatizados ampliada para 22 testes abrangentes com 100% de aprovação.
+  - Suíte de testes unitários automatizados ampliada para 23 testes abrangentes com 100% de aprovação.
 
 ### Modificado
-- Total de entradas no dicionário estático expandido de 2.235 para mais de 2.585 termos e descrições técnicas.
+- Total de entradas no dicionário estático expandido para mais de 2.620 termos e descrições técnicas.
 - Integração modular do mapa de skills (`src/maps/skills.json`) no pipeline de geração (`generate_i18n.py`).
 
 ---

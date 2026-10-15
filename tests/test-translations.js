@@ -465,6 +465,29 @@ test('Tradução de Menus de Imagem, Cabeçalhos de Ação com Pastas e Painel L
   );
 });
 
+test('Tradução de Tooltips de Documentação e Atalhos de Clique (Click to Open Docs)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Tooltips de documentação em botões e ícones informativos
+  assert.equal(tr('Click to Open Docs'), 'Clique para abrir a documentação');
+  assert.equal(tr('Click to open docs'), 'Clique para abrir a documentação');
+  assert.equal(tr('Click to Open Documentation'), 'Clique para abrir a documentação');
+  assert.equal(tr('Open Docs'), 'Abrir documentação');
+  assert.equal(tr('Open Documentation'), 'Abrir documentação');
+  assert.equal(tr('View Docs'), 'Ver documentação');
+  assert.equal(tr('View Documentation'), 'Ver documentação');
+
+  // Ações de clique associadas
+  assert.equal(tr('Click to Learn More'), 'Clique para saber mais');
+  assert.equal(tr('Click to Copy'), 'Clique para copiar');
+  assert.equal(tr('Click to Expand'), 'Clique para expandir');
+  assert.equal(tr('Click to Collapse'), 'Clique para recolher');
+  assert.equal(tr('Click to Refresh'), 'Clique para atualizar');
+  assert.equal(tr('Click to Retry'), 'Clique para tentar novamente');
+});
+
+
 
 
 

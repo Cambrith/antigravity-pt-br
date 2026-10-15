@@ -441,7 +441,43 @@ EXACT_MAP = {
     "Copy full URL to clipboard": "Copiar URL completa para a área de transferência",
     "Click to copy full command": "Clique para copiar o comando completo",
     "Click to copy URL": "Clique para copiar a URL",
+    "Click to Open Docs": "Clique para abrir a documentação",
+    "Click to open Docs": "Clique para abrir a documentação",
     "Click to open docs": "Clique para abrir a documentação",
+    "Click To Open Docs": "Clique para abrir a documentação",
+    "Click to Open Documentation": "Clique para abrir a documentação",
+    "Click to open documentation": "Clique para abrir a documentação",
+    "Click To Open Documentation": "Clique para abrir a documentação",
+    "Open Docs": "Abrir documentação",
+    "Open docs": "Abrir documentação",
+    "open docs": "abrir documentação",
+    "Open Documentation": "Abrir documentação",
+    "Open documentation": "Abrir documentação",
+    "View Docs": "Ver documentação",
+    "View docs": "Ver documentação",
+    "View Documentation": "Ver documentação",
+    "View documentation": "Ver documentação",
+    "Click to Learn More": "Clique para saber mais",
+    "Click to learn more": "Clique para saber mais",
+    "Click to Copy": "Clique para copiar",
+    "Click to copy": "Clique para copiar",
+    "Click to Copy URL": "Clique para copiar a URL",
+    "Click to Expand": "Clique para expandir",
+    "Click to expand": "Clique para expandir",
+    "Click to Collapse": "Clique para recolher",
+    "Click to collapse": "Clique para recolher",
+    "Click to Edit": "Clique para editar",
+    "Click to edit": "Clique para editar",
+    "Click to Delete": "Clique para excluir",
+    "Click to delete": "Clique para excluir",
+    "Click to Remove": "Clique para remover",
+    "Click to remove": "Clique para remover",
+    "Click to Close": "Clique para fechar",
+    "Click to close": "Clique para fechar",
+    "Click to Retry": "Clique para tentar novamente",
+    "Click to retry": "Clique para tentar novamente",
+    "Click to Refresh": "Clique para atualizar",
+    "Click to refresh": "Clique para atualizar",
     "Click to go there, drag to select a range, drag an edge to resize": "Clique para ir até lá, arraste para selecionar um intervalo, arraste uma borda para redimensionar",
     "Double-click to reset panel sizes": "Clique duas vezes para redefinir os tamanhos dos painéis",
     "Drag to resize, double-click to reset": "Arraste para redimensionar, clique duas vezes para redefinir",
@@ -3333,6 +3369,21 @@ js_body = r'''(function() {
     }
     if (/^(?:See|View|Show)\s+more$/i.test(s)) {
       return "Ver mais";
+    }
+
+    // Ações de clique em documentação, guias e atalhos (Click to ...)
+    if (/^Click to (?:open|view) docs?$/i.test(s)) {
+      return "Clique para abrir a documentação";
+    }
+    if (/^Click to (?:open|view) documentation$/i.test(s)) {
+      return "Clique para abrir a documentação";
+    }
+    if (/^Click to learn more(?: about (.+))?$/i.test(s)) {
+      const match = /^Click to learn more(?: about (.+))?$/i.exec(s);
+      return match && match[1] ? `Clique para saber mais sobre ${translateString(match[1]) || match[1]}` : "Clique para saber mais";
+    }
+    if (/^Click to (?:copy|copy url)$/i.test(s)) {
+      return s.toLowerCase().includes("url") ? "Clique para copiar a URL" : "Clique para copiar";
     }
 
     // Configurações de Servidores MCP Dinâmicas (para novos servidores e campos futuros)
