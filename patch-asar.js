@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v3';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v4';
 
 // 1. Resolução Multiplataforma de Caminhos
 function detectAsarPath() {
@@ -142,11 +142,52 @@ function patchPreload(code) {
             'Archive': 'Arquivar',
             'Pin': 'Fixar',
             'Unpin': 'Desafixar',
-            'Open': 'Abrir'
+            'Open': 'Abrir',
+            'Copy Image': 'Copiar imagem',
+            'Save Image': 'Salvar imagem',
+            'Save Image As...': 'Salvar imagem como...',
+            'Save Image As': 'Salvar imagem como',
+            'Copy Image Address': 'Copiar endereço da imagem',
+            'Copy Image Link': 'Copiar link da imagem',
+            'Open Image': 'Abrir imagem',
+            'Open Image in New Tab': 'Abrir imagem em nova guia',
+            'Open Image in new tab': 'Abrir imagem em nova guia',
+            'Download Image': 'Baixar imagem',
+            'Inspect': 'Inspecionar',
+            'Inspect Element': 'Inspecionar elemento',
+            'Learn More': 'Saber mais',
+            'Documentation': 'Documentação',
+            'Settings': 'Configurações',
+            'Preferences': 'Preferências',
+            'Search': 'Buscar',
+            'Find': 'Localizar',
+            'Select': 'Selecionar',
+            'Clear': 'Limpar',
+            'Reset': 'Redefinir',
+            'Edit': 'Editar',
+            'Remove': 'Remover',
+            'Cancel': 'Cancelar',
+            'Save': 'Salvar',
+            'Save As...': 'Salvar como...',
+            'Export': 'Exportar',
+            'Import': 'Importar',
+            'Share': 'Compartilhar'
         };
+        function resolveLabel(lbl) {
+            if (!lbl || typeof lbl !== 'string') return lbl;
+            if (trMap[lbl]) return trMap[lbl];
+            try {
+                if (typeof window !== 'undefined' && window.__CAMBRITH_TRANSLATE_STR__) {
+                    const dyn = window.__CAMBRITH_TRANSLATE_STR__(lbl);
+                    if (dyn) return dyn;
+                }
+            } catch (_) {}
+            if (/^Version\\s+(.+)$/i.test(lbl)) return lbl.replace(/^Version\\s+(.+)$/i, 'Versão $1');
+            return lbl;
+        }
         const trItems = (arr) => Array.isArray(arr) ? arr.map(it => ({
             ...it,
-            label: (it && it.label && trMap[it.label]) ? trMap[it.label] : (it && it.label && /^Version\\s+(.+)$/i.test(it.label) ? it.label.replace(/^Version\\s+(.+)$/i, 'Versão $1') : (it ? it.label : undefined)),
+            label: it && it.label ? resolveLabel(it.label) : undefined,
             submenu: it && it.submenu ? trItems(it.submenu) : undefined
         })) : arr;
         return electron_1.ipcRenderer.invoke('window:show-context-menu', trItems(items));

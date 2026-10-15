@@ -23,8 +23,9 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
     - **Pesquisa Científica & Bioinformática**: AlphaFold, AlphaGenome, ChEMBL, UniProt, PDB, dbSNP, ClinVar, NCBI, PubMed, ArXiv e bioRxiv.
     - **Ferramentas de Desenvolvimento**: Chrome DevTools via MCP, depuração de acessibilidade (a11y), otimização de LCP e diagnóstico de vazamento de memória.
     - **Google Maps Platform**: Visualização de mapas, rotas ecológicas, geocodificação, dados ambientais e Places API.
-- **Tradução Completa de Menus de Imagem e Mídias**:
-  - Localização do menu de contexto de clique direito em imagens (`Copy Image` $\rightarrow$ `Copiar imagem`, `Save Image` $\rightarrow$ `Salvar imagem`, `Save Image As...` $\rightarrow$ `Salvar imagem como...`, `Copy Image Address` $\rightarrow$ `Copiar endereço da imagem`, `Open Image in New Tab` $\rightarrow$ `Abrir imagem em nova guia`, `Download Image` $\rightarrow$ `Baixar imagem`).
+- **Tradução Completa de Menus de Imagem e Mídias (Nativo e Web)**:
+  - Localização nativa no preload do Electron (`patch-asar.js` v4) e na interface para menus de contexto acionados pelo botão direito em imagens (`Copy Image` $\rightarrow$ `Copiar imagem`, `Save Image` $\rightarrow$ `Salvar imagem`, `Save Image As...` $\rightarrow$ `Salvar imagem como...`, `Copy Image Address` $\rightarrow$ `Copiar endereço da imagem`, `Open Image in New Tab` $\rightarrow$ `Abrir imagem em nova guia`, `Download Image` $\rightarrow$ `Baixar imagem`).
+  - Implementação de fallback inteligente em `showContextMenu` no `preload.js`, conectando diretamente ao motor dinâmico de tradução em tempo real (`window.__CAMBRITH_TRANSLATE_STR__`).
 - **Cabeçalhos de Ação e Exploração com Múltiplas Entidades**:
   - Suporte completo a contadores de arquivos, pastas, ações e comandos nos cabeçalhos colapsáveis em tempo real (`Explorou 3 arquivos 1 pasta, 3 ações, executou 1 comando`, `Explorando 2 arquivos, 2 pastas, 4 ações, executando 2 comandos`).
 - **Painel Lateral: Filtros Git, Skills Usadas e Paginação**:
