@@ -6,14 +6,21 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [1.4.0] - 2026-10-15
 
-### Adicionado
+- **Tradução Completa de Agentes Especializados e Personalizados (Custom Agents)**:
+  - Criação do catálogo dedicado `src/maps/agents.json` para localização integral de agentes especializados e subagentes do ecossistema.
+  - Tradução oficial das descrições completas dos agentes em Configurações > Personalizações:
+    - `firestore-rules-author`: Subagente especialista obrigatório para regras de segurança do Cloud Firestore (`firestore.rules`).
+    - `flutter_a11y_agent`: Especialista em revisão de acessibilidade (a11y) para bases de código Flutter, PRs e diffs.
+    - `self` e `research`: Subagentes nativos de continuidade e pesquisa ampla na base de código.
+  - Tradução de controles e ações de interface dos agentes (`Agentes personalizados`, `Novo agente`, `Criar agente personalizado`, `Copiar caminho`, `Excluir agente`, `Duplicar agente`).
+  - Suporte dinâmico para alternância de switches acessíveis (`aria-label="Toggle <agente>"` $\rightarrow$ `Alternar <agente>`).
 - **Tradução Automática de Blocos de Pensamento (Thinking Auto-Translator)**:
   - Implementação de módulo de tradução em tempo real para os fluxos e blocos de pensamento interno da IA (`Thinking / Thought for Xs`).
   - Permite que o modelo de IA continue raciocinando nativamente em inglês (mantendo máxima profundidade lógica e velocidade) enquanto o texto exibido ao usuário dentro do colapsável "Pensou por Xs" é automaticamente traduzido e renderizado em Português do Brasil (pt-BR).
   - Algoritmo de detecção inteligente de idioma baseado em indicadores lexicais comparativos para distinguir pensamento em inglês de raciocínio já em português, ignorando trechos de código (`pre`, `code`), tags HTML e seletores CSS.
   - Sistema de cache assíncrono em memória (`Map`) para traduções instantâneas sem bloqueio de renderização do Electron ou impacto no desempenho da interface.
   - Acionamento reativo multicanal: por clique em botões colapsáveis (`[data-testid="thinking-collapsible-trigger"]` / `Pensou por...`), por mutação de nós adicionados em tempo real via `MutationObserver` (suporte a streaming contínuo) e no boot da aplicação.
-  - Suíte de testes unitários expandida para 24 testes automatizados com validação de detecção de idioma e rejeição de CSS/código.
+  - Suíte de testes unitários expandida para 25 testes automatizados com 100% de aprovação.
 
 ---
 

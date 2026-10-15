@@ -526,3 +526,39 @@ test('Tradução Automática de Pensamentos (Thinking Auto-Translator)', () => {
   // Não deve detectar textos muito curtos
   assert.equal(isEnThought("The file is here"), false);
 });
+
+test('Tradução de Agentes Especializados e Personalizados (Custom Agents)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Seção de agentes personalizados
+  assert.equal(tr('Custom Agents'), 'Agentes personalizados');
+  assert.equal(tr('Custom agents'), 'Agentes personalizados');
+  assert.equal(tr('Specialized Agents'), 'Agentes especializados');
+  assert.equal(tr('Specialized agents'), 'Agentes especializados');
+  assert.equal(tr('Subagents'), 'Subagentes');
+  assert.equal(tr('New Agent'), 'Novo agente');
+  assert.equal(tr('Create Custom Agent'), 'Criar agente personalizado');
+  assert.equal(tr('No custom agents configured'), 'Nenhum agente personalizado configurado');
+  assert.equal(tr('Copy path'), 'Copiar caminho');
+  assert.equal(tr('Delete agent'), 'Excluir agente');
+
+  // Descrição do subagente firestore-rules-author
+  assert.equal(
+    tr('MANDATORY specialist subagent for Cloud Firestore Security Rules (firestore.rules). Whenever your task requires creating, authoring, or modifying Firestore Security Rules (firestore.rules), you MUST delegate rules authoring to this subagent rather than writing firestore.rules directly in the main agent.'),
+    'Subagente especialista OBRIGATÓRIO para regras de segurança do Cloud Firestore (firestore.rules). Sempre que sua tarefa exigir criação, autoria ou modificação de regras de segurança do Firestore (firestore.rules), você DEVE delegar a autoria de regras a este subagente em vez de escrever firestore.rules diretamente no agente principal.'
+  );
+
+  // Descrição do subagente flutter_a11y_agent
+  assert.equal(
+    tr('Expert at reviewing Flutter code for accessibility (a11y) issues. Invoke this agent to perform an a11y review of a codebase, pending changes, or PR.'),
+    'Especialista em revisar código Flutter quanto a problemas de acessibilidade (a11y). Invoque este agente para realizar uma revisão de acessibilidade em uma base de código, alterações pendentes ou PR.'
+  );
+
+  // Ações dinâmicas de botões e switches
+  assert.equal(tr('Toggle firestore-rules-author'), 'Alternar firestore-rules-author');
+  assert.equal(tr('Toggle flutter_a11y_agent'), 'Alternar flutter_a11y_agent');
+  assert.equal(tr('Delete agent firestore-rules-author'), 'Excluir agente firestore-rules-author');
+  assert.equal(tr('Duplicate agent flutter_a11y_agent'), 'Duplicar agente flutter_a11y_agent');
+});
+

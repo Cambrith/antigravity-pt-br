@@ -2692,6 +2692,13 @@ if os.path.exists(skills_map_file):
         _skills = json.load(_f)
         EXACT_MAP.update(_skills)
 
+# Carregar catálogo de agentes especializados traduzidos
+agents_map_file = os.path.join(os.path.dirname(__file__), "src", "maps", "agents.json")
+if os.path.exists(agents_map_file):
+    with open(agents_map_file, "r", encoding="utf-8") as _f:
+        _agents = json.load(_f)
+        EXACT_MAP.update(_agents)
+
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
 
 js_body = r'''(function() {
@@ -3405,6 +3412,20 @@ js_body = r'''(function() {
     }
     if ((m = /^Delete\s+(.+?)\s+MCP Server$/i.exec(s))) {
       return `Excluir servidor MCP ${m[1]}`;
+    }
+
+    // Ações de Agentes Personalizados e Especializados
+    if ((m = /^Toggle\s+(.+)$/i.exec(s))) {
+      return `Alternar ${m[1]}`;
+    }
+    if ((m = /^Delete\s+agent\s+(.+)$/i.exec(s))) {
+      return `Excluir agente ${m[1]}`;
+    }
+    if ((m = /^Duplicate\s+agent\s+(.+)$/i.exec(s))) {
+      return `Duplicar agente ${m[1]}`;
+    }
+    if ((m = /^Edit\s+agent\s+(.+)$/i.exec(s))) {
+      return `Editar agente ${m[1]}`;
     }
 
     // Notificações de Cota e Créditos de IA (Tooltip / Popover / Erro)
