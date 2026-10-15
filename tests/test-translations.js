@@ -410,6 +410,62 @@ test('Tradução de Servidores MCP, Contadores de Ferramentas e Catálogo de Ski
   );
 });
 
+test('Tradução de Menus de Imagem, Cabeçalhos de Ação com Pastas e Painel Lateral (Git/Skills/Plugins)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Menus de contexto em imagem
+  assert.equal(tr('Copy Image'), 'Copiar imagem');
+  assert.equal(tr('Save Image'), 'Salvar imagem');
+  assert.equal(tr('Save Image As...'), 'Salvar imagem como...');
+  assert.equal(tr('Copy Image Address'), 'Copiar endereço da imagem');
+  assert.equal(tr('Open Image in New Tab'), 'Abrir imagem em nova guia');
+
+  // Cabeçalhos de ação e exploração com múltiplos tipos de entidade (arquivos, pastas, ações e comandos)
+  assert.equal(
+    tr('Explored 3 files 1 folder, 3 actions, ran 1 command'),
+    'Explorou 3 arquivos 1 pasta, 3 ações, executou 1 comando'
+  );
+  assert.equal(
+    tr('Explored 3 files, 1 folder, 3 actions, ran 1 command'),
+    'Explorou 3 arquivos, 1 pasta, 3 ações, executou 1 comando'
+  );
+  assert.equal(
+    tr('Exploring 2 files, 2 folders, 4 actions, running 2 commands'),
+    'Explorando 2 arquivos, 2 pastas, 4 ações, executando 2 comandos'
+  );
+
+  // Painel lateral: Git, Skills e Paginação
+  assert.equal(
+    tr('Staged index changes and working tree changes'),
+    'Alterações preparadas no índice e na árvore de trabalho'
+  );
+  assert.equal(
+    tr('All changes since origin/main'),
+    'Todas as alterações desde origin/main'
+  );
+  assert.equal(
+    tr('All changes since feat/nova-tela'),
+    'Todas as alterações desde feat/nova-tela'
+  );
+  assert.equal(tr('Skills Used 1'), 'Habilidades usadas 1');
+  assert.equal(tr('Skills Used'), 'Habilidades usadas');
+  assert.equal(tr('See all (16)'), 'Ver tudo (16)');
+  assert.equal(tr('See all'), 'Ver tudo');
+  assert.equal(tr('See more (5)'), 'Ver mais (5)');
+
+  // Texto descritivo da página de Plugins (integral e dividido)
+  assert.equal(
+    tr('Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products. You can always change your choices in Settings.'),
+    'Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.'
+  );
+  assert.equal(
+    tr('Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products. You can always change your choices in '),
+    'Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas em '
+  );
+});
+
+
 
 
 

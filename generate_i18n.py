@@ -2579,6 +2579,74 @@ EXACT_MAP = {
     "No MCP servers found": "Nenhum servidor MCP encontrado",
     "No tools available": "Nenhuma ferramenta disponível",
     "No tools found": "Nenhuma ferramenta encontrada",
+
+    # Menus de Contexto em Imagens e Mídias
+    "Copy Image": "Copiar imagem",
+    "Copy image": "Copiar imagem",
+    "copy image": "copiar imagem",
+    "Save Image": "Salvar imagem",
+    "Save image": "Salvar imagem",
+    "save image": "salvar imagem",
+    "Save Image As...": "Salvar imagem como...",
+    "Save Image As": "Salvar imagem como",
+    "Save image as...": "Salvar imagem como...",
+    "Save image as": "Salvar imagem como",
+    "Copy Image Address": "Copiar endereço da imagem",
+    "Copy image address": "Copiar endereço da imagem",
+    "Copy Image Link": "Copiar link da imagem",
+    "Copy image link": "Copiar link da imagem",
+    "Open Image": "Abrir imagem",
+    "Open image": "Abrir imagem",
+    "Open Image in New Tab": "Abrir imagem em nova guia",
+    "Open image in new tab": "Abrir imagem em nova guia",
+    "Open Image In New Tab": "Abrir imagem em nova guia",
+    "View Image": "Ver imagem",
+    "View image": "Ver imagem",
+    "Download Image": "Baixar imagem",
+    "Download image": "Baixar imagem",
+
+    # Painel Lateral: Git, Mudanças, Skills e Mídias
+    "Staged index changes and working tree changes": "Alterações preparadas no índice e na árvore de trabalho",
+    "Staged index changes and working tree changes.": "Alterações preparadas no índice e na árvore de trabalho.",
+    "staged index changes and working tree changes": "alterações preparadas no índice e na árvore de trabalho",
+    "Working tree changes": "Alterações na árvore de trabalho",
+    "working tree changes": "alterações na árvore de trabalho",
+    "Staged index changes": "Alterações no índice (stage)",
+    "staged index changes": "alterações no índice (stage)",
+    "All changes since origin/main": "Todas as alterações desde origin/main",
+    "All changes since origin/master": "Todas as alterações desde origin/master",
+    "All changes since main": "Todas as alterações desde main",
+    "All changes since master": "Todas as alterações desde master",
+    "Skills Used": "Habilidades usadas",
+    "Skills used": "Habilidades usadas",
+    "skills used": "habilidades usadas",
+    "Skill Used": "Habilidade usada",
+    "Skill used": "Habilidade usada",
+    "skill used": "habilidade usada",
+    "No skills used": "Nenhuma habilidade usada",
+    "No skill used": "Nenhuma habilidade usada",
+    "See all": "Ver tudo",
+    "See all...": "Ver tudo...",
+    "See more": "Ver mais",
+    "See more...": "Ver mais...",
+    "See less": "Ver menos",
+    "Show all": "Mostrar tudo",
+    "Show all...": "Mostrar tudo...",
+    "Show more": "Mostrar mais",
+    "Show more...": "Mostrar mais...",
+    "Show less": "Mostrar menos",
+    "View all": "Ver tudo",
+    "View all...": "Ver tudo...",
+    "View more": "Ver mais",
+    "View more...": "Ver mais...",
+
+    # Complementos de texto da página de Plugins
+    "You can always change your choices in Settings.": "Você sempre pode alterar suas escolhas nas Configurações.",
+    "You can always change your choices in Settings": "Você sempre pode alterar suas escolhas nas Configurações",
+    "You can always change your choices in ": "Você sempre pode alterar suas escolhas em ",
+    "You can always change your choices in": "Você sempre pode alterar suas escolhas em",
+    "Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products.": "Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google.",
+    "Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products": "Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google",
 }
 
 # Carregar catálogo completo de skills traduzidas
@@ -2688,30 +2756,47 @@ js_body = r'''(function() {
     if ((m = /^Worked for (\d+)h (\d+)m$/.exec(s))) return `Trabalhou por ${m[1]}h ${m[2]}m`;
     if ((m = /^Worked for (\d+)h$/.exec(s))) return `Trabalhou por ${m[1]}h`;
     // Ações de execução de comandos e ferramentas em tempo real (Tool Group Collapsible)
+    function resolveEntityCounts(str) {
+      if (!str) return str;
+      return str
+        .replace(/(\d+)\s+files?/gi, (_, num) => `${num} ${num === '1' ? 'arquivo' : 'arquivos'}`)
+        .replace(/\bfiles\b/gi, 'arquivos')
+        .replace(/\bfile\b/gi, 'arquivo')
+        .replace(/(\d+)\s+folders?/gi, (_, num) => `${num} ${num === '1' ? 'pasta' : 'pastas'}`)
+        .replace(/\bfolders\b/gi, 'pastas')
+        .replace(/\bfolder\b/gi, 'pasta')
+        .replace(/(\d+)\s+actions?/gi, (_, num) => `${num} ${num === '1' ? 'ação' : 'ações'}`)
+        .replace(/\bactions\b/gi, 'ações')
+        .replace(/\baction\b/gi, 'ação')
+        .replace(/(\d+)\s+directories\b/gi, (_, num) => `${num} diretórios`)
+        .replace(/(\d+)\s+directory\b/gi, (_, num) => `${num} diretório`);
+    }
+
     function resolveCommandCount(cmdStr) {
-      return cmdStr.replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`);
+      if (!cmdStr) return cmdStr;
+      return resolveEntityCounts(cmdStr).replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`);
     }
     function resolveFileCount(fileStr) {
-      return fileStr.replace(/(\d+)\s+files?/gi, (_, num) => `${num} ${num === '1' ? 'arquivo' : 'arquivos'}`).replace(/\bfiles\b/gi, 'arquivos');
+      return resolveEntityCounts(fileStr);
     }
 
     if ((m = /^Exploring\s+(.+?),\s*running\s+(.+)$/i.exec(s))) {
-      return `Explorando ${resolveFileCount(m[1])}, executando ${resolveCommandCount(m[2])}`;
+      return `Explorando ${resolveEntityCounts(m[1])}, executando ${resolveCommandCount(m[2])}`;
     }
     if ((m = /^Explored\s+(.+?),\s*ran\s+(.+)$/i.exec(s))) {
-      return `Explorou ${resolveFileCount(m[1])}, executou ${resolveCommandCount(m[2])}`;
+      return `Explorou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}`;
     }
     if ((m = /^Exploring\s+(.+)$/i.exec(s))) {
-      return `Explorando ${resolveFileCount(m[1])}`;
+      return `Explorando ${resolveEntityCounts(m[1])}`;
     }
     if ((m = /^Explored\s+(.+)$/i.exec(s))) {
-      return `Explorou ${resolveFileCount(m[1])}`;
+      return `Explorou ${resolveEntityCounts(m[1])}`;
     }
     if ((m = /^Editing\s+(.+)$/i.exec(s))) {
-      return `Editando ${resolveFileCount(m[1])}`;
+      return `Editando ${resolveEntityCounts(m[1])}`;
     }
     if ((m = /^Edited\s+(.+)$/i.exec(s))) {
-      return `Editou ${resolveFileCount(m[1])}`;
+      return `Editou ${resolveEntityCounts(m[1])}`;
     }
     if ((m = /^Running\s+(.+)$/i.exec(s))) {
       return `Executando ${resolveCommandCount(m[1])}`;
@@ -3214,8 +3299,40 @@ js_body = r'''(function() {
     if ((m = /^There are currently no Build with (.+?) plugins available\.?$/i.exec(s))) {
       return `No momento, não há plugins criados com o ${m[1]} disponíveis.`;
     }
-    if ((m = /^Plugins are packaged collections of skills and MCPs to help the Agent in (.+?) work with Google developer products\. You can always change your choices in Settings\.?$/i.exec(s))) {
-      return `Os plugins são coleções empacotadas de habilidades e servidores MCP para ajudar o agente no ${m[1]} a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas opções nas Configurações.`;
+    if (/Plugins are packaged collections of skills and MCPs to help the Agent/i.test(s)) {
+      return s
+        .replace(/Plugins are packaged collections of skills and MCPs to help the Agent in (.+?) work with Google developer products\.?/gi,
+          'Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no $1 a trabalhar com produtos de desenvolvimento do Google.')
+        .replace(/You can always change your choices in Settings\.?/gi,
+          'Você sempre pode alterar suas escolhas nas Configurações.')
+        .replace(/You can always change your choices in\s*$/gi,
+          'Você sempre pode alterar suas escolhas em');
+    }
+
+    // Painel lateral: Filtros Git, Histórico, Skills e Paginação
+    if (/^Staged index changes and working tree changes\.?$/i.test(s)) {
+      return "Alterações preparadas no índice e na árvore de trabalho";
+    }
+    if ((m = /^All changes since\s+(.+)$/i.exec(s))) {
+      return `Todas as alterações desde ${m[1]}`;
+    }
+    if ((m = /^Skills?\s+[Uu]sed\s*\(?(\d+)\)?$/i.exec(s))) {
+      return `Habilidades usadas ${m[1]}`;
+    }
+    if ((m = /^Skills?\s+[Uu]sed$/i.exec(s))) {
+      return "Habilidades usadas";
+    }
+    if ((m = /^(?:See|View|Show)\s+all\s*\((.+?)\)$/i.exec(s))) {
+      return `Ver tudo (${m[1]})`;
+    }
+    if ((m = /^(?:See|View|Show)\s+more\s*\((.+?)\)$/i.exec(s))) {
+      return `Ver mais (${m[1]})`;
+    }
+    if (/^(?:See|View|Show)\s+all$/i.test(s)) {
+      return "Ver tudo";
+    }
+    if (/^(?:See|View|Show)\s+more$/i.test(s)) {
+      return "Ver mais";
     }
 
     // Configurações de Servidores MCP Dinâmicas (para novos servidores e campos futuros)

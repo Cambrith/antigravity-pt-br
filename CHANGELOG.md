@@ -23,11 +23,21 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
     - **Pesquisa Científica & Bioinformática**: AlphaFold, AlphaGenome, ChEMBL, UniProt, PDB, dbSNP, ClinVar, NCBI, PubMed, ArXiv e bioRxiv.
     - **Ferramentas de Desenvolvimento**: Chrome DevTools via MCP, depuração de acessibilidade (a11y), otimização de LCP e diagnóstico de vazamento de memória.
     - **Google Maps Platform**: Visualização de mapas, rotas ecológicas, geocodificação, dados ambientais e Places API.
+- **Tradução Completa de Menus de Imagem e Mídias**:
+  - Localização do menu de contexto de clique direito em imagens (`Copy Image` $\rightarrow$ `Copiar imagem`, `Save Image` $\rightarrow$ `Salvar imagem`, `Save Image As...` $\rightarrow$ `Salvar imagem como...`, `Copy Image Address` $\rightarrow$ `Copiar endereço da imagem`, `Open Image in New Tab` $\rightarrow$ `Abrir imagem em nova guia`, `Download Image` $\rightarrow$ `Baixar imagem`).
+- **Cabeçalhos de Ação e Exploração com Múltiplas Entidades**:
+  - Suporte completo a contadores de arquivos, pastas, ações e comandos nos cabeçalhos colapsáveis em tempo real (`Explorou 3 arquivos 1 pasta, 3 ações, executou 1 comando`, `Explorando 2 arquivos, 2 pastas, 4 ações, executando 2 comandos`).
+- **Painel Lateral: Filtros Git, Skills Usadas e Paginação**:
+  - Tradução das descrições dos seletores de alterações de branch e índice (`Staged index changes and working tree changes` $\rightarrow$ `Alterações preparadas no índice e na árvore de trabalho`, `All changes since <branch>` $\rightarrow$ `Todas as alterações desde <branch>`).
+  - Localização de contadores de habilidades ativas (`Skills Used 1` $\rightarrow$ `Habilidades usadas 1`, `No skills used` $\rightarrow$ `Nenhuma habilidade usada`).
+  - Tradução dinâmica de paginação em listas e envios de mídia (`See all (16)` $\rightarrow$ `Ver tudo (16)`, `See more (5)` $\rightarrow$ `Ver mais (5)`).
+- **Correção e Robustez no Cabeçalho da Página de Plugins**:
+  - Tratamento aprimorado para o parágrafo descritivo de plugins (`Plugins are packaged collections of skills and MCPs...`), cobrindo fragmentação de nós e links do React para configurações.
 - **Suíte de Testes Expandida**:
-  - Nova suíte de testes unitários automatizados cobrindo ferramentas MCP dinâmicas, tratamento de erros de credenciais ADC e descrições do catálogo de skills (totalizando 21 testes unitários com 100% de aprovação).
+  - Suíte de testes unitários automatizados ampliada para 22 testes abrangentes com 100% de aprovação.
 
 ### Modificado
-- Total de entradas no dicionário estático expandido de 2.235 para mais de 2.525 termos e descrições técnicas.
+- Total de entradas no dicionário estático expandido de 2.235 para mais de 2.585 termos e descrições técnicas.
 - Integração modular do mapa de skills (`src/maps/skills.json`) no pipeline de geração (`generate_i18n.py`).
 
 ---
