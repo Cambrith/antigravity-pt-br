@@ -26,7 +26,10 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Tradução dinâmica em tempo real no frontend de sentenças analíticas e de fluxo do modelo (análise de arquivos, seções, servidores MCP e scripts).
   - Tradução de parâmetros de ações de ferramentas (`toolAction` e `toolSummary`) para português brasileiro (ex.: `Analisando diretório`, `Verificando status do git`, `Executando testes`), com preservação estrita de comandos e códigos técnicos originais (`CommandLine`, código-fonte, caminhos).
   - Localização de rótulos e durações de pensamento (`Thought Process`, `Thinking Process`, `Thinking...`, `Pensou por 15 segundos`, etc.).
-- **Tradução de Processos e Comandos em Tempo Real (Running/Ran/Exploring/Editing)**:
+- **Tradução de Processos, Tarefas e Comandos em Tempo Real (Tasks/Running/Ran)**:
+  - Tradução de contadores de tarefas em execução no status bar e barra de chat (`1 task running` $\rightarrow$ `1 tarefa em execução`, `2 tasks running` $\rightarrow$ `2 tarefas em execução`, `No tasks running` $\rightarrow$ `Nenhuma tarefa em execução`, `Task running...` $\rightarrow$ `Tarefa em execução...`).
+  - Tradução dinâmica de status em cabeçalhos de colapsáveis (`<Ação> finished` $\rightarrow$ `<Ação> concluído`, `<Ação> was canceled` $\rightarrow$ `<Ação> foi cancelado`, `<Ação> failed` $\rightarrow$ `<Ação> falhou`).
+  - Tradução completa de logs de tarefas e execução de comandos (`Task id "..." finished with result:` $\rightarrow$ `Tarefa id "..." concluída com o resultado:`, `The command exited with code 1.` $\rightarrow$ `O comando encerrou com o código 1.`, `Stdout:` $\rightarrow$ `Saída padrão:`, `Stderr:` $\rightarrow$ `Erro padrão:`).
   - Tradução do status de comandos ao iniciar (`Running <comando>` $\rightarrow$ `Executando <comando>`).
   - Tradução de status ao concluir comandos (`Ran <comando>` $\rightarrow$ `Executou <comando>`).
   - Contadores com plural correto de comandos e arquivos (`Running 1 command` $\rightarrow$ `Executando 1 comando`, `Running 2 commands` $\rightarrow$ `Executando 2 comandos`, `Exploring 2 files, running 1 command` $\rightarrow$ `Explorando 2 arquivos, executando 1 comando`).

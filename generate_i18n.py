@@ -1300,6 +1300,18 @@ EXACT_MAP = {
     "Delete Task": "Excluir tarefa",
     "Task Logs": "Logs da tarefa",
     "Task not found": "Tarefa não encontrada",
+    "Task running": "Tarefa em execução",
+    "Tasks running": "Tarefas em execução",
+    "Task running...": "Tarefa em execução...",
+    "Tasks running...": "Tarefas em execução...",
+    "1 task running": "1 tarefa em execução",
+    "No tasks running": "Nenhuma tarefa em execução",
+    "Tool execution was canceled": "A execução da ferramenta foi cancelada",
+    "Tool execution was cancelled": "A execução da ferramenta foi cancelada",
+    "The command was canceled.": "O comando foi cancelado.",
+    "The command was cancelled.": "O comando foi cancelado.",
+    "Stdout:": "Saída padrão:",
+    "Stderr:": "Erro padrão:",
     "Artifacts": "Artefatos",
     "Artifact": "Artefato",
     "Artifact Viewer": "Visualizador de artefatos",
@@ -2581,6 +2593,28 @@ js_body = r'''(function() {
     }
 
     // Sentenças de raciocínio, análise e fluxo do modelo
+    if (/^Analysis (?:centers|focuses) on/i.test(s)) {
+      return s
+        .replace(/Analysis (?:centers|focuses) on the "(.+?)" section of the (?:documentation|file),? examining localized modules, specifically the interface elements and the MCP server catalog configuration\.?/gi,
+          'A análise se concentra na seção "$1" da documentação, examinando os módulos localizados, especificamente os elementos de interface e a configuração do catálogo de servidores MCP.')
+        .replace(/Analysis (?:centers|focuses) on the "(.+?)" section of the (.+?) file\.?/gi,
+          'A análise se concentra na seção "$1" do arquivo $2.')
+        .replace(/The catalog's configuration fields are key, especially considering the (\d+) servers it manages\.?/gi,
+          'Os campos de configuração do catálogo são fundamentais, especialmente considerando os $1 servidores que ele gerencia.')
+        .replace(/The catalog includes configuration fields for the (\d+) servers\.?/gi,
+          'O catálogo inclui campos de configuração para os $1 servidores.')
+        .replace(/Also looking at the new features implemented since the last table update, focusing on improvements to environment selection\.?/gi,
+          'Também analisando os novos recursos implementados desde a última atualização da tabela, com foco em melhorias na seleção de ambiente.')
+        .replace(/Analyzing new features implemented since the last table update\.?/gi,
+          'Analisando os novos recursos implementados desde a última atualização da tabela.')
+        .replace(/This section details the localized modules, specifically the interface elements and the MCP server catalog\.?/gi,
+          'Esta seção detalha os módulos localizados, especificamente os elementos de interface e o catálogo de servidores MCP.')
+        .replace(/This section details the (.+?), specifically the (.+?)\.?/gi,
+          'Esta seção detalha $1, especificamente $2.')
+        .replace(/This section details the (.+?)\.?/gi,
+          'Esta seção detalha $1.');
+    }
+
     if ((m = /^Analysis (?:focuses|centers) on (?:the )?["']?(.+?)["']? section of the (.+?) file\.?$/i.exec(s))) {
       return `A análise se concentra na seção "${m[1]}" do arquivo ${m[2]}.`;
     }
@@ -2613,6 +2647,77 @@ js_body = r'''(function() {
     }
     if ((m = /^Reviewing\s+(.+)$/i.exec(s))) {
       return `Revisando ${m[1]}`;
+    }
+
+    // Tarefas em execução e contadores de tarefas
+    if ((m = /^(\d+)\s+tasks?\s+running$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'tarefa em execução' : 'tarefas em execução'}`;
+    }
+    if ((m = /^(\d+)\s+tasks?\s+active$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'tarefa ativa' : 'tarefas ativas'}`;
+    }
+    if ((m = /^(\d+)\s+tasks?\s+completed$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'tarefa concluída' : 'tarefas concluídas'}`;
+    }
+    if ((m = /^(\d+)\s+tasks?\s+failed$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'tarefa falhou' : 'tarefas falharam'}`;
+    }
+    if ((m = /^(\d+)\s+tasks?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'tarefa' : 'tarefas'}`;
+    }
+    if ((m = /^Tasks \((\d+)\)$/i.exec(s))) return `Tarefas (${m[1]})`;
+    if ((m = /^Task \((\d+)\)$/i.exec(s))) return `Tarefa (${m[1]})`;
+    if (/^No tasks running$/i.test(s)) return "Nenhuma tarefa em execução";
+    if (/^Task running\.\.\.$/i.test(s)) return "Tarefa em execução...";
+    if (/^Task running$/i.test(s)) return "Tarefa em execução";
+    if (/^Tasks running\.\.\.$/i.test(s)) return "Tarefas em execução...";
+    if (/^Tasks running$/i.test(s)) return "Tarefas em execução";
+
+    // Status de tarefas e ferramentas em colapsáveis e cabeçalhos
+    if ((m = /^(.+?)\s+finished$/i.exec(s))) {
+      return `${m[1]} concluído`;
+    }
+    if ((m = /^(.+?)\s+was canceled$/i.exec(s))) {
+      return `${m[1]} foi cancelado`;
+    }
+    if ((m = /^(.+?)\s+was cancelled$/i.exec(s))) {
+      return `${m[1]} foi cancelado`;
+    }
+    if ((m = /^(.+?)\s+failed$/i.exec(s))) {
+      return `${m[1]} falhou`;
+    }
+
+    // Mensagens de saída e resultados de tarefas
+    if (/^Task id [^\n]+ (?:finished|was canceled|was cancelled|failed)/i.test(s)) {
+      return s
+        .replace(/Task id ["'](.+?)["'] finished with result:/gi, 'Tarefa id "$1" concluída com o resultado:')
+        .replace(/Task id ["'](.+?)["'] was canceled with result:/gi, 'Tarefa id "$1" foi cancelada com o resultado:')
+        .replace(/Task id ["'](.+?)["'] was cancelled with result:/gi, 'Tarefa id "$1" foi cancelada com o resultado:')
+        .replace(/Task id ["'](.+?)["'] failed with result:/gi, 'Tarefa id "$1" falhou com o resultado:')
+        .replace(/The command exited with code (\d+)\.?/gi, 'O comando encerrou com o código $1.')
+        .replace(/Stdout:/gi, 'Saída padrão:')
+        .replace(/Stderr:/gi, 'Erro padrão:');
+    }
+    if ((m = /^Task id ["'](.+?)["'] finished with result:?$/i.exec(s))) {
+      return `Tarefa id "${m[1]}" concluída com o resultado:`;
+    }
+    if ((m = /^Task id ["'](.+?)["'] was canceled(?: with result:?)?$/i.exec(s))) {
+      return `Tarefa id "${m[1]}" foi cancelada com o resultado:`;
+    }
+    if ((m = /^Task id ["'](.+?)["'] was cancelled(?: with result:?)?$/i.exec(s))) {
+      return `Tarefa id "${m[1]}" foi cancelada com o resultado:`;
+    }
+    if ((m = /^Task id ["'](.+?)["'] failed(?: with result:?)?$/i.exec(s))) {
+      return `Tarefa id "${m[1]}" falhou com o resultado:`;
+    }
+    if ((m = /^The command exited with code (\d+)\.?$/i.exec(s))) {
+      return `O comando encerrou com o código ${m[1]}.`;
+    }
+    if ((m = /^The command was canceled\.?$/i.exec(s))) {
+      return "O comando foi cancelado.";
+    }
+    if ((m = /^Task Description:\s*(.+)$/i.exec(s))) {
+      return `Descrição da tarefa: ${m[1]}`;
     }
 
     if ((m = /^Tools \((\d+)\)$/.exec(s))) return `Ferramentas (${m[1]})`;

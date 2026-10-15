@@ -224,7 +224,61 @@ test('Tradução de Sentenças Dinâmicas de Raciocínio e Pensamento Analítico
     tr('Reviewing test execution logs'),
     'Revisando test execution logs'
   );
+
+  // Parágrafo analítico composto (imagem 1)
+  const paragraphEn = 'Analysis centers on the "What is Translated?" section of the documentation, examining localized modules, specifically the interface elements and the MCP server catalog configuration. The catalog\'s configuration fields are key, especially considering the 99 servers it manages. Also looking at the new features implemented since the last table update, focusing on improvements to environment selection.';
+  const paragraphPt = tr(paragraphEn);
+  assert.match(paragraphPt, /A análise se concentra na seção "What is Translated\?" da documentação/);
+  assert.match(paragraphPt, /considerando os 99 servidores que ele gerencia/);
+  assert.match(paragraphPt, /com foco em melhorias na seleção de ambiente/);
 });
+
+test('Tradução de Tarefas em Execução, Status e Logs (Tasks Running/Finished/Canceled)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Contadores de tarefas na barra de status e menus
+  assert.equal(tr('1 task running'), '1 tarefa em execução');
+  assert.equal(tr('2 tasks running'), '2 tarefas em execução');
+  assert.equal(tr('5 tasks running'), '5 tarefas em execução');
+  assert.equal(tr('No tasks running'), 'Nenhuma tarefa em execução');
+  assert.equal(tr('Task running'), 'Tarefa em execução');
+  assert.equal(tr('Task running...'), 'Tarefa em execução...');
+  assert.equal(tr('Tasks running'), 'Tarefas em execução');
+  assert.equal(tr('Tasks running...'), 'Tarefas em execução...');
+  assert.equal(tr('Tasks (4)'), 'Tarefas (4)');
+  assert.equal(tr('Task (1)'), 'Tarefa (1)');
+  assert.equal(tr('1 task active'), '1 tarefa ativa');
+  assert.equal(tr('3 tasks active'), '3 tarefas ativas');
+  assert.equal(tr('1 task completed'), '1 tarefa concluída');
+  assert.equal(tr('2 tasks completed'), '2 tarefas concluídas');
+
+  // Cabeçalhos de colapsáveis de tarefas e comandos
+  assert.equal(tr('Buscar regra global em .config finished'), 'Buscar regra global em .config concluído');
+  assert.equal(tr('Buscar regras globais was canceled'), 'Buscar regras globais foi cancelado');
+  assert.equal(tr('Localizando arquivo de regras globais failed'), 'Localizando arquivo de regras globais falhou');
+
+  // Mensagens internas de resultados de tarefas
+  assert.equal(
+    tr('Task id "30b76d49-c038-43b4-894c-20320b69aebd/task-966" finished with result:'),
+    'Tarefa id "30b76d49-c038-43b4-894c-20320b69aebd/task-966" concluída com o resultado:'
+  );
+  assert.equal(
+    tr('Task id "test-task-123" was canceled with result:'),
+    'Tarefa id "test-task-123" foi cancelada com o resultado:'
+  );
+  assert.equal(
+    tr('The command exited with code 1.'),
+    'O comando encerrou com o código 1.'
+  );
+  assert.equal(
+    tr('Tool execution was canceled'),
+    'A execução da ferramenta foi cancelada'
+  );
+  assert.equal(tr('Stdout:'), 'Saída padrão:');
+  assert.equal(tr('Stderr:'), 'Erro padrão:');
+});
+
 
 
 
