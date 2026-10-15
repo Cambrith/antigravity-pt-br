@@ -82,6 +82,24 @@ EXACT_MAP = {
     "hide tools": "ocultar ferramentas",
     "show tools": "mostrar ferramentas",
     "1 tool": "1 ferramenta",
+    "1 search": "1 pesquisa",
+    "2 searches": "2 pesquisas",
+    "3 searches": "3 pesquisas",
+    "4 searches": "4 pesquisas",
+    "5 searches": "5 pesquisas",
+    "search": "pesquisa",
+    "searches": "pesquisas",
+    "1 command": "1 comando",
+    "2 commands": "2 comandos",
+    "3 commands": "3 comandos",
+    "Exploring searches": "Explorando pesquisas",
+    "Explored searches": "Explorou pesquisas",
+    "Searching files": "Pesquisando arquivos",
+    "Searched files": "Pesquisou arquivos",
+    "Searching code": "Pesquisando código",
+    "Searched code": "Pesquisou código",
+    "Searching the web": "Pesquisando na web",
+    "Searched the web": "Pesquisou na web",
     "Demoted": "Rebaixada",
     "demoted": "rebaixada",
     "Excluded": "Excluída",
@@ -2854,6 +2872,17 @@ js_body = r'''(function() {
     function resolveEntityCounts(str) {
       if (!str) return str;
       return str
+        .replace(/(\d+)\s+web\s+searches\b/gi, (_, num) => `${num} ${num === '1' ? 'pesquisa na web' : 'pesquisas na web'}`)
+        .replace(/(\d+)\s+web\s+search\b/gi, (_, num) => `${num} pesquisa na web`)
+        .replace(/\bweb\s+searches\b/gi, 'pesquisas na web')
+        .replace(/\bweb\s+search\b/gi, 'pesquisa na web')
+        .replace(/(\d+)\s+code\s+searches\b/gi, (_, num) => `${num} ${num === '1' ? 'pesquisa de código' : 'pesquisas de código'}`)
+        .replace(/(\d+)\s+code\s+search\b/gi, (_, num) => `${num} pesquisa de código`)
+        .replace(/\bcode\s+searches\b/gi, 'pesquisas de código')
+        .replace(/\bcode\s+search\b/gi, 'pesquisa de código')
+        .replace(/(\d+)\s+searches\b/gi, (_, num) => `${num} ${num === '1' ? 'pesquisa' : 'pesquisas'}`)
+        .replace(/(\d+)\s+search\b/gi, (_, num) => `${num} pesquisa`)
+        .replace(/\bsearches\b/gi, 'pesquisas')
         .replace(/(\d+)\s+files?/gi, (_, num) => `${num} ${num === '1' ? 'arquivo' : 'arquivos'}`)
         .replace(/\bfiles\b/gi, 'arquivos')
         .replace(/\bfile\b/gi, 'arquivo')
@@ -2863,6 +2892,12 @@ js_body = r'''(function() {
         .replace(/(\d+)\s+actions?/gi, (_, num) => `${num} ${num === '1' ? 'ação' : 'ações'}`)
         .replace(/\bactions\b/gi, 'ações')
         .replace(/\baction\b/gi, 'ação')
+        .replace(/(\d+)\s+tools?/gi, (_, num) => `${num} ${num === '1' ? 'ferramenta' : 'ferramentas'}`)
+        .replace(/\btools\b/gi, 'ferramentas')
+        .replace(/\btool\b/gi, 'ferramenta')
+        .replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`)
+        .replace(/\bcommands\b/gi, 'comandos')
+        .replace(/\bcommand\b/gi, 'comando')
         .replace(/(\d+)\s+directories\b/gi, (_, num) => `${num} diretórios`)
         .replace(/(\d+)\s+directory\b/gi, (_, num) => `${num} diretório`);
     }
@@ -2881,11 +2916,29 @@ js_body = r'''(function() {
     if ((m = /^Explored\s+(.+?),\s*ran\s+(.+)$/i.exec(s))) {
       return `Explorou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}`;
     }
+    if ((m = /^Exploring\s+(.+?),\s*searching\s+(.+)$/i.exec(s))) {
+      return `Explorando ${resolveEntityCounts(m[1])}, pesquisando ${resolveEntityCounts(m[2])}`;
+    }
+    if ((m = /^Explored\s+(.+?),\s*searched\s+(.+)$/i.exec(s))) {
+      return `Explorou ${resolveEntityCounts(m[1])}, pesquisou ${resolveEntityCounts(m[2])}`;
+    }
+    if ((m = /^Searching\s+(.+?),\s*running\s+(.+)$/i.exec(s))) {
+      return `Pesquisando ${resolveEntityCounts(m[1])}, executando ${resolveCommandCount(m[2])}`;
+    }
+    if ((m = /^Searched\s+(.+?),\s*ran\s+(.+)$/i.exec(s))) {
+      return `Pesquisou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}`;
+    }
     if ((m = /^Exploring\s+(.+)$/i.exec(s))) {
       return `Explorando ${resolveEntityCounts(m[1])}`;
     }
     if ((m = /^Explored\s+(.+)$/i.exec(s))) {
       return `Explorou ${resolveEntityCounts(m[1])}`;
+    }
+    if ((m = /^Searching\s+(.+)$/i.exec(s))) {
+      return `Pesquisando ${resolveEntityCounts(m[1])}`;
+    }
+    if ((m = /^Searched\s+(.+)$/i.exec(s))) {
+      return `Pesquisou ${resolveEntityCounts(m[1])}`;
     }
     if ((m = /^Editing\s+(.+)$/i.exec(s))) {
       return `Editando ${resolveEntityCounts(m[1])}`;
@@ -2898,6 +2951,12 @@ js_body = r'''(function() {
     }
     if ((m = /^Ran\s+(.+)$/i.exec(s))) {
       return `Executou ${resolveCommandCount(m[1])}`;
+    }
+    if ((m = /^Reading\s+(.+)$/i.exec(s))) {
+      return `Lendo ${resolveEntityCounts(m[1])}`;
+    }
+    if ((m = /^Read\s+(.+)$/i.exec(s))) {
+      return `Leu ${resolveEntityCounts(m[1])}`;
     }
 
     // Sentenças de raciocínio, análise e fluxo do modelo

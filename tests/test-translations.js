@@ -146,6 +146,15 @@ test('Tradução de Processos e Comandos em Execução (Running/Ran/Exploring/Ed
   // Ações compostas (exploração + comando)
   assert.equal(tr('Exploring 2 files, running 1 command'), 'Explorando 2 arquivos, executando 1 comando');
   assert.equal(tr('Explored 2 files, ran 1 command'), 'Explorou 2 arquivos, executou 1 comando');
+  assert.equal(tr('Exploring 2 searches, running 1 command'), 'Explorando 2 pesquisas, executando 1 comando');
+  assert.equal(tr('Exploring 1 search, running 1 command'), 'Explorando 1 pesquisa, executando 1 comando');
+  assert.equal(tr('Explored 2 searches, ran 1 command'), 'Explorou 2 pesquisas, executou 1 comando');
+  assert.equal(tr('Exploring 2 searches'), 'Explorando 2 pesquisas');
+  assert.equal(tr('Explored 2 searches'), 'Explorou 2 pesquisas');
+  assert.equal(tr('Searching 2 files, running 1 command'), 'Pesquisando 2 arquivos, executando 1 comando');
+  assert.equal(tr('1 search'), '1 pesquisa');
+  assert.equal(tr('2 searches'), '2 pesquisas');
+  assert.equal(tr('searches'), 'pesquisas');
 
   // Estados pontuais
   assert.equal(tr('Running...'), 'Executando...');

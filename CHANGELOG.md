@@ -4,6 +4,16 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.5] - 2026-10-15
+
+### Corrigido
+- **Tradução de Contadores de Pesquisa no Agrupador de Ferramentas (`searches` $\rightarrow$ `pesquisas`)**:
+  - Correção na contagem de ferramentas do agrupador ("Tool Group Collapsible") na barra de status de passos (`Exploring 2 searches, running 1 command` $\rightarrow$ `Explorando 2 pesquisas, executando 1 comando`).
+  - Suporte completo em `resolveEntityCounts` para `searches`, `search`, `web searches`, `code searches`, `tools` e `commands`.
+  - Inclusão no `EXACT_MAP` de entradas de contagem de buscas (`1 search`, `2 searches`, `searches`, etc.).
+  - Adição de regras dinâmicas para ações combinadas (`Searching <x>, running <y>`, `Searched <x>, ran <y>`, `Exploring <x>, searching <y>`, `Reading <x>`, `Read <x>`).
+  - Atualização da suíte de testes com cobertura de ações compostas de busca e execução.
+
 ## [1.4.4] - 2026-10-15
 
 ### Adicionado
