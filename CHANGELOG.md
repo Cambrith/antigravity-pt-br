@@ -4,6 +4,25 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.2] - 2026-10-15
+
+### Adicionado
+- **Tradução Completa de Prompts de Comandos MCP e Menu de Barra (`/`)**:
+  - Localização integral das descrições dos comandos e prompts expostos via MCP e comandos slash no autocompletar do chat:
+    - **Firebase MCP Server**:
+      - `mcp:firebase-mcp-server:firebase:deploy`: "Use este comando para implantar recursos no Firebase."
+      - `mcp:firebase-mcp-server:firebase:init`: "Use este comando para configurar serviços do Firebase, como back-end e recursos de IA."
+      - `mcp:firebase-mcp-server:firestore:generate_security_rules`: "Gere regras de segurança seguras do Firebase Firestore e os testes unitários correspondentes para seu projeto."
+      - `mcp:firebase-mcp-server:storage:generate_security_rules`: "Gere regras de segurança seguras do Firebase Storage e os testes unitários correspondentes para seu projeto."
+      - `mcp:firebase-mcp-server:crashlytics:connect`: "Use este comando para acessar os dados do Crashlytics de um aplicativo Firebase."
+    - **Lovable MCP Server**:
+      - `mcp:lovable:api_guide`: "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros e início rápido com fetch para gerenciar e publicar projetos"
+      - `mcp:lovable:sdk_guide`: "Nome anterior de api_guide; retorna o mesmo guia da API pública."
+      - `mcp:lovable:getting_started`: "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, implantação e fluxos de iteração"
+  - Suporte resiliente a textos completos e truncados com reticências (`...` e `…`) gerados pelo encurtamento visual da interface.
+  - Preservação estrita dos identificadores de comando digitáveis (`btw`, `goal`, `schedule`, `mcp:firebase-mcp-server:firebase:deploy`, `mcp:lovable:api_guide`).
+  - Suíte de testes unitários expandida para 26 testes automatizados com 100% de aprovação.
+
 ## [1.4.1] - 2026-10-15
 
 ### Corrigido

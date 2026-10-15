@@ -587,3 +587,77 @@ test('Tradução de Agentes Especializados e Personalizados (Custom Agents)', ()
   assert.equal(tr('Duplicate agent flutter_a11y_agent'), 'Duplicar agente flutter_a11y_agent');
 });
 
+test('Tradução de Prompts de Comandos MCP e Menu Slash (Firebase, Lovable e Slash Commands)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Prompts do Firebase exibidos no menu "/"
+  assert.equal(
+    tr('Use this command to deploy resources to Firebase.'),
+    'Use este comando para implantar recursos no Firebase.'
+  );
+  assert.equal(
+    tr('Use this command to set up Firebase services, like backend and AI features.'),
+    'Use este comando para configurar serviços do Firebase, como back-end e recursos de IA.'
+  );
+  assert.equal(
+    tr("Use this command to access a Firebase application's Crashlytics data."),
+    "Use este comando para acessar os dados do Crashlytics de um aplicativo Firebase."
+  );
+  assert.equal(
+    tr('Generate secure Firebase Firestore Security Rules and corresponding unit tests for your project.'),
+    'Gere regras de segurança seguras do Firebase Firestore e os testes unitários correspondentes para seu projeto.'
+  );
+  assert.equal(
+    tr('Generate secure Firebase Storage Security Rules and corresponding unit tests for your project.'),
+    'Gere regras de segurança seguras do Firebase Storage e os testes unitários correspondentes para seu projeto.'
+  );
+
+  // Prompts do Lovable exibidos no menu "/" (versões completas e truncadas na UI)
+  assert.equal(
+    tr('Guide for calling the Lovable public API directly over HTTPS — authentication, pagination, errors, and a fetch-based quick start for managing and publishing projects'),
+    'Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros e início rápido com fetch para gerenciar e publicar projetos'
+  );
+  assert.equal(
+    tr('Guide for calling the Lovable public API directly over HTTPS — authentication, pagination, errors, a...'),
+    'Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros, a...'
+  );
+  assert.equal(
+    tr('Former name of api_guide; returns the same public API guide.'),
+    'Nome anterior de api_guide; retorna o mesmo guia da API pública.'
+  );
+  assert.equal(
+    tr('How to build apps with Lovable — covers project creation, effective prompting, integrations, deployment, and iteration workflows'),
+    'Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, implantação e fluxos de iteração'
+  );
+  assert.equal(
+    tr('How to build apps with Lovable — covers project creation, effective prompting, integrations, d...'),
+    'Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, d...'
+  );
+
+  // Comandos slash nativos
+  assert.equal(
+    tr('Ask a quick question without interrupting the main conversation.'),
+    'Faça uma pergunta rápida sem interromper a conversa principal.'
+  );
+  assert.equal(
+    tr('Run until the specified goal is completely finished.'),
+    'Execute até que o objetivo especificado seja completamente concluído.'
+  );
+  assert.equal(
+    tr('Run an instruction on a recurring schedule or as a one-time timer.'),
+    'Execute uma instrução em um agendamento recorrente ou como um temporizador único.'
+  );
+
+  // Preservação estrita dos identificadores técnicos dos comandos
+  assert.equal(tr('mcp:firebase-mcp-server:firebase:deploy'), null);
+  assert.equal(tr('mcp:firebase-mcp-server:firebase:init'), null);
+  assert.equal(tr('mcp:lovable:api_guide'), null);
+  assert.equal(tr('mcp:lovable:sdk_guide'), null);
+  assert.equal(tr('mcp:lovable:getting_started'), null);
+  assert.equal(tr('btw'), null);
+  assert.equal(tr('goal'), null);
+  assert.equal(tr('schedule'), null);
+});
+
+

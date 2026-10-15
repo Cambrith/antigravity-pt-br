@@ -413,6 +413,32 @@ EXACT_MAP = {
     "Invoke a team of agents to autonomously tackle large projects.": "Invoque uma equipe de agentes para realizar grandes projetos de forma autônoma.",
     "Reflect on recent successes or corrections to capture reusable skills or rules.": "Reflita sobre sucessos recentes ou correções para capturar habilidades ou regras reutilizáveis.",
     "Invoke the Boost multi-agent orchestrator for complex tasks.": "Invoque o orquestrador multiagente Boost para tarefas complexas.",
+    # Prompts de comandos MCP (menu slash "/")
+    "Use this command to deploy resources to Firebase.": "Use este comando para implantar recursos no Firebase.",
+    "Use this command to deploy resources to Firebase": "Use este comando para implantar recursos no Firebase",
+    "Use this command to set up Firebase services, like backend and AI features.": "Use este comando para configurar serviços do Firebase, como back-end e recursos de IA.",
+    "Use this command to set up Firebase services, like backend and AI features": "Use este comando para configurar serviços do Firebase, como back-end e recursos de IA",
+    "Use this command to access a Firebase application's Crashlytics data.": "Use este comando para acessar os dados do Crashlytics de um aplicativo Firebase.",
+    "Use this command to access a Firebase application's Crashlytics data": "Use este comando para acessar os dados do Crashlytics de um aplicativo Firebase",
+    "Generate secure Firebase Firestore Security Rules and corresponding unit tests for your project.": "Gere regras de segurança seguras do Firebase Firestore e os testes unitários correspondentes para seu projeto.",
+    "Generate secure Firebase Firestore Security Rules and corresponding unit tests for your project": "Gere regras de segurança seguras do Firebase Firestore e os testes unitários correspondentes para seu projeto",
+    "Generate secure Firebase Storage Security Rules and corresponding unit tests for your project.": "Gere regras de segurança seguras do Firebase Storage e os testes unitários correspondentes para seu projeto.",
+    "Generate secure Firebase Storage Security Rules and corresponding unit tests for your project": "Gere regras de segurança seguras do Firebase Storage e os testes unitários correspondentes para seu projeto",
+    "Run a test with the Firebase App Testing agent": "Execute um teste com o agente de testes de aplicativos do Firebase",
+    "Generate or update your Firebase SQL Connect schema.": "Gere ou atualize seu esquema do Firebase SQL Connect.",
+    "Generate or update your Firebase SQL Connect schema": "Gere ou atualize seu esquema do Firebase SQL Connect",
+    "Guide for calling the Lovable public API directly over HTTPS — authentication, pagination, errors, and a fetch-based quick start for managing and publishing projects": "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros e início rápido com fetch para gerenciar e publicar projetos",
+    "Guide for calling the Lovable public API directly over HTTPS - authentication, pagination, errors, and a fetch-based quick start for managing and publishing projects": "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros e início rápido com fetch para gerenciar e publicar projetos",
+    "Guide for calling the Lovable public API directly over HTTPS — authentication, pagination, errors, a...": "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros, a...",
+    "Guide for calling the Lovable public API directly over HTTPS — authentication, pagination, errors, a…": "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros, a…",
+    "Guide for calling the Lovable public API directly over HTTPS - authentication, pagination, errors, a...": "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros, a...",
+    "Former name of api_guide; returns the same public API guide.": "Nome anterior de api_guide; retorna o mesmo guia da API pública.",
+    "Former name of api_guide; returns the same public API guide": "Nome anterior de api_guide; retorna o mesmo guia da API pública",
+    "How to build apps with Lovable — covers project creation, effective prompting, integrations, deployment, and iteration workflows": "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, implantação e fluxos de iteração",
+    "How to build apps with Lovable - covers project creation, effective prompting, integrations, deployment, and iteration workflows": "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, implantação e fluxos de iteração",
+    "How to build apps with Lovable — covers project creation, effective prompting, integrations, d...": "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, d...",
+    "How to build apps with Lovable — covers project creation, effective prompting, integrations, d…": "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, d…",
+    "How to build apps with Lovable - covers project creation, effective prompting, integrations, d...": "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, d...",
     "Fork Conversation": "Bifurcar conversa",
     "Create fork in current workspace": "Criar bifurcação no espaço de trabalho atual",
     "Create fork in new workspace": "Criar bifurcação em novo espaço de trabalho",
@@ -3181,6 +3207,44 @@ js_body = r'''(function() {
     if ((m = /^mcp\s+servers?\s*\((.+?)\)$/i.exec(s))) {
       const isPlural = /servers/i.test(m[0]);
       return `${isPlural ? 'Servidores MCP' : 'Servidor MCP'} (${m[1]})`;
+    }
+
+    // Prompts de comandos MCP (menu slash "/")
+    if ((m = /^Use this command to deploy resources to Firebase\.?$/i.exec(s))) {
+      return "Use este comando para implantar recursos no Firebase.";
+    }
+    if ((m = /^Use this command to set up Firebase services, like backend and AI features\.?$/i.exec(s))) {
+      return "Use este comando para configurar serviços do Firebase, como back-end e recursos de IA.";
+    }
+    if ((m = /^Use this command to access a Firebase application's Crashlytics data\.?$/i.exec(s))) {
+      return "Use este comando para acessar os dados do Crashlytics de um aplicativo Firebase.";
+    }
+    if ((m = /^Generate secure Firebase Firestore Security Rules and corresponding unit tests for your project\.?$/i.exec(s))) {
+      return "Gere regras de segurança seguras do Firebase Firestore e os testes unitários correspondentes para seu projeto.";
+    }
+    if ((m = /^Generate secure Firebase Storage Security Rules and corresponding unit tests for your project\.?$/i.exec(s))) {
+      return "Gere regras de segurança seguras do Firebase Storage e os testes unitários correspondentes para seu projeto.";
+    }
+    if ((m = /^Run a test with the Firebase App Testing agent\.?$/i.exec(s))) {
+      return "Execute um teste com o agente de testes de aplicativos do Firebase.";
+    }
+    if ((m = /^Generate or update your Firebase SQL Connect schema\.?$/i.exec(s))) {
+      return "Gere ou atualize seu esquema do Firebase SQL Connect.";
+    }
+    if ((m = /^Guide for calling the Lovable public API directly over HTTPS/i.exec(s))) {
+      if (/errors,\s*a(?:\.\.\.|…)$/i.test(s)) {
+        return "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros, a...";
+      }
+      return "Guia para chamar a API pública do Lovable diretamente via HTTPS — autenticação, paginação, erros e início rápido com fetch para gerenciar e publicar projetos";
+    }
+    if ((m = /^Former name of api_guide; returns the same public API guide\.?$/i.exec(s))) {
+      return "Nome anterior de api_guide; retorna o mesmo guia da API pública.";
+    }
+    if ((m = /^How to build apps with Lovable/i.exec(s))) {
+      if (/integrations,\s*d(?:\.\.\.|…)$/i.test(s)) {
+        return "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, d...";
+      }
+      return "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, implantação e fluxos de iteração";
     }
 
 

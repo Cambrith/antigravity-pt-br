@@ -1,6 +1,6 @@
 {
   "name": "antigravity-pt-br",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Tradução completa da interface do Google Antigravity para Português do Brasil com instaladores multiplataforma (Linux, Windows, macOS)",
   "main": "dist/patch-asar.js",
   "scripts": {
