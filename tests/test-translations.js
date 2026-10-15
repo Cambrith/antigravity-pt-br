@@ -364,6 +364,53 @@ test('Tradução de Escopo de Configuração (Modified in Outside of project)', 
   );
 });
 
+test('Tradução de Servidores MCP, Contadores de Ferramentas e Catálogo de Skills', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Interface de gerenciamento MCP
+  assert.equal(tr('Manage MCP Servers'), 'Gerenciar servidores MCP');
+  assert.equal(tr('Available MCP Servers'), 'Servidores MCP disponíveis');
+  assert.equal(tr('Restart Server'), 'Reiniciar servidor');
+  assert.equal(tr('Disable all tools'), 'Desativar todas as ferramentas');
+  assert.equal(tr('Enable all tools'), 'Ativar todas as ferramentas');
+  assert.equal(tr('Disable tool'), 'Desativar ferramenta');
+  assert.equal(tr('Enable tool'), 'Ativar ferramenta');
+  assert.equal(tr('Server Status'), 'Status do servidor');
+  assert.equal(tr('Server running'), 'Servidor em execução');
+  assert.equal(tr('Server stopped'), 'Servidor parado');
+  assert.equal(tr('No MCP servers configured'), 'Nenhum servidor MCP configurado');
+
+  // Contadores dinâmicos de ferramentas ativadas e desativadas
+  assert.equal(tr('> 30 tools enabled'), '> 30 ferramentas ativadas');
+  assert.equal(tr('30 tools enabled'), '30 ferramentas ativadas');
+  assert.equal(tr('1 tool enabled'), '1 ferramenta ativada');
+  assert.equal(tr('> 1 tool enabled'), '> 1 ferramenta ativada');
+  assert.equal(tr('5 tools disabled'), '5 ferramentas desativadas');
+  assert.equal(tr('1 tool disabled'), '1 ferramenta desativada');
+
+  // Erros de Proxy MCP e credenciais ADC com preservação de comando gcloud
+  assert.equal(
+    tr('Error: [MCP Proxy Error] No ADC credentials found. Please run gcloud auth application-default login, or retry your request... : calling "initialize": connect ECONNREFUSED 127.0.0.1'),
+    'Erro: [Erro no Proxy MCP] Nenhuma credencial ADC encontrada. Execute "gcloud auth application-default login" ou tente novamente. : ao chamar "initialize": connect ECONNREFUSED 127.0.0.1'
+  );
+  assert.equal(
+    tr('[MCP Proxy Error] No ADC credentials found. Please run gcloud auth application-default login, or retry your request'),
+    '[Erro no Proxy MCP] Nenhuma credencial ADC encontrada. Execute "gcloud auth application-default login" ou tente novamente.'
+  );
+
+  // Amostras de descrições de Skills traduzidas do catálogo
+  assert.equal(
+    tr('Uses Chrome DevTools MCP for accessibility (a11y) debugging and auditing based on web.dev guidelines. Use when testing semantic HTML, ARIA labels, focus states, keyboard navigation, tap targets, and color contrast.'),
+    'Usa o MCP do Chrome DevTools para depuração e auditoria de acessibilidade (a11y) com base nas diretrizes do web.dev. Use para testar HTML semântico, rótulos ARIA, estados de foco, navegação por teclado, áreas de toque e contraste de cores.'
+  );
+  assert.equal(
+    tr('Uses Chrome DevTools via MCP for efficient debugging, troubleshooting and browser automation. Use when debugging web pages, automating browser interactions, analyzing performance, or inspecting network requests. This skill does not apply to `--slim` mode (MCP configuration).'),
+    'Usa o Chrome DevTools via MCP para depuração eficiente, solução de problemas e automação do navegador. Use ao depurar páginas web, automatizar interações do navegador, analisar desempenho ou inspecionar requisições de rede.'
+  );
+});
+
+
 
 
 

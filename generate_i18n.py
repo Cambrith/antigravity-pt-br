@@ -2524,7 +2524,69 @@ EXACT_MAP = {
     "Personal access token": "Token de acesso pessoal",
     "API Key": "Chave de API",
     "API key": "Chave de API",
+
+    # Servidores MCP e Ferramentas (MCP UI)
+    "Manage MCP Servers": "Gerenciar servidores MCP",
+    "Manage MCP servers": "Gerenciar servidores MCP",
+    "manage mcp servers": "gerenciar servidores MCP",
+    "Available MCP Servers": "Servidores MCP disponíveis",
+    "Available MCP servers": "Servidores MCP disponíveis",
+    "Configured MCP Servers": "Servidores MCP configurados",
+    "Configured MCP servers": "Servidores MCP configurados",
+    "Restart Server": "Reiniciar servidor",
+    "Restart server": "Reiniciar servidor",
+    "Restart MCP Server": "Reiniciar servidor MCP",
+    "Restart MCP server": "Reiniciar servidor MCP",
+    "Server Status": "Status do servidor",
+    "Server status": "Status do servidor",
+    "Server running": "Servidor em execução",
+    "Server stopped": "Servidor parado",
+    "Server failed": "Servidor falhou",
+    "Server error": "Erro no servidor",
+    "Server Error": "Erro no servidor",
+    "Disable all tools": "Desativar todas as ferramentas",
+    "Disable all Tools": "Desativar todas as ferramentas",
+    "Enable all tools": "Ativar todas as ferramentas",
+    "Enable all Tools": "Ativar todas as ferramentas",
+    "Disable tool": "Desativar ferramenta",
+    "Enable tool": "Ativar ferramenta",
+    "Disable Server": "Desativar servidor",
+    "Disable server": "Desativar servidor",
+    "Enable Server": "Ativar servidor",
+    "Enable server": "Ativar servidor",
+    "Edit Server": "Editar servidor",
+    "Edit server": "Editar servidor",
+    "View Server Logs": "Ver logs do servidor",
+    "View server logs": "Ver logs do servidor",
+    "Server Logs": "Logs do servidor",
+    "Server logs": "Logs do servidor",
+    "MCP Server": "Servidor MCP",
+    "MCP Servers": "Servidores MCP",
+    "mcp server": "servidor MCP",
+    "mcp servers": "servidores MCP",
+    "tools enabled": "ferramentas ativadas",
+    "tool enabled": "ferramenta ativada",
+    "tools disabled": "ferramentas desativadas",
+    "tool disabled": "ferramenta desativada",
+    "Enabled tools": "Ferramentas ativadas",
+    "Disabled tools": "Ferramentas desativadas",
+    "Configure MCP": "Configurar MCP",
+    "Configure MCP Server": "Configurar servidor MCP",
+    "Configure MCP Servers": "Configurar servidores MCP",
+    "Custom MCP Servers": "Servidores MCP personalizados",
+    "Built-in MCP Servers": "Servidores MCP integrados",
+    "No MCP servers configured": "Nenhum servidor MCP configurado",
+    "No MCP servers found": "Nenhum servidor MCP encontrado",
+    "No tools available": "Nenhuma ferramenta disponível",
+    "No tools found": "Nenhuma ferramenta encontrada",
 }
+
+# Carregar catálogo completo de skills traduzidas
+skills_map_file = os.path.join(os.path.dirname(__file__), "src", "maps", "skills.json")
+if os.path.exists(skills_map_file):
+    with open(skills_map_file, "r", encoding="utf-8") as _f:
+        _skills = json.load(_f)
+        EXACT_MAP.update(_skills)
 
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
 
@@ -2793,6 +2855,30 @@ js_body = r'''(function() {
     if ((m = /^(\d+) agents? running$/.exec(s))) return `${m[1]} ${m[1] === '1' ? 'agente em execução' : 'agentes em execução'}`;
     if (s === "No agents running") return "Nenhum agente em execução";
     if ((m = /^(\d+) files? changed$/.exec(s))) return `${m[1]} ${m[1] === '1' ? 'arquivo alterado' : 'arquivos alterados'}`;
+
+    // Contadores de ferramentas MCP ativadas e desativadas (ex: "> 30 tools enabled", "1 tool enabled", "tools disabled")
+    if ((m = /^([><≥≤]?\s*)(\d+)\s+tools?\s+enabled$/i.exec(s))) {
+      const prefix = m[1] ? m[1].trim() + " " : "";
+      const count = m[2];
+      const word = count === "1" ? "ferramenta ativada" : "ferramentas ativadas";
+      return `${prefix}${count} ${word}`;
+    }
+    if ((m = /^([><≥≤]?\s*)(\d+)\s+tools?\s+disabled$/i.exec(s))) {
+      const prefix = m[1] ? m[1].trim() + " " : "";
+      const count = m[2];
+      const word = count === "1" ? "ferramenta desativada" : "ferramentas desativadas";
+      return `${prefix}${count} ${word}`;
+    }
+
+    // Erros de Proxy MCP e credenciais ADC
+    if (/\[MCP Proxy Error\]/i.test(s) || /No ADC credentials found/i.test(s)) {
+      return s
+        .replace(/Error:\s*\[MCP Proxy Error\]/gi, "Erro: [Erro no Proxy MCP]")
+        .replace(/\[MCP Proxy Error\]/gi, "[Erro no Proxy MCP]")
+        .replace(/No ADC credentials found\.?\s*Please run\s+gcloud auth application-default login,\s*or retry your request\.{0,3}/gi,
+          'Nenhuma credencial ADC encontrada. Execute "gcloud auth application-default login" ou tente novamente.')
+        .replace(/:\s*calling\s+"([^"]+)":/gi, ': ao chamar "$1":');
+    }
 
     // Quota patterns
     function resolveLimitName(lim) {

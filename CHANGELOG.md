@@ -6,6 +6,32 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ---
 
+## [1.3.0] - 2026-10-14
+
+### Adicionado
+- **Tradução Completa de Servidores MCP Novos e Interface de Controle**:
+  - Localização integral das ações e controles de servidores MCP (`Manage MCP Servers` $\rightarrow$ `Gerenciar servidores MCP`, `Available MCP Servers` $\rightarrow$ `Servidores MCP disponíveis`, `Configured MCP Servers` $\rightarrow$ `Servidores MCP configurados`, `Restart Server` $\rightarrow$ `Reiniciar servidor`, `Disable all tools` $\rightarrow$ `Desativar todas as ferramentas`, `Enable all tools` $\rightarrow$ `Ativar todas as ferramentas`, `Disable tool` $\rightarrow$ `Desativar ferramenta`, `Enable tool` $\rightarrow$ `Ativar ferramenta`).
+  - Status operacionais dos servidores (`Server running` $\rightarrow$ `Servidor em execução`, `Server stopped` $\rightarrow$ `Servidor parado`, `Server failed` $\rightarrow$ `Servidor falhou`, `Server error` $\rightarrow$ `Erro no servidor`).
+  - Tradução dinâmica com concordância numérica e suporte a prefixos comparativos para contadores de ferramentas MCP ativadas e desativadas (`> 30 tools enabled` $\rightarrow$ `> 30 ferramentas ativadas`, `1 tool enabled` $\rightarrow$ `1 ferramenta ativada`, `tools disabled` $\rightarrow$ `ferramentas desativadas`).
+  - Tratamento e tradução idiomática de erros de inicialização de Proxy MCP e credenciais ADC (`[MCP Proxy Error] No ADC credentials found. Please run gcloud auth application-default login, or retry your request...` $\rightarrow$ `[Erro no Proxy MCP] Nenhuma credencial ADC encontrada. Execute "gcloud auth application-default login" ou tente novamente.`), com preservação estrita do comando shell original.
+- **Catálogo Completo de 128 Skills do Ecossistema Traduzidas**:
+  - Mapeamento e tradução oficial de todas as 128 habilidades instaladas em `src/maps/skills.json` cobrindo todos os domínios do ecossistema:
+    - **Dart e Flutter**: Criação de CLIs, testes unitários, testes de widgets, mocks, arquitetura limpa, layout responsivo, deep linking, internacionalização e FFI.
+    - **Google Cloud & Data Agent Kit**: Pipelines de BigQuery SQL, BigFrames, property graphs GQL, Cloud Composer / Managed Airflow (DAGs e migrações), Apache Spark no Dataproc e Dataform.
+    - **Firebase**: Autenticação, regras de segurança do Firestore, Data Connect com PostgreSQL, App Hosting, Cloud Functions v2, Crashlytics e Remote Config.
+    - **Inteligência Artificial & Gemini API**: Gemini 3.8 Live API, Gemini Omni 1.1 Flash (edição de vídeo), chamadas de função assíncronas, geração de áudio e visão computacional.
+    - **Pesquisa Científica & Bioinformática**: AlphaFold, AlphaGenome, ChEMBL, UniProt, PDB, dbSNP, ClinVar, NCBI, PubMed, ArXiv e bioRxiv.
+    - **Ferramentas de Desenvolvimento**: Chrome DevTools via MCP, depuração de acessibilidade (a11y), otimização de LCP e diagnóstico de vazamento de memória.
+    - **Google Maps Platform**: Visualização de mapas, rotas ecológicas, geocodificação, dados ambientais e Places API.
+- **Suíte de Testes Expandida**:
+  - Nova suíte de testes unitários automatizados cobrindo ferramentas MCP dinâmicas, tratamento de erros de credenciais ADC e descrições do catálogo de skills (totalizando 21 testes unitários com 100% de aprovação).
+
+### Modificado
+- Total de entradas no dicionário estático expandido de 2.235 para mais de 2.525 termos e descrições técnicas.
+- Integração modular do mapa de skills (`src/maps/skills.json`) no pipeline de geração (`generate_i18n.py`).
+
+---
+
 ## [1.2.0] - 2026-10-14
 
 ### Adicionado
