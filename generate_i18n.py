@@ -131,8 +131,14 @@ EXACT_MAP = {
     "empty message": "mensagem vazia",
     "Send Now": "Enviar agora",
 
-    # Settings Info Tooltips & Cards
     "Controls the actions the agent can take.": "Controla as ações que o agente pode realizar.",
+    "Controls the actions the agent can take": "Controla as ações que o agente pode realizar.",
+    "Controls what actions the agent can take.": "Controla as ações que o agente pode realizar.",
+    "Controls what actions the agent can take": "Controla as ações que o agente pode realizar.",
+    "Defines whether the agent prompts you to review its artifacts.": "Define se o agente solicita que você revise seus documentos.",
+    "Defines whether the agent prompts you to review its artifacts": "Define se o agente solicita que você revise seus documentos.",
+    "Defines whether the agent prompts you to review its documents.": "Define se o agente solicita que você revise seus documentos.",
+    "Defines whether the agent prompts you to review its documents": "Define se o agente solicita que você revise seus documentos.",
     "Learn more about": "Saiba mais sobre",
     "Learn more about ": "Saiba mais sobre ",
     "Inherits your Global Permissions when working in this project.": "Herda suas Permissões Globais ao trabalhar neste projeto.",
@@ -789,7 +795,14 @@ EXACT_MAP = {
     "Project": "Projeto",
     "No Project": "Sem projeto",
     "Not in Project": "Fora do projeto",
-    "Outside of Project": "Fora de projeto",
+    "Outside of Project": "Fora do projeto",
+    "Outside of project": "Fora do projeto",
+    "outside of project": "fora do projeto",
+    "Modified in Outside of project": "Modificado fora do projeto",
+    "Modified in Outside of Project": "Modificado fora do projeto",
+    "Modified in outside of project": "Modificado fora do projeto",
+    "Modificado em Fora de projeto": "Modificado fora do projeto",
+    "Modificado em Fora do projeto": "Modificado fora do projeto",
     "Other Projects": "Outros projetos",
     "Create Project": "Criar projeto",
     "Create New Project": "Criar novo projeto",
@@ -2840,9 +2853,24 @@ js_body = r'''(function() {
       return `Enviar feedback como ${m[1]}`;
     }
 
-    // Modified in project
-    if ((m = /^Modified in (\d+) projects?$/.exec(s))) {
+    // Modified in project / Outside of project
+    if ((m = /^Modified in (?:Outside of [Pp]roject|outside-of-project)$/i.exec(s))) {
+      return "Modificado fora do projeto";
+    }
+    if ((m = /^Modificado em Fora d[eo] projeto$/i.exec(s))) {
+      return "Modificado fora do projeto";
+    }
+    if ((m = /^(.+?)\.?\s*(?:Modified in Outside of [Pp]roject|Modificado em Fora d[eo] projeto)$/i.exec(s))) {
+      const base = translateString(m[1]) || m[1];
+      return `${base.replace(/\.+$/, '')}. Modificado fora do projeto`;
+    }
+    if ((m = /^Modified in (\d+) projects?$/i.exec(s))) {
       return `Modificado em ${m[1]} ${m[1] === '1' ? 'projeto' : 'projetos'}`;
+    }
+    if ((m = /^Modified in (.+)$/i.exec(s))) {
+      const proj = m[1].trim();
+      if (/^outside of project$/i.test(proj)) return "Modificado fora do projeto";
+      return `Modificado em ${proj}`;
     }
     if ((m = /^(\d+) projects?$/.exec(s))) {
       return `${m[1]} ${m[1] === '1' ? 'projeto' : 'projetos'}`;

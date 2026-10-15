@@ -16,6 +16,10 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Avisos contextuais de suporte a repositórios e projetos (`Workspaces are not available for this project`, `Worktrees are available for Git repositories`, `Worktrees are a git feature. This folder is shared as is.`).
   - Buscas e listas de worktrees anteriores (`Search past worktrees...`, `Search past workspaces...`, `Previous Worktrees`, `No environments found`, `No previous worktrees`).
   - Notificações de criação e bifurcação de conversas (`Creating worktree for the forked conversation...`, `Creating CitC workspace for the forked conversation...`, `Forked conversation`).
+- **Correção Idiomática de Escopo de Configurações (Modificado fora do projeto)**:
+  - Correção da tradução literal truncada `Modificado em Fora de projeto` para a formulação natural e gramaticalmente correta em pt-BR: `Modificado fora do projeto`.
+  - Atualização do nome do escopo `Outside of Project` de `Fora de projeto` para `Fora do projeto` (com artigo definido).
+  - Tradução fluida e sem redundâncias de pontuação em descrições compostas de permissões e políticas de revisão (`Controla as ações que o agente pode realizar. Modificado fora do projeto`, `Define se o agente solicita que você revise seus documentos. Modificado fora do projeto`).
 - **Tradução da Página de Plugins e Catálogo Oficial (Build with Google / Antigravity)**:
   - Localização do texto descritivo do cabeçalho da loja de plugins com normalização de quebras de linha (`Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products...` $\rightarrow$ `Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google...`).
   - Tradução de cabeçalhos e títulos de catálogo (`Plugins criados com o Google`, `Plugins criados com o Antigravity`).

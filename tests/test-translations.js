@@ -334,6 +334,37 @@ test('Tradução da Página de Plugins e Catálogo do Google/Antigravity', () =>
   assert.equal(tr('Install Plugin'), 'Instalar plugin');
 });
 
+test('Tradução de Escopo de Configuração (Modified in Outside of project)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Termos isolados de escopo
+  assert.equal(tr('Outside of Project'), 'Fora do projeto');
+  assert.equal(tr('Outside of project'), 'Fora do projeto');
+  assert.equal(tr('Not in Project'), 'Fora do projeto');
+
+  // Frases compostas de escopo de configuração
+  assert.equal(tr('Modified in Outside of project'), 'Modificado fora do projeto');
+  assert.equal(tr('Modified in Outside of Project'), 'Modificado fora do projeto');
+  assert.equal(tr('Modificado em Fora de projeto'), 'Modificado fora do projeto');
+  assert.equal(tr('Modificado em Fora do projeto'), 'Modificado fora do projeto');
+
+  // Frase em projeto específico
+  assert.equal(tr('Modified in Ricing PLM'), 'Modificado em Ricing PLM');
+  assert.equal(tr('Modified in 2 projects'), 'Modificado em 2 projetos');
+
+  // Parágrafo completo com descrição de configuração
+  assert.equal(
+    tr('Controla as ações que o agente pode realizar. Modificado em Fora de projeto'),
+    'Controla as ações que o agente pode realizar. Modificado fora do projeto'
+  );
+  assert.equal(
+    tr('Controls what actions the agent can take. Modified in Outside of project'),
+    'Controla as ações que o agente pode realizar. Modificado fora do projeto'
+  );
+});
+
+
 
 
 
