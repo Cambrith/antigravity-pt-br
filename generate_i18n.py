@@ -951,8 +951,61 @@ EXACT_MAP = {
     "Build With Google": "Criado com o Google",
     "Browse and enable plugins from the Build With Google catalog.": "Navegue e ative plugins do catálogo de plugins criados com o Google.",
     "Browse and enable plugins from the Build with Google catalog.": "Navegue e ative plugins do catálogo de plugins criados com o Google.",
-    "Plugins are packaged collections of skills and MCPs to help the Agent in Google work with Google developer products. You can always change your choices in Settings.": "Os plugins são coleções empacotadas de habilidades e servidores MCP para ajudar o agente no Google a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas opções nas Configurações.",
-    "Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products. You can always change your choices in Settings.": "Os plugins são coleções empacotadas de habilidades e servidores MCP para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas opções nas Configurações.",
+    "Plugins are packaged collections of skills and MCPs to help the Agent in Google work with Google developer products. You can always change your choices in Settings.": "Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Google a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.",
+    "Plugins are packaged collections of skills and MCPs to help the Agent in Google work with Google developer products. You can always change your choices in Settings": "Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Google a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.",
+    "Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products. You can always change your choices in Settings.": "Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.",
+    "Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products. You can always change your choices in Settings": "Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.",
+    "Plugins created with Google": "Plugins criados com o Google",
+    "Plugins Created with Google": "Plugins criados com o Google",
+    "Plugins Created With Google": "Plugins criados com o Google",
+    "Plugins created with Antigravity": "Plugins criados com o Antigravity",
+    "Plugins Created with Antigravity": "Plugins criados com o Antigravity",
+    "Plugins Created With Antigravity": "Plugins criados com o Antigravity",
+    "Plugins built with Google": "Plugins criados com o Google",
+    "Plugins Built with Google": "Plugins criados com o Google",
+    "Plugins Built With Google": "Plugins criados com o Google",
+    "Plugins built with Antigravity": "Plugins criados com o Antigravity",
+    "Plugins Built with Antigravity": "Plugins criados com o Antigravity",
+    "Plugins Built With Antigravity": "Plugins criados com o Antigravity",
+
+    # Descrições dos plugins oficiais
+    "Core tools and knowledge required to develop for Android": "Ferramentas essenciais e conhecimentos necessários para desenvolver para Android.",
+    "Core tools and knowledge required to develop for Android.": "Ferramentas essenciais e conhecimentos necessários para desenvolver para Android.",
+    "Keep your coding agent up to date with the latest web best practices": "Mantenha seu agente de código atualizado com as melhores práticas modernas da web.",
+    "Keep your coding agent up to date with the latest web best practices.": "Mantenha seu agente de código atualizado com as melhores práticas modernas da web.",
+    "Using the Antigravity Python SDK to build AI agents": "Usando o SDK Python do Antigravity para criar agentes de IA.",
+    "Using the Antigravity Python SDK to build AI agents.": "Usando o SDK Python do Antigravity para criar agentes de IA.",
+    "Using the Google Antigravity Python SDK to build AI agents": "Usando o SDK Python do Antigravity para criar agentes de IA.",
+    "Using the Google Antigravity Python SDK to build AI agents.": "Usando o SDK Python do Antigravity para criar agentes de IA.",
+    "Curated collection of agent skills for science": "Coleção selecionada de habilidades de agentes para ciências.",
+    "Curated collection of agent skills for science.": "Coleção selecionada de habilidades de agentes para ciências.",
+    "Curated collection of agent skills for science tasks": "Coleção selecionada de habilidades de agentes para ciências.",
+    "Curated collection of agent skills for science tasks.": "Coleção selecionada de habilidades de agentes para ciências.",
+    "Prototype, build & run modern apps users love with Firebase's backend, AI, and operational infrastructure": "Crie protótipos, desenvolva e execute aplicativos modernos com o backend, IA e infraestrutura operacional do Firebase.",
+    "Prototype, build & run modern apps users love with Firebase's backend, AI, and operational infrastructure.": "Crie protótipos, desenvolva e execute aplicativos modernos com o backend, IA e infraestrutura operacional do Firebase.",
+    "Prototype, build & run modern apps that users love with Firebase's backend, AI, and operational infrastructure": "Crie protótipos, desenvolva e execute aplicativos modernos com o backend, IA e infraestrutura operacional do Firebase.",
+    "Prototype, build & run modern apps that users love with Firebase's backend, AI, and operational infrastructure.": "Crie protótipos, desenvolva e execute aplicativos modernos com o backend, IA e infraestrutura operacional do Firebase.",
+    "Reliable automation, in-depth debugging, and performance analysis in Chrome using Chrome DevTools and Puppeteer": "Automação confiável, depuração aprofundada e análise de desempenho no Chrome usando Chrome DevTools e Puppeteer.",
+    "Reliable automation, in-depth debugging, and performance analysis in Chrome using Chrome DevTools and Puppeteer.": "Automação confiável, depuração aprofundada e análise de desempenho no Chrome usando Chrome DevTools e Puppeteer.",
+    "Build applications with the Gemini Interactions API and Live API, including text, image, video, and speech generation, managed agents, and real-time multimodal streaming": "Crie aplicativos com a API de Interações e API Live do Gemini, incluindo geração de texto, imagem, vídeo e fala, agentes gerenciados e streaming multimodal em tempo real.",
+    "Build applications with the Gemini Interactions API and Live API, including text, image, video, and speech generation, managed agents, and real-time multimodal streaming.": "Crie aplicativos com a API de Interações e API Live do Gemini, incluindo geração de texto, imagem, vídeo e fala, agentes gerenciados e streaming multimodal em tempo real.",
+    "Search and retrieve official documentation across Google Cloud, Gemini, Android, Firebase, Flutter, and Web. Requires Google Cloud credentials (ADC) or an API key": "Pesquise e obtenha documentação oficial do Google Cloud, Gemini, Android, Firebase, Flutter e Web. Requer credenciais do Google Cloud (ADC) ou chave de API.",
+    "Search and retrieve official documentation across Google Cloud, Gemini, Android, Firebase, Flutter, and Web. Requires Google Cloud credentials (ADC) or an API key.": "Pesquise e obtenha documentação oficial do Google Cloud, Gemini, Android, Firebase, Flutter e Web. Requer credenciais do Google Cloud (ADC) ou chave de API.",
+    "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.": "Este plugin oferece um conjunto especializado de habilidades para engenheiros de dados e especialistas em bancos de dados no Google Cloud. Ele atua como um assistente especializado para arquitetar pipelines de dados complexos, transformar dados com dbt, criar notebooks SQL para Spark e BigQuery e orquestrar fluxos de trabalho em todo o ecossistema GCP.",
+    "Official plugin for Dart and Flutter that installs Flutter/Dart Skills, Rules, Custom Agents, and Dart MCP server for building natively compiled, visually stunning applications for mobile, web, desktop, and embedded devices from a single codebase": "Plugin oficial para Dart e Flutter que instala habilidades, regras, agentes personalizados e servidor MCP Dart para criar aplicativos nativos para celular, web, desktop e dispositivos embarcados a partir de um único código-fonte.",
+    "Official plugin for Dart and Flutter that installs Flutter/Dart Skills, Rules, Custom Agents, and Dart MCP server for building natively compiled, visually stunning applications for mobile, web, desktop, and embedded devices from a single codebase.": "Plugin oficial para Dart e Flutter que instala habilidades, regras, agentes personalizados e servidor MCP Dart para criar aplicativos nativos para celular, web, desktop e dispositivos embarcados a partir de um único código-fonte.",
+    "A collection of skills for architecting and implementing production-ready code using Google Maps Platform APIs and SDKs for any map, place, address, geocoding, routing/ETA (including eco-friendly routing), nearby search, 3D / Street View / static map, marker clustering, custom styling, drawing, geofencing, heatmap, or environmental (air-quality / pollen / solar / weather) feature — across Web, Android, iOS, and Web Services APIs.": "Coleção de habilidades para arquitetar e implementar código pronto para produção usando APIs e SDKs do Google Maps Platform.",
+    "A collection of skills for architecting and implementing production-ready code using Google Maps Platform APIs and SDKs for any map, place, address, geocoding, routing/ETA (including eco-friendly routing), nearby search, 3D / Street View / static map, marker clustering, custom styling, drawing, geofencing, heatmap, or environmental (air-quality / pollen / solar / weather) feature — across Web, Android, iOS, and Web Services APIs": "Coleção de habilidades para arquitetar e implementar código pronto para produção usando APIs e SDKs do Google Maps Platform.",
+    "Download": "Baixar",
+    "Downloading": "Baixando",
+    "Downloading...": "Baixando...",
+    "Downloaded": "Baixado",
+    "Install Plugin": "Instalar plugin",
+    "Uninstall Plugin": "Desinstalar plugin",
+    "Update Plugin": "Atualizar plugin",
+    "Updating Plugin": "Atualizando plugin",
+    "Updating Plugin...": "Atualizando plugin...",
+    "Plugin Details": "Detalhes do plugin",
     "There are currently no Build with Google plugins available.": "No momento, não há plugins criados com o Google disponíveis.",
     "There are currently no Build with Antigravity plugins available.": "No momento, não há plugins criados com o Antigravity disponíveis.",
     "Plugin Operation Error:": "Erro na operação do plugin:",
@@ -3156,7 +3209,11 @@ js_body = r'''(function() {
     if (EXACT_MAP[trimmed]) {
       return raw.replace(trimmed, EXACT_MAP[trimmed]);
     }
-    const dyn = translateDynamic(trimmed);
+    const normalized = trimmed.replace(/\s+/g, ' ');
+    if (EXACT_MAP[normalized]) {
+      return raw.replace(trimmed, EXACT_MAP[normalized]);
+    }
+    const dyn = translateDynamic(trimmed) || translateDynamic(normalized);
     if (dyn) {
       return raw.replace(trimmed, dyn);
     }

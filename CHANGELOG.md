@@ -16,6 +16,11 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Avisos contextuais de suporte a repositórios e projetos (`Workspaces are not available for this project`, `Worktrees are available for Git repositories`, `Worktrees are a git feature. This folder is shared as is.`).
   - Buscas e listas de worktrees anteriores (`Search past worktrees...`, `Search past workspaces...`, `Previous Worktrees`, `No environments found`, `No previous worktrees`).
   - Notificações de criação e bifurcação de conversas (`Creating worktree for the forked conversation...`, `Creating CitC workspace for the forked conversation...`, `Forked conversation`).
+- **Tradução da Página de Plugins e Catálogo Oficial (Build with Google / Antigravity)**:
+  - Localização do texto descritivo do cabeçalho da loja de plugins com normalização de quebras de linha (`Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products...` $\rightarrow$ `Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google...`).
+  - Tradução de cabeçalhos e títulos de catálogo (`Plugins criados com o Google`, `Plugins criados com o Antigravity`).
+  - Descrições completas dos plugins oficiais do ecossistema: Android CLI, Modern Web Guidance, Google Antigravity SDK, Science, Firebase, Chrome DevTools, Gemini API, Google Developer Knowledge, Data Agent Kit, Dart e Flutter e Google Maps Platform.
+  - Tradução de botões e status de ciclo de vida dos plugins (`Download` $\rightarrow$ `Baixar`, `Downloading...` $\rightarrow$ `Baixando...`, `Downloaded` $\rightarrow$ `Baixado`, `Install Plugin` $\rightarrow$ `Instalar plugin`, `Uninstall Plugin` $\rightarrow$ `Desinstalar plugin`).
 - **Tradução de Erros e Notificações de Branch do Projeto**:
   - Alertas toast de falha ao salvar branch (`Failed to save project branch: No git folder in this project matches the folder` $\rightarrow$ `Falha ao salvar branch do projeto: Nenhuma pasta git neste projeto corresponde à pasta`).
   - Tratamento dinâmico com prefixo e tradução do motivo de erro para seleção de branch (`Failed to save project branch: <detalhes>`).

@@ -279,6 +279,62 @@ test('Tradução de Tarefas em Execução, Status e Logs (Tasks Running/Finished
   assert.equal(tr('Stderr:'), 'Erro padrão:');
 });
 
+test('Tradução da Página de Plugins e Catálogo do Google/Antigravity', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Texto descritivo do topo
+  assert.equal(
+    tr('Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products. You can always change your choices in Settings.'),
+    'Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.'
+  );
+
+  // Normalização de quebras de linha e múltiplos espaços
+  assert.equal(
+    tr('Plugins are packaged collections of skills and MCPs to help the Agent in Antigravity work with Google developer products.\nYou can always change your choices in Settings.'),
+    'Os plugins são coleções empacotadas de habilidades e MCPs para ajudar o agente no Antigravity a trabalhar com produtos de desenvolvimento do Google. Você sempre pode alterar suas escolhas nas Configurações.'
+  );
+
+  // Títulos e cabeçalhos
+  assert.equal(tr('Plugins created with Google'), 'Plugins criados com o Google');
+  assert.equal(tr('Plugins created with Antigravity'), 'Plugins criados com o Antigravity');
+  assert.equal(tr('Plugins Built With Google'), 'Plugins criados com o Google');
+  assert.equal(tr('Plugins Built With Antigravity'), 'Plugins criados com o Antigravity');
+
+  // Descrições de plugins oficiais
+  assert.equal(
+    tr('Core tools and knowledge required to develop for Android'),
+    'Ferramentas essenciais e conhecimentos necessários para desenvolver para Android.'
+  );
+  assert.equal(
+    tr('Keep your coding agent up to date with the latest web best practices.'),
+    'Mantenha seu agente de código atualizado com as melhores práticas modernas da web.'
+  );
+  assert.equal(
+    tr('Using the Antigravity Python SDK to build AI agents'),
+    'Usando o SDK Python do Antigravity para criar agentes de IA.'
+  );
+  assert.equal(
+    tr('Curated collection of agent skills for science.'),
+    'Coleção selecionada de habilidades de agentes para ciências.'
+  );
+  assert.equal(
+    tr("Prototype, build & run modern apps users love with Firebase's backend, AI, and operational infrastructure."),
+    "Crie protótipos, desenvolva e execute aplicativos modernos com o backend, IA e infraestrutura operacional do Firebase."
+  );
+  assert.equal(
+    tr('Reliable automation, in-depth debugging, and performance analysis in Chrome using Chrome DevTools and Puppeteer'),
+    'Automação confiável, depuração aprofundada e análise de desempenho no Chrome usando Chrome DevTools e Puppeteer.'
+  );
+
+  // Ações de download e instalação
+  assert.equal(tr('Download'), 'Baixar');
+  assert.equal(tr('Downloading...'), 'Baixando...');
+  assert.equal(tr('Downloaded'), 'Baixado');
+  assert.equal(tr('Install Plugin'), 'Instalar plugin');
+});
+
+
 
 
 

@@ -151,6 +151,7 @@ curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.
 | **Detalhamento de Tokens e Orçamento** | Contadores de detalhamento (`Mostrar 2 detalhamentos`, `Ocultar detalhamento`), limites de tokens para regras e avisos de exclusão de ferramentas MCP. |
 | **Barra de Entrada de Mensagens** | Placeholders de prompt (`Pergunte qualquer coisa, @ para mencionar, / para ações`, `Digite uma mensagem...`), com isolamento e proteção total do texto digitado pelo usuário. |
 | **Catálogo de Servidores MCP** | Todos os 99 servidores MCP mapeados, incluindo campos de configuração (Tokens, API Keys, URLs e descrições). |
+| **Página de Plugins e Catálogo Oficial** | Cabeçalho e introdução da loja de plugins, descrições completas dos plugins oficiais (Android CLI, Modern Web Guidance, Google Antigravity SDK, Science, Firebase, Chrome DevTools, Gemini API, Developer Knowledge, Data Agent Kit, Dart & Flutter, Maps), botões de ação e status (Baixar, Baixando, Instalado, Atualizar). |
 | **Cotas e Créditos de IA** | Alertas de cotas semanais e de 5 horas, limites esgotados, opções de upgrade e renovações com data/hora formatada. |
 | **Avisos de Conexão e Rede** | Indicadores de modo offline ("Sem internet", "Conexão perdida", "Reconectando..."). |
 | **Formulário de Feedback** | 100% dos campos, categorias de relato de problemas, placeholders e botões de envio. |
