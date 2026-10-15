@@ -660,4 +660,63 @@ test('Tradução de Prompts de Comandos MCP e Menu Slash (Firebase, Lovable e Sl
   assert.equal(tr('schedule'), null);
 });
 
+test('Tradução de Regras e Personalizações de Regras (Rules & Rule Previews)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Interface e termos de regras
+  assert.equal(tr('Rules'), 'Regras');
+  assert.equal(tr('Workspace Rules'), 'Regras do espaço de trabalho');
+  assert.equal(tr('User Rules'), 'Regras do usuário');
+  assert.equal(tr('Global Rules'), 'Regras globais');
+  assert.equal(tr('Project Rules'), 'Regras do projeto');
+  assert.equal(tr('Manage Rules'), 'Gerenciar regras');
+  assert.equal(tr('Active Rules'), 'Regras ativas');
+  assert.equal(tr('No rules configured'), 'Nenhuma regra configurada');
+  assert.equal(tr('No rules found'), 'Nenhuma regra encontrada');
+  assert.equal(tr('Add Rule'), 'Adicionar regra');
+  assert.equal(tr('New Rule'), 'Nova regra');
+  assert.equal(tr('Edit Rule'), 'Editar regra');
+  assert.equal(tr('Delete Rule'), 'Excluir regra');
+  assert.equal(tr('Rule Name'), 'Nome da regra');
+  assert.equal(tr('Rule Description'), 'Descrição da regra');
+  assert.equal(tr('Rule Content'), 'Conteúdo da regra');
+
+  // Preview e conteúdo de flutter-hot-reload.md exibido no painel de regras (imagem do usuário)
+  assert.equal(
+    tr('# Proactive Flutter Hot Reload Rule Whenever you edit or modify any `.dart` file under `lib/` in this projec...'),
+    '# Regra Proativa de Hot Reload no Flutter Sempre que você editar ou modificar qualquer arquivo `.dart` em `lib/` neste projet...'
+  );
+  assert.equal(
+    tr('# Proactive Flutter Hot Reload Rule Whenever you edit or modify any `.dart` file under `lib/` in this projec…'),
+    '# Regra Proativa de Hot Reload no Flutter Sempre que você editar ou modificar qualquer arquivo `.dart` em `lib/` neste projet…'
+  );
+  assert.equal(
+    tr('# Proactive Flutter Hot Reload Rule Whenever you edit or modify any `.dart` file under `lib/` in this project:'),
+    '# Regra Proativa de Hot Reload no Flutter Sempre que você editar ou modificar qualquer arquivo `.dart` em `lib/` neste projeto:'
+  );
+  assert.equal(
+    tr('Proactive Flutter Hot Reload Rule'),
+    'Regra Proativa de Hot Reload no Flutter'
+  );
+  assert.equal(
+    tr('# Proactive Flutter Hot Reload Rule'),
+    '# Regra Proativa de Hot Reload no Flutter'
+  );
+  assert.equal(
+    tr('Proactively connect to running Dart/Flutter apps and trigger hot reload or hot restart upon editing .dart files under lib/.'),
+    'Conectar proativamente aos aplicativos Dart/Flutter em execução e acionar hot reload ou hot restart ao editar arquivos .dart em lib/.'
+  );
+
+  // Ações dinâmicas de regras
+  assert.equal(tr('Toggle rule flutter-hot-reload.md'), 'Alternar regra flutter-hot-reload.md');
+  assert.equal(tr('Delete rule flutter-hot-reload.md'), 'Excluir regra flutter-hot-reload.md');
+
+  // Preservação estrita dos identificadores e caminhos de arquivos de regras
+  assert.equal(tr('user_global'), null);
+  assert.equal(tr('AGENTS.md'), null);
+  assert.equal(tr('flutter-hot-reload.md'), null);
+});
+
+
 

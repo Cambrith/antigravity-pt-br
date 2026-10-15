@@ -4,6 +4,19 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.3] - 2026-10-15
+
+### Adicionado
+- **Tradução Completa de Regras e Personalizações (`Rules & Rule Previews`)**:
+  - Criação do catálogo dedicado `src/maps/rules.json` para localização abrangente de regras de desenvolvimento e personalizações de regras do ecossistema.
+  - Tradução e suporte dinâmico no painel de contexto para prévias e conteúdos de regras:
+    - `flutter-hot-reload.md`: `# Regra Proativa de Hot Reload no Flutter Sempre que você editar ou modificar qualquer arquivo .dart em lib/ neste projeto:` (com suporte a reticências e versões truncadas).
+    - Descrições de ações, conexão MCP com Dart DTD e acionamento de `hot_reload` e `hot_restart`.
+  - Localização completa dos controles e termos da interface de regras (`Regras do espaço de trabalho`, `Regras do usuário`, `Regras globais`, `Regras do projeto`, `Gerenciar regras`, `Regras ativas`, `Adicionar regra`, `Nova regra`, `Editar regra`, `Excluir regra`, `Conteúdo da regra`).
+  - Ações dinâmicas de alternância e exclusão (`Alternar regra <nome>`, `Excluir regra <nome>`).
+  - Preservação estrita dos identificadores e caminhos de arquivos de regras (`user_global`, `AGENTS.md`, `flutter-hot-reload.md`).
+  - Suíte de testes unitários expandida para 27 testes automatizados com 100% de aprovação.
+
 ## [1.4.2] - 2026-10-15
 
 ### Adicionado

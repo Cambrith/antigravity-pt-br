@@ -2737,6 +2737,13 @@ if os.path.exists(agents_map_file):
         _agents = json.load(_f)
         EXACT_MAP.update(_agents)
 
+# Carregar catálogo de regras traduzidas
+rules_map_file = os.path.join(os.path.dirname(__file__), "src", "maps", "rules.json")
+if os.path.exists(rules_map_file):
+    with open(rules_map_file, "r", encoding="utf-8") as _f:
+        _rules = json.load(_f)
+        EXACT_MAP.update(_rules)
+
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
 
 js_body = r'''(function() {
@@ -3245,6 +3252,23 @@ js_body = r'''(function() {
         return "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, d...";
       }
       return "Como criar aplicativos com o Lovable — abrange criação de projetos, criação de prompts eficazes, integrações, implantação e fluxos de iteração";
+    }
+
+    // Regras (Rules) e previews de regras
+    if ((m = /^#?\s*Proactive Flutter Hot Reload Rule/i.exec(s))) {
+      if (/\.\.\.|…/.test(s)) {
+        return "# Regra Proativa de Hot Reload no Flutter Sempre que você editar ou modificar qualquer arquivo `.dart` em `lib/` neste projet...";
+      }
+      if (/Whenever you edit or modify/i.test(s)) {
+        return "# Regra Proativa de Hot Reload no Flutter Sempre que você editar ou modificar qualquer arquivo `.dart` em `lib/` neste projeto:";
+      }
+      return "# Regra Proativa de Hot Reload no Flutter";
+    }
+    if ((m = /^Toggle rule\s+(.+)$/i.exec(s))) {
+      return `Alternar regra ${m[1]}`;
+    }
+    if ((m = /^Delete rule\s+(.+)$/i.exec(s))) {
+      return `Excluir regra ${m[1]}`;
     }
 
 
