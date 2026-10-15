@@ -836,7 +836,7 @@
     }
   }
 
-  const ATTRS = ['placeholder', 'title', 'aria-label', 'data-tooltip-content'];
+  const ATTRS = ['placeholder', 'title', 'aria-label', 'data-tooltip-content', 'data-tooltip', 'data-title', 'aria-description'];
   function translateElementAttrs(el) {
     if (!el || el.nodeType !== 1) return;
     for (const attr of ATTRS) {
@@ -851,6 +851,14 @@
       }
     }
   }
+
+  // Intercepta hover/pointerenter para traduzir tooltips e titles antes da exibição nativa
+  document.addEventListener('pointerenter', (e) => {
+    let el = e.target;
+    for (let i = 0; el && i < 3; i++, el = el.parentElement) {
+      if (el.nodeType === 1) translateElementAttrs(el);
+    }
+  }, { capture: true, passive: true });
 
   function walkAndTranslate(root) {
     if (!root) return;
