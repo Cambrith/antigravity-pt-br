@@ -4,7 +4,7 @@
 [![Segurança](https://github.com/Cambrith/antigravity-pt-br/actions/workflows/security.yml/badge.svg)](https://github.com/Cambrith/antigravity-pt-br/actions)
 [![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](LICENSE)
 [![Plataformas](https://img.shields.io/badge/suporte-Linux%20%7C%20ChromeOS%20%7C%20Windows%20%7C%20macOS-brightgreen.svg)](docs/COMPATIBILITY.md)
-[![Traduções](https://img.shields.io/badge/entradas-2.185%2B-blueviolet.svg)](#-o-que-está-traduzido)
+[![Traduções](https://img.shields.io/badge/entradas-2.270%2B-blueviolet.svg)](#-o-que-está-traduzido)
 [![Testes Automatizados](https://img.shields.io/badge/testes-100%25%20passando-success.svg)](tests/)
 
 Sistema profissional, robusto e persistente de localização em Português do Brasil (pt-BR) para o **Google Antigravity**, projetado para funcionar de forma transparente no **Linux** (múltiplas distribuições), **ChromeOS**, **Windows** e **macOS**.
@@ -16,7 +16,7 @@ Sistema profissional, robusto e persistente de localização em Português do Br
 O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
 
 Este projeto resolve essa barreira entregando:
-1. **Tradução Integral e Fiel**: Mais de 2.185 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+1. **Tradução Integral e Fiel**: Mais de 2.270 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
 2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
 3. **Multiplataforma Real**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
 4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.
@@ -143,6 +143,13 @@ curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.
 | Módulo / Recurso | Detalhes da Localização |
 |---|---|
 | **Interface e Configurações** | Menus de contexto nativo, barra lateral, configurações de agente, temas, atalhos, painéis e diálogos. |
+| **Ambiente, Worktree e Início de Conversa** | Seletores de ambiente (`Local`, `Worktree`, `Clone CitC`), tooltips (`Selecionar ambiente (Ctrl+.)`), descrições explicativas, buscas e histórico de worktrees anteriores, avisos de compatibilidade Git e criação de conversas bifurcadas. |
+| **Processos e Comandos em Tempo Real** | Notificações de execução de comandos (`Executando <comando>`, `Executou <comando>`), contadores com concordância no plural (`Executando 2 comandos`, `Explorando 2 arquivos, executando 1 comando`) e operações com arquivos (`Editando arquivos`, `Editou arquivos`). |
+| **Pensamentos e Ações do Agente** | Cabeçalhos e durações do processo de raciocínio (`Processo de raciocínio`, `Pensou por 10s`, `Pensando...`), resumos de ferramentas em pt-BR e diretrizes oficiais ([AGENTS.md](AGENTS.md)) com preservação estrita de códigos originais. |
+| **Erros e Notificações de Branch** | Alertas toast ao selecionar branch do projeto (`Falha ao salvar branch do projeto: Nenhuma pasta git neste projeto corresponde à pasta`), validações de formato e tratamento dinâmico de erros. |
+| **Modelos e Níveis de Raciocínio** | Seletor de modelos com níveis de esforço dinâmicos traduzidos (`Gemini 3.8 Flash Médio`, `Claude Sonnet 4.6 (Raciocínio)`, `Alto`, `Máximo`). |
+| **Detalhamento de Tokens e Orçamento** | Contadores de detalhamento (`Mostrar 2 detalhamentos`, `Ocultar detalhamento`), limites de tokens para regras e avisos de exclusão de ferramentas MCP. |
+| **Barra de Entrada de Mensagens** | Placeholders de prompt (`Pergunte qualquer coisa, @ para mencionar, / para ações`, `Digite uma mensagem...`), com isolamento e proteção total do texto digitado pelo usuário. |
 | **Catálogo de Servidores MCP** | Todos os 99 servidores MCP mapeados, incluindo campos de configuração (Tokens, API Keys, URLs e descrições). |
 | **Cotas e Créditos de IA** | Alertas de cotas semanais e de 5 horas, limites esgotados, opções de upgrade e renovações com data/hora formatada. |
 | **Avisos de Conexão e Rede** | Indicadores de modo offline ("Sem internet", "Conexão perdida", "Reconectando..."). |
