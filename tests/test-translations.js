@@ -492,10 +492,12 @@ test('Tradução Automática de Pensamentos (Thinking Auto-Translator)', () => {
   const isEnThought = sandbox.window.__CAMBRITH_IS_EN_THOUGHT__;
   const translateThought = sandbox.window.__CAMBRITH_TRANSLATE_THOUGHT__;
   const processThoughts = sandbox.window.__CAMBRITH_PROCESS_THOUGHTS__;
+  const prefetchThoughts = sandbox.window.__CAMBRITH_PREFETCH_THOUGHTS__;
 
   assert.equal(typeof isEnThought, 'function');
   assert.equal(typeof translateThought, 'function');
   assert.equal(typeof processThoughts, 'function');
+  assert.equal(typeof prefetchThoughts, 'function');
 
   // Detecção de pensamento em inglês
   assert.equal(

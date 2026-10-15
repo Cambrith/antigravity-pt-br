@@ -14,12 +14,12 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
     - `self` e `research`: Subagentes nativos de continuidade e pesquisa ampla na base de código.
   - Tradução de controles e ações de interface dos agentes (`Agentes personalizados`, `Novo agente`, `Criar agente personalizado`, `Copiar caminho`, `Excluir agente`, `Duplicar agente`).
   - Suporte dinâmico para alternância de switches acessíveis (`aria-label="Toggle <agente>"` $\rightarrow$ `Alternar <agente>`).
-- **Tradução Automática de Blocos de Pensamento (Thinking Auto-Translator)**:
-  - Implementação de módulo de tradução em tempo real para os fluxos e blocos de pensamento interno da IA (`Thinking / Thought for Xs`).
-  - Permite que o modelo de IA continue raciocinando nativamente em inglês (mantendo máxima profundidade lógica e velocidade) enquanto o texto exibido ao usuário dentro do colapsável "Pensou por Xs" é automaticamente traduzido e renderizado em Português do Brasil (pt-BR).
-  - Algoritmo de detecção inteligente de idioma baseado em indicadores lexicais comparativos para distinguir pensamento em inglês de raciocínio já em português, ignorando trechos de código (`pre`, `code`), tags HTML e seletores CSS.
-  - Sistema de cache assíncrono em memória (`Map`) para traduções instantâneas sem bloqueio de renderização do Electron ou impacto no desempenho da interface.
-  - Acionamento reativo multicanal: por clique em botões colapsáveis (`[data-testid="thinking-collapsible-trigger"]` / `Pensou por...`), por mutação de nós adicionados em tempo real via `MutationObserver` (suporte a streaming contínuo) e no boot da aplicação.
+- **Tradução Instantânea de Blocos de Pensamento (Proactive Zero-Latency Auto-Translator)**:
+  - Implementação de módulo de pré-carregamento proativo (prefetch) para os fluxos e blocos de pensamento interno da IA (`Thinking / Thought for Xs`) diretamente da árvore interna do React Fiber.
+  - Elimina qualquer espera de rede no momento do clique: a IA pode raciocinar livremente em inglês e, assim que o pensamento é gerado em background, o sistema extrai o texto e realiza o pré-carregamento assíncrono para o cache antes que o usuário interaja com a interface.
+  - Abertura imediata ao clicar em "Pensou por Xs" (< 60ms), renderizando 100% traduzido em Português do Brasil (pt-BR) de forma instantânea e imperceptível.
+  - Preservação estrita de variáveis técnicas, comandos shell e caminhos usando mascaramento com tokens (`__CODE_X__`), impedindo corrupção ou distorção de termos de desenvolvimento.
+  - Interceptação antecipada no evento `pointerdown` (disparado antes do evento de `click`) e sincronização reativa via `MutationObserver` durante respostas em streaming.
   - Suíte de testes unitários expandida para 25 testes automatizados com 100% de aprovação.
 
 ---

@@ -3685,10 +3685,11 @@ js_body = r'''(function() {
   }
 
   // =========================================================================
-  // Tradução Automática de Blocos de Pensamento (Thinking / Thought)
+  // Tradutor Instantâneo de Pensamentos (Proactive Zero-Latency Auto-Translator)
   // =========================================================================
   const thoughtCache = new Map();
   const pendingTranslations = new Map();
+  const prefetchedTriggers = new WeakSet();
 
   function isEnglishThoughtText(text) {
     if (!text || typeof text !== 'string') return false;
@@ -3704,7 +3705,8 @@ js_body = r'''(function() {
       'will', 'would', 'can', 'could', 'should', 'with', 'from', 'have', 'has', 'had',
       'been', 'we', 'need', 'check', 'let', 'now', 'first', 'user', 'request',
       'thinking', 'inspect', 'determine', 'implement', 'generate', 'examine',
-      'search', 'file', 'ensure', 'looking', 'trying', 'going', 'about', 'because'
+      'search', 'file', 'ensure', 'looking', 'trying', 'going', 'about', 'because',
+      'reveals', 'indicating', 'evident', 'present', 'presence', 'focus', 'approach'
     ];
     const ptIndicators = [
       'o', 'a', 'os', 'as', 'um', 'uma', 'de', 'do', 'da', 'em', 'no', 'na',
@@ -3733,14 +3735,34 @@ js_body = r'''(function() {
 
     const promise = (async () => {
       try {
-        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt-BR&dt=t&q=' + encodeURIComponent(trimmed);
+        // Mascara snippets entre crases para preservar código e comandos intactos
+        const codes = [];
+        const masked = trimmed.replace(/`([^`]+)`/g, (m, c) => {
+          codes.push(c);
+          return '__CODE_' + (codes.length - 1) + '__';
+        });
+
+        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt-BR&dt=t&q=' + encodeURIComponent(masked);
         const resp = await fetch(url);
         if (!resp.ok) return null;
         const data = await resp.json();
         if (data && Array.isArray(data[0])) {
-          const trans = data[0].map(c => (c && c[0]) ? c[0] : '').join('');
+          let trans = data[0].map(c => (c && c[0]) ? c[0] : '').join('');
+          
+          // Restaura snippets de código originais
+          codes.forEach((c, idx) => {
+            const re = new RegExp('__CODE_' + idx + '__|__\\s*CÓDIGO_' + idx + '__|__\\s*CODE_' + idx + '__', 'gi');
+            trans = trans.replace(re, '`' + c + '`');
+          });
+
           if (trans && trans.trim()) {
             thoughtCache.set(trimmed, trans);
+            // Armazena também a versão sem crases para bater com nós de texto puros do DOM
+            const unmaskedOrig = trimmed.replace(/`/g, '');
+            const unmaskedTrans = trans.replace(/`/g, '');
+            if (unmaskedOrig !== trimmed) {
+              thoughtCache.set(unmaskedOrig, unmaskedTrans);
+            }
             return trans;
           }
         }
@@ -3756,15 +3778,84 @@ js_body = r'''(function() {
     return promise;
   }
 
+  function extractThinkingFromTrigger(trigger) {
+    if (!trigger) return null;
+    try {
+      const fiberKey = Object.keys(trigger).find(k => k.startsWith('__reactFiber'));
+      if (!fiberKey) return null;
+      let fiber = trigger[fiberKey];
+      while (fiber) {
+        if (fiber.memoizedProps && typeof fiber.memoizedProps.thinking === 'string') {
+          return fiber.memoizedProps.thinking;
+        }
+        fiber = fiber.return;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function prefetchTriggerThinking(trigger) {
+    if (!trigger || prefetchedTriggers.has(trigger)) return;
+    prefetchedTriggers.add(trigger);
+    const text = extractThinkingFromTrigger(trigger);
+    if (!text || typeof text !== 'string') return;
+
+    // Divide em parágrafos e frases principais
+    const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length >= 20);
+    for (const p of paragraphs) {
+      if (isEnglishThoughtText(p) && !thoughtCache.has(p) && !pendingTranslations.has(p)) {
+        translateThoughtTextAsync(p);
+      }
+      const lines = p.split(/\n/).map(l => l.trim()).filter(l => l.length >= 20);
+      for (const l of lines) {
+        if (isEnglishThoughtText(l) && !thoughtCache.has(l) && !pendingTranslations.has(l)) {
+          translateThoughtTextAsync(l);
+        }
+      }
+    }
+  }
+
+  function prefetchAllTriggers() {
+    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"]');
+    for (const trig of triggers) {
+      prefetchTriggerThinking(trig);
+    }
+  }
+
   function processThoughtContainer(container) {
     if (!container || container.__cambrith_processing) return;
+
+    // 1. Processa elementos de parágrafo estruturados (<p>, blockquote, li)
+    const blocks = container.querySelectorAll('p, blockquote, li');
+    if (blocks.length > 0) {
+      for (const block of blocks) {
+        if (block.__cambrith_thought_translated) continue;
+        const text = (block.innerText || '').trim();
+        if (isEnglishThoughtText(text)) {
+          if (thoughtCache.has(text)) {
+            const cached = thoughtCache.get(text);
+            block.innerText = cached;
+            block.__cambrith_thought_translated = true;
+          } else {
+            translateThoughtTextAsync(text).then((trans) => {
+              if (trans && block.isConnected) {
+                block.innerText = trans;
+                block.__cambrith_thought_translated = true;
+              }
+            });
+          }
+        }
+      }
+    }
+
+    // 2. Processa nós de texto individuais (fallback preciso para estruturas dinâmicas)
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     const candidateNodes = [];
     let n;
     while ((n = walker.nextNode())) {
       const parent = n.parentElement;
       if (!parent || parent.closest('pre, code, style, script, svg')) continue;
-      if (n.__cambrith_thought_translated) continue;
+      if (n.__cambrith_thought_translated || parent.__cambrith_thought_translated) continue;
 
       const val = n.nodeValue;
       if (val && isEnglishThoughtText(val)) {
@@ -3793,6 +3884,8 @@ js_body = r'''(function() {
   }
 
   function scanAndTranslateAllThoughts() {
+    prefetchAllTriggers();
+
     const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], button[aria-expanded]');
     for (const trig of triggers) {
       const text = trig.innerText || '';
@@ -3811,19 +3904,29 @@ js_body = r'''(function() {
   }
 
   let thoughtDebounceTimer = null;
-  function scheduleThoughtScan(delay = 100) {
+  function scheduleThoughtScan(delay = 80) {
     if (thoughtDebounceTimer) clearTimeout(thoughtDebounceTimer);
     thoughtDebounceTimer = setTimeout(() => {
       scanAndTranslateAllThoughts();
     }, delay);
   }
 
+  // Intercepta pointerdown imediatamente antes do clique do usuário
+  document.addEventListener('pointerdown', (e) => {
+    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button');
+    if (trig && /pensou por|thought for/i.test(trig.innerText || '')) {
+      prefetchTriggerThinking(trig);
+      scanAndTranslateAllThoughts();
+    }
+  }, { capture: true, passive: true });
+
   document.addEventListener('click', (e) => {
     const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button');
     if (trig && /pensou por|thought for/i.test(trig.innerText || '')) {
-      setTimeout(scanAndTranslateAllThoughts, 50);
-      setTimeout(scanAndTranslateAllThoughts, 200);
-      setTimeout(scanAndTranslateAllThoughts, 500);
+      scanAndTranslateAllThoughts();
+      setTimeout(scanAndTranslateAllThoughts, 20);
+      setTimeout(scanAndTranslateAllThoughts, 80);
+      setTimeout(scanAndTranslateAllThoughts, 250);
     }
   }, { capture: true, passive: true });
 
@@ -3875,6 +3978,7 @@ js_body = r'''(function() {
   window.__CAMBRITH_TRANSLATE_STR__ = translateString;
   window.__CAMBRITH_TRANSLATE_THOUGHT__ = translateThoughtTextAsync;
   window.__CAMBRITH_PROCESS_THOUGHTS__ = scanAndTranslateAllThoughts;
+  window.__CAMBRITH_PREFETCH_THOUGHTS__ = prefetchAllTriggers;
   window.__CAMBRITH_IS_EN_THOUGHT__ = isEnglishThoughtText;
 })();
 '''
