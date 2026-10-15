@@ -368,9 +368,26 @@ test('Tradução de Servidores MCP, Contadores de Ferramentas e Catálogo de Ski
   const sandbox = setupSandbox();
   const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
 
-  // Interface de gerenciamento MCP
+  // Interface de gerenciamento MCP e Personalizações (Context Usage)
+  assert.equal(tr('MCP Tools'), 'Ferramentas MCP');
+  assert.equal(tr('Mcp Tools'), 'Ferramentas MCP');
+  assert.equal(tr('Mcp tools'), 'Ferramentas MCP');
+  assert.equal(tr('MCP tools'), 'Ferramentas MCP');
+  assert.equal(tr('mcp tools'), 'ferramentas MCP');
+  assert.equal(tr('MCP Tool'), 'Ferramenta MCP');
+  assert.equal(tr('Mcp Tool'), 'Ferramenta MCP');
+  assert.equal(tr('Mcp tool'), 'ferramenta MCP');
+  assert.equal(tr('mcp tool'), 'ferramenta MCP');
+  assert.equal(tr('Mcp Tools (4)'), 'Ferramentas MCP (4)');
+  assert.equal(tr('Mcp Tool (1)'), 'Ferramenta MCP (1)');
+  assert.equal(tr('Mcp Tools: External'), 'Ferramentas MCP: External');
   assert.equal(tr('Manage MCP Servers'), 'Gerenciar servidores MCP');
   assert.equal(tr('Available MCP Servers'), 'Servidores MCP disponíveis');
+  assert.equal(tr('MCP Servers'), 'Servidores MCP');
+  assert.equal(tr('Mcp Servers'), 'Servidores MCP');
+  assert.equal(tr('Mcp servers'), 'Servidores MCP');
+  assert.equal(tr('Mcp Server'), 'Servidor MCP');
+  assert.equal(tr('Mcp Servers (2)'), 'Servidores MCP (2)');
   assert.equal(tr('Restart Server'), 'Reiniciar servidor');
   assert.equal(tr('Disable all tools'), 'Desativar todas as ferramentas');
   assert.equal(tr('Enable all tools'), 'Ativar todas as ferramentas');
@@ -380,6 +397,12 @@ test('Tradução de Servidores MCP, Contadores de Ferramentas e Catálogo de Ski
   assert.equal(tr('Server running'), 'Servidor em execução');
   assert.equal(tr('Server stopped'), 'Servidor parado');
   assert.equal(tr('No MCP servers configured'), 'Nenhum servidor MCP configurado');
+
+  // Preservação de identificadores técnicos e nomes de servidores (deve retornar null para manter texto original intacto)
+  assert.equal(tr('chrome-devtools-mcp'), null);
+  assert.equal(tr('firebase-mcp-server'), null);
+  assert.equal(tr('github-mcp-server'), null);
+  assert.equal(tr('mcp_run_tool'), null);
 
   // Contadores dinâmicos de ferramentas ativadas e desativadas
   assert.equal(tr('> 30 tools enabled'), '> 30 ferramentas ativadas');

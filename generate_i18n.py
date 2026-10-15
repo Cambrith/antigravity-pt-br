@@ -1979,6 +1979,18 @@ EXACT_MAP = {
     "An error occurred while submitting your feedback. Please try again.": "Ocorreu um erro ao enviar seu feedback. Por favor, tente novamente.",
     "e.g., curl": "ex.: curl",
     "MCP Tools": "Ferramentas MCP",
+    "Mcp Tools": "Ferramentas MCP",
+    "Mcp tools": "Ferramentas MCP",
+    "MCP tools": "Ferramentas MCP",
+    "mcp tools": "ferramentas MCP",
+    "MCP Tool": "Ferramenta MCP",
+    "Mcp Tool": "Ferramenta MCP",
+    "Mcp tool": "ferramenta MCP",
+    "mcp tool": "ferramenta MCP",
+    "Mcp Servers": "Servidores MCP",
+    "Mcp servers": "Servidores MCP",
+    "Mcp Server": "Servidor MCP",
+    "Mcp server": "servidor MCP",
     "External tools the agent can call via Model Context Protocol.": "Ferramentas externas que o agente pode chamar via Model Context Protocol.",
     "Loading token usage...": "Carregando uso de tokens...",
     "No token data available.": "Nenhum dado de token disponível.",
@@ -3147,6 +3159,28 @@ js_body = r'''(function() {
     // MCP
     if ((m = /^No MCP servers found for ["']?(.+?)["']?$/.exec(s))) {
       return `Nenhum servidor MCP encontrado para "${m[1]}"`;
+    }
+    if ((m = /^mcp\s+tools?$/i.exec(s))) {
+      if (s === 'mcp tools') return 'ferramentas MCP';
+      if (s === 'mcp tool') return 'ferramenta MCP';
+      return /tools$/i.test(s) ? 'Ferramentas MCP' : 'Ferramenta MCP';
+    }
+    if ((m = /^mcp\s+tools?\s*\((.+?)\)$/i.exec(s))) {
+      const isPlural = /tools/i.test(m[0]);
+      return `${isPlural ? 'Ferramentas MCP' : 'Ferramenta MCP'} (${m[1]})`;
+    }
+    if ((m = /^mcp\s+tools?:\s*(.+)$/i.exec(s))) {
+      const isPlural = /tools/i.test(m[0]);
+      return `${isPlural ? 'Ferramentas MCP' : 'Ferramenta MCP'}: ${m[1]}`;
+    }
+    if ((m = /^mcp\s+servers?$/i.exec(s))) {
+      if (s === 'mcp servers') return 'servidores MCP';
+      if (s === 'mcp server') return 'servidor MCP';
+      return /servers$/i.test(s) ? 'Servidores MCP' : 'Servidor MCP';
+    }
+    if ((m = /^mcp\s+servers?\s*\((.+?)\)$/i.exec(s))) {
+      const isPlural = /servers/i.test(m[0]);
+      return `${isPlural ? 'Servidores MCP' : 'Servidor MCP'} (${m[1]})`;
     }
 
 

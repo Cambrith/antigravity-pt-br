@@ -4,6 +4,17 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.1] - 2026-10-15
+
+### Corrigido
+- **Localização de Ferramentas MCP (`Mcp Tools` $\rightarrow$ `Ferramentas MCP`)**:
+  - Correção na interface de gerenciamento de contexto e tokens (`Context usage`), na seção de personalizações junto a Regras, Habilidades e Subagentes.
+  - Inclusão das variações de capitalização geradas dinamicamente pelo frontend (`Mcp Tools`, `Mcp tools`, `MCP tools`, `mcp tools`, `Mcp Tool`, `Mcp tool`, `mcp tool`) mapeadas estritamente para `Ferramentas MCP` (ou singular `Ferramenta MCP`).
+  - Preservação obrigatória da sigla técnica **MCP** sempre em letras maiúsculas.
+  - Implementação de regra dinâmica em `translateDynamic` cobrindo contadores e separadores (`Mcp Tools (X)`, `Mcp Tools: ...`, `Mcp Servers`).
+  - Garantia de preservação estrita de identificadores técnicos (`chrome-devtools-mcp`, `firebase-mcp-server`, chamadas de ferramentas e comandos bash).
+  - Testes unitários atualizados com 25 suites e 100% de aprovação.
+
 ## [1.4.0] - 2026-10-15
 
 - **Tradução Completa de Agentes Especializados e Personalizados (Custom Agents)**:
