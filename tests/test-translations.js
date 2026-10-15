@@ -301,7 +301,7 @@ test('Tradução da Página de Plugins e Catálogo do Google/Antigravity', () =>
   assert.equal(tr('Plugins Built With Google'), 'Plugins criados com o Google');
   assert.equal(tr('Plugins Built With Antigravity'), 'Plugins criados com o Antigravity');
 
-  // Descrições de plugins oficiais
+  // Descrições de plugins oficiais e catálogo exibido na UI
   assert.equal(
     tr('Core tools and knowledge required to develop for Android'),
     'Ferramentas essenciais e conhecimentos necessários para desenvolver para Android.'
@@ -327,11 +327,120 @@ test('Tradução da Página de Plugins e Catálogo do Google/Antigravity', () =>
     'Automação confiável, depuração aprofundada e análise de desempenho no Chrome usando Chrome DevTools e Puppeteer.'
   );
 
-  // Ações de download e instalação
+  // Dart and Flutter (exibido na interface)
+  assert.equal(tr('Dart and Flutter'), 'Dart e Flutter');
+  assert.equal(
+    tr('Skills providing tailored instructions for happy path Dart and Flutter development workflows.'),
+    'Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento ideais em Dart e Flutter.'
+  );
+  assert.equal(
+    tr('Skills providing tailored instructions for happy path Dart and Flutter development workflows...'),
+    'Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento ideais em Dart e Flutter...'
+  );
+  assert.equal(
+    tr('Skills providing tailored instructions for happy path Dart and Flutter development workflows…'),
+    'Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento ideais em Dart e Flutter…'
+  );
+
+  // Google Maps Platform (exibido na interface)
+  assert.equal(tr('Google Maps Platform'), 'Google Maps Platform');
+  assert.equal(
+    tr('Build and prototype location-aware applications with Google Maps Platform. Integrate interactive maps, search and inspect Places details, calculate optimal...'),
+    'Crie e desenvolva protótipos de aplicativos com reconhecimento de localização com o Google Maps Platform. Integre mapas interativos, pesquise e inspecione detalhes do Places, calcule rotas ideais...'
+  );
+  assert.equal(
+    tr('Build and prototype location-aware applications with Google Maps Platform. Integrate interactive maps, search and inspect Places details, calculate optimal…'),
+    'Crie e desenvolva protótipos de aplicativos com reconhecimento de localização com o Google Maps Platform. Integre mapas interativos, pesquise e inspecione detalhes do Places, calcule rotas ideais…'
+  );
+  assert.equal(
+    tr('Integration skill and tools for Google Maps Platform APIs'),
+    'Habilidade de integração e ferramentas para APIs do Google Maps Platform.'
+  );
+
+  // Data Agent Kit (exibido na interface)
+  assert.equal(tr('Data Agent Kit'), 'Data Agent Kit');
+  assert.equal(
+    tr('Specialized suite of skills for data engineers and database practitioners on Google Cloud'),
+    'Conjunto especializado de habilidades para engenheiros de dados e profissionais de banco de dados no Google Cloud.'
+  );
+  assert.equal(
+    tr('Specialized suite of skills for data engineers and database practitioners on Google Cloud...'),
+    'Conjunto especializado de habilidades para engenheiros de dados e profissionais de banco de dados no Google Cloud...'
+  );
+  assert.equal(
+    tr('Specialized suite of skills for data engineers and database practitioners on Google Cloud…'),
+    'Conjunto especializado de habilidades para engenheiros de dados e profissionais de banco de dados no Google Cloud…'
+  );
+
+  // Ações de download e instalação e gerenciamento de plugins
   assert.equal(tr('Download'), 'Baixar');
   assert.equal(tr('Downloading...'), 'Baixando...');
   assert.equal(tr('Downloaded'), 'Baixado');
   assert.equal(tr('Install Plugin'), 'Instalar plugin');
+  assert.equal(tr('Installed Plugins'), 'Plugins instalados');
+  assert.equal(tr('Available Plugins'), 'Plugins disponíveis');
+  assert.equal(tr('Manage Plugins'), 'Gerenciar plugins');
+  assert.equal(tr('Search plugins...'), 'Pesquisar plugins...');
+  assert.equal(tr('Search plugins…'), 'Pesquisar plugins…');
+  assert.equal(tr('Plugin details'), 'Detalhes do plugin');
+});
+
+test('Tradução Dinâmica de Novos Plugins Futuros (Dynamic Future Plugin Support)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  const isPluginDesc = sandbox.window.__CAMBRITH_IS_PLUGIN_DESC__;
+
+  // Novos plugins que surjam no futuro com diferentes tecnologias e padrões
+  assert.equal(
+    tr('Skills providing tailored instructions for React and Next.js development workflows.'),
+    'Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento de React and Next.js.'
+  );
+  assert.equal(
+    tr('Skills providing tailored instructions for Vue.js and Nuxt development workflows...'),
+    'Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento de Vue.js and Nuxt...'
+  );
+  assert.equal(
+    tr('Specialized suite of skills for DevOps engineers on AWS.'),
+    'Conjunto especializado de habilidades para DevOps engineers no AWS.'
+  );
+  assert.equal(
+    tr('Specialized suite of skills for Machine Learning practitioners...'),
+    'Conjunto especializado de habilidades para Machine Learning practitioners...'
+  );
+  assert.equal(
+    tr('Integration skill and tools for Stripe Payment APIs.'),
+    'Habilidade de integração e ferramentas para APIs do Stripe Payment.'
+  );
+  assert.equal(
+    tr('Core tools and knowledge required to develop for Rust.'),
+    'Ferramentas essenciais e conhecimentos necessários para desenvolver para Rust.'
+  );
+  assert.equal(
+    tr('Curated collection of agent skills for bioinformatics tasks.'),
+    'Coleção selecionada de habilidades de agente para bioinformatics tasks.'
+  );
+  assert.equal(
+    tr('Keep your coding agent up to date with modern GraphQL standards.'),
+    'Mantenha seu agente de codificação atualizado com modern GraphQL standards.'
+  );
+  assert.equal(
+    tr('Tools and skills for Kubernetes cluster orchestration.'),
+    'Ferramentas e habilidades para Kubernetes cluster orchestration.'
+  );
+  assert.equal(
+    tr('Plugin for Supabase database integration.'),
+    'Plugin para Supabase database integration.'
+  );
+  assert.equal(
+    tr('Connects Antigravity with Jira project management.'),
+    'Conecta o Antigravity com Jira project management.'
+  );
+
+  // Validador de detecção de linguagem para tradução assíncrona sob demanda
+  assert.equal(isPluginDesc('Skills providing tailored workflows for custom agents'), true);
+  assert.equal(isPluginDesc('Build and deploy microservices with ease'), true);
+  assert.equal(isPluginDesc('const x = 123;'), false);
+  assert.equal(isPluginDesc('{ "name": "test" }'), false);
 });
 
 test('Tradução de Escopo de Configuração (Modified in Outside of project)', () => {

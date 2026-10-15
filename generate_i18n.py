@@ -2744,6 +2744,13 @@ if os.path.exists(rules_map_file):
         _rules = json.load(_f)
         EXACT_MAP.update(_rules)
 
+# Carregar catálogo de plugins traduzidos
+plugins_map_file = os.path.join(os.path.dirname(__file__), "src", "maps", "plugins.json")
+if os.path.exists(plugins_map_file):
+    with open(plugins_map_file, "r", encoding="utf-8") as _f:
+        _plugins = json.load(_f)
+        EXACT_MAP.update(_plugins)
+
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
 
 js_body = r'''(function() {
@@ -3624,6 +3631,108 @@ js_body = r'''(function() {
       return `Conexão perdida com ${m[1]}. Os recursos do agente podem não funcionar.`;
     }
 
+    // Suporte Dinâmico a Plugins Existentes e Novos Plugins Futuros
+    if ((m = /^Skills providing tailored instructions for (.+?) development workflows(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento de ${m[1]}${suffix}`;
+    }
+    if ((m = /^Skills providing tailored instructions for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Habilidades que fornecem instruções personalizadas para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Skills providing (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Habilidades que fornecem ${m[1]}${suffix}`;
+    }
+    if ((m = /^Specialized suite of skills for (.+?) on (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[3] || '';
+      return `Conjunto especializado de habilidades para ${m[1]} no ${m[2]}${suffix}`;
+    }
+    if ((m = /^Specialized suite of skills for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Conjunto especializado de habilidades para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Suite of skills for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Conjunto de habilidades para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Build and prototype location-aware applications with (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Crie e desenvolva protótipos de aplicativos com reconhecimento de localização com o ${m[1]}${suffix}`;
+    }
+    if ((m = /^Build and prototype (.+?) with (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[3] || '';
+      return `Crie e desenvolva protótipos de ${m[1]} com ${m[2]}${suffix}`;
+    }
+    if ((m = /^Integration skill and tools for (.+?) APIs(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Habilidade de integração e ferramentas para APIs do ${m[1]}${suffix}`;
+    }
+    if ((m = /^Integration skill and tools for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Habilidade de integração e ferramentas para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Core tools and knowledge required to develop for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Ferramentas essenciais e conhecimentos necessários para desenvolver para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Curated collection of agent skills for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Coleção selecionada de habilidades de agente para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Curated collection of skills for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Coleção selecionada de habilidades para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Collection of agent skills for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Coleção de habilidades de agente para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Keep your coding agent up to date with (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Mantenha seu agente de codificação atualizado com ${m[1]}${suffix}`;
+    }
+    if ((m = /^Reliable automation, in-depth debugging, and performance analysis in (.+?) using (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[3] || '';
+      return `Automação confiável, depuração aprofundada e análise de desempenho em ${m[1]} usando ${m[2]}${suffix}`;
+    }
+    if ((m = /^Prototype, build & run modern apps (?:that users love |users love )?with (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Crie protótipos, desenvolva e execute aplicativos modernos com ${m[1]}${suffix}`;
+    }
+    if ((m = /^Official documentation, reference guides, and best practices for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Documentação oficial, guias de referência e práticas recomendadas para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Using the (.+?) to build AI agents(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Uso do ${m[1]} para criar agentes de IA${suffix}`;
+    }
+    if ((m = /^(?:Provides?|Provide)\s+skills and tools for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Fornece habilidades e ferramentas para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Tools and skills for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Ferramentas e habilidades para ${m[1]}${suffix}`;
+    }
+    if ((m = /^(?:Allows?|Allow) the agent to (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Permite que o agente ${m[1]}${suffix}`;
+    }
+    if ((m = /^(?:Helps?|Help) (?:the )?agent to (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Ajuda o agente a ${m[1]}${suffix}`;
+    }
+    if ((m = /^(?:A\s+)?plugin for (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Plugin para ${m[1]}${suffix}`;
+    }
+    if ((m = /^Connects? Antigravity with (.+?)(\.\.\.|…|\.)?$/i.exec(s))) {
+      const suffix = m[2] || '';
+      return `Conecta o Antigravity com ${m[1]}${suffix}`;
+    }
+
     return null;
   }
 
@@ -3645,14 +3754,93 @@ js_body = r'''(function() {
     return null;
   }
 
-  const SKIP_TAGS = new Set(['PRE', 'CODE', 'SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'SVG', 'PATH', 'MATH']);
+  const SKIP_TAGS = new Set(['PRE', 'SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'SVG', 'PATH', 'MATH']);
+
+  function isPluginDescriptionElement(el) {
+    if (!el || el.nodeType !== 1) return false;
+    // Descrições de plugins na UI do Antigravity usam <code class="whitespace-pre-wrap"> sem tag <pre>
+    if (el.tagName === 'CODE' && (el.classList.contains('whitespace-pre-wrap') || el.closest('.whitespace-pre-wrap'))) {
+      if (el.closest('pre, .monaco-editor, .xterm, [data-testid="user-input-step"]')) return false;
+      return true;
+    }
+    if (el.closest && el.closest('[data-testid*="plugin"], [class*="plugin-card"], [class*="pluginCard"], [class*="plugin_card"]')) {
+      if (el.closest('pre, .monaco-editor, .xterm, [data-testid="user-input-step"]')) return false;
+      return true;
+    }
+    return false;
+  }
 
   function shouldSkipElement(el) {
     if (!el || el.nodeType !== 1) return true;
+    if (isPluginDescriptionElement(el)) {
+      return false;
+    }
+    if (el.tagName === 'CODE') return true;
     if (SKIP_TAGS.has(el.tagName)) return true;
     if (el.isContentEditable) return true;
     if (el.closest && el.closest('pre, code, script, style, textarea, input, [contenteditable="true"], .monaco-editor, .xterm, .katex, [data-testid="user-input-step"]')) return true;
     return false;
+  }
+
+  const pluginDescCache = new Map();
+  const pendingPluginTranslations = new Map();
+
+  function isEnglishPluginDescription(text) {
+    if (!text || typeof text !== 'string') return false;
+    const trimmed = text.trim();
+    if (trimmed.length < 15) return false;
+    if (/^[\[{]/.test(trimmed) || /^(?:import|export|const|let|var|function)\b/.test(trimmed)) return false;
+    const enIndicators = /\b(?:the|and|for|with|from|to|in|on|of|by|skills?|tools?|development|workflows?|applications?|plugins?|agents?|interactive|analyze|support|manage|connects?|streamlines?|accelerates?|build|curated|suite|prototype|official)\b/i;
+    return enIndicators.test(trimmed);
+  }
+
+  function translatePluginNodeAsync(node, originalText) {
+    const trimmed = originalText.trim();
+    if (!trimmed || !isEnglishPluginDescription(trimmed)) return;
+    if (node.__cambrith_plugin_translated) return;
+
+    if (pluginDescCache.has(trimmed)) {
+      const cached = pluginDescCache.get(trimmed);
+      node.nodeValue = originalText.replace(trimmed, cached);
+      node.__cambrith_plugin_translated = true;
+      return;
+    }
+
+    if (pendingPluginTranslations.has(trimmed)) {
+      pendingPluginTranslations.get(trimmed).then((trans) => {
+        if (trans && node.nodeValue && node.isConnected) {
+          node.nodeValue = originalText.replace(trimmed, trans);
+          node.__cambrith_plugin_translated = true;
+        }
+      });
+      return;
+    }
+
+    const promise = (async () => {
+      try {
+        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt-BR&dt=t&q=' + encodeURIComponent(trimmed);
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data && Array.isArray(data[0])) {
+          const trans = data[0].map(c => (c && c[0]) ? c[0] : '').join('');
+          if (trans && trans.trim()) {
+            pluginDescCache.set(trimmed, trans.trim());
+            return trans.trim();
+          }
+        }
+      } catch (_) {}
+      return null;
+    })();
+
+    pendingPluginTranslations.set(trimmed, promise);
+    promise.then((trans) => {
+      pendingPluginTranslations.delete(trimmed);
+      if (trans && node.nodeValue && node.isConnected) {
+        node.nodeValue = originalText.replace(trimmed, trans);
+        node.__cambrith_plugin_translated = true;
+      }
+    });
   }
 
   function translateTextNode(node) {
@@ -3672,6 +3860,11 @@ js_body = r'''(function() {
     const tr = translateString(val);
     if (tr && tr !== val) {
       node.nodeValue = tr;
+      return;
+    }
+    // Tradução sob demanda para novos plugins futuros em tempo real
+    if (isPluginDescriptionElement(parent)) {
+      translatePluginNodeAsync(node, val);
     }
   }
 
@@ -4102,6 +4295,8 @@ js_body = r'''(function() {
   window.__CAMBRITH_PROCESS_THOUGHTS__ = scanAndTranslateAllThoughts;
   window.__CAMBRITH_PREFETCH_THOUGHTS__ = prefetchAllTriggers;
   window.__CAMBRITH_IS_EN_THOUGHT__ = isEnglishThoughtText;
+  window.__CAMBRITH_TRANSLATE_PLUGIN__ = translatePluginNodeAsync;
+  window.__CAMBRITH_IS_PLUGIN_DESC__ = isEnglishPluginDescription;
 })();
 '''
 

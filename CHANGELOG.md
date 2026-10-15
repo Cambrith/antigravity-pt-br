@@ -4,6 +4,29 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.4] - 2026-10-15
+
+### Adicionado
+- **Tradução Completa da Lista de Plugins e Catálogo (`Plugins & Plugin Marketplace`)**:
+  - Criação do catálogo dedicado `src/maps/plugins.json` para localização abrangente de todos os plugins oficiais do Google e Antigravity:
+    - `Dart and Flutter` ("Dart e Flutter"): tradução integral da descrição completa e variantes com reticências (`Habilidades que fornecem instruções personalizadas para fluxos de desenvolvimento ideais em Dart e Flutter.`).
+    - `Google Maps Platform`: tradução da descrição de catálogo e prévia (`Crie e desenvolva protótipos de aplicativos com reconhecimento de localização com o Google Maps Platform. Integre mapas interativos, pesquise e inspecione detalhes do Places, calcule rotas ideais...`).
+    - `Data Agent Kit`: tradução de descrição e variantes (`Conjunto especializado de habilidades para engenheiros de dados e profissionais de banco de dados no Google Cloud.`).
+    - Plugins adicionais: `Firebase`, `Chrome DevTools`, `Android CLI`, `API Gemini`, `Ciência`, `SDK do Google Antigravity`, `Diretrizes da Web Moderna` e `Conhecimento de Desenvolvedor Google`.
+  - Localização integral das ações e controles de plugins (`Plugins instalados`, `Plugins disponíveis`, `Todos os plugins`, `Gerenciar plugins`, `Pesquisar plugins...`, `Detalhes do plugin`, `Ativar plugin`, `Desativar plugin`, `Instalar plugin`, `Desinstalar plugin`, `Atualizar tudo`, etc.).
+  - Remoção do bloqueio de tradução em tags `<code>`: inclusão de exceção em `shouldSkipElement` para descrições formatadas com `<code class="whitespace-pre-wrap">` preservando a integridade de blocos `<pre>` e editores de código.
+
+- **Suporte Dinâmico para Novos Plugins Futuros (Dynamic Future Plugin Engine)**:
+  - Implementação de regras dinâmicas em `translateDynamic` cobrindo padrões frasais comuns de novos plugins que venham a ser lançados ou instalados no futuro:
+    - Padrões de habilidades de fluxo (`Skills providing tailored instructions for <x> development workflows...`).
+    - Padrões de suítes especializadas (`Specialized suite of skills for <role> on <platform>...`).
+    - Padrões de integração de APIs (`Integration skill and tools for <x> APIs...`).
+    - Padrões de ferramentas essenciais (`Core tools and knowledge required to develop for <x>...`).
+    - Padrões de curadoria e bibliotecas (`Curated collection of agent skills for <x>...`).
+    - Preservação inteligente de reticências (`...` e `…`) e sufixos de pontuação.
+  - Mecanismo de tradução sob demanda assíncrona com cache (`pluginDescCache`) para descrições arbitrárias em inglês de novos plugins futuros adicionados no ecossistema.
+  - Suíte de testes unitários expandida para 28 testes automatizados cobrindo plugins existentes e novos plugins futuros com 100% de aprovação.
+
 ## [1.4.3] - 2026-10-15
 
 ### Adicionado
