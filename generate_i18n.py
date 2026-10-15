@@ -3663,23 +3663,177 @@ js_body = r'''(function() {
     btn.style.display = isFullscreen ? "flex" : "none";
   }
 
+  // =========================================================================
+  // Tradução Automática de Blocos de Pensamento (Thinking / Thought)
+  // =========================================================================
+  const thoughtCache = new Map();
+  const pendingTranslations = new Map();
+
+  function isEnglishThoughtText(text) {
+    if (!text || typeof text !== 'string') return false;
+    const trimmed = text.trim();
+    if (trimmed.length < 20) return false;
+
+    // Ignora seletores CSS ou código JSON/XML evidente
+    if (/^(\.[\w-]+\s*\{|@media|div:|table|#[\w-]+\s*\{)/.test(trimmed)) return false;
+    if (trimmed.startsWith('{') && trimmed.endsWith('}')) return false;
+
+    const enIndicators = [
+      'the', 'is', 'are', 'was', 'were', 'this', 'that', 'these', 'those',
+      'will', 'would', 'can', 'could', 'should', 'with', 'from', 'have', 'has', 'had',
+      'been', 'we', 'need', 'check', 'let', 'now', 'first', 'user', 'request',
+      'thinking', 'inspect', 'determine', 'implement', 'generate', 'examine',
+      'search', 'file', 'ensure', 'looking', 'trying', 'going', 'about', 'because'
+    ];
+    const ptIndicators = [
+      'o', 'a', 'os', 'as', 'um', 'uma', 'de', 'do', 'da', 'em', 'no', 'na',
+      'para', 'com', 'por', 'não', 'que', 'se', 'está', 'estou', 'vamos', 'como',
+      'usuário', 'pensamento', 'verificando', 'executando', 'analisando', 'arquivo'
+    ];
+
+    const words = trimmed.toLowerCase().split(/[^a-zà-ú]+/).filter(w => w.length >= 2);
+    if (words.length < 4) return false;
+
+    let enCount = 0;
+    let ptCount = 0;
+    for (const w of words) {
+      if (enIndicators.includes(w)) enCount++;
+      if (ptIndicators.includes(w)) ptCount++;
+    }
+
+    return enCount >= 2 && enCount > ptCount;
+  }
+
+  async function translateThoughtTextAsync(text) {
+    const trimmed = text.trim();
+    if (!trimmed || !isEnglishThoughtText(trimmed)) return null;
+    if (thoughtCache.has(trimmed)) return thoughtCache.get(trimmed);
+    if (pendingTranslations.has(trimmed)) return pendingTranslations.get(trimmed);
+
+    const promise = (async () => {
+      try {
+        const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=pt-BR&dt=t&q=' + encodeURIComponent(trimmed);
+        const resp = await fetch(url);
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        if (data && Array.isArray(data[0])) {
+          const trans = data[0].map(c => (c && c[0]) ? c[0] : '').join('');
+          if (trans && trans.trim()) {
+            thoughtCache.set(trimmed, trans);
+            return trans;
+          }
+        }
+      } catch (err) {
+        // Falha silenciosa de rede
+      } finally {
+        pendingTranslations.delete(trimmed);
+      }
+      return null;
+    })();
+
+    pendingTranslations.set(trimmed, promise);
+    return promise;
+  }
+
+  function processThoughtContainer(container) {
+    if (!container || container.__cambrith_processing) return;
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    const candidateNodes = [];
+    let n;
+    while ((n = walker.nextNode())) {
+      const parent = n.parentElement;
+      if (!parent || parent.closest('pre, code, style, script, svg')) continue;
+      if (n.__cambrith_thought_translated) continue;
+
+      const val = n.nodeValue;
+      if (val && isEnglishThoughtText(val)) {
+        candidateNodes.push(n);
+      }
+    }
+
+    if (candidateNodes.length === 0) return;
+
+    for (const node of candidateNodes) {
+      const orig = node.nodeValue;
+      const trimmed = orig.trim();
+      if (thoughtCache.has(trimmed)) {
+        const cached = thoughtCache.get(trimmed);
+        node.nodeValue = orig.replace(trimmed, cached);
+        node.__cambrith_thought_translated = true;
+      } else {
+        translateThoughtTextAsync(trimmed).then((trans) => {
+          if (trans && node.nodeValue && node.nodeValue.includes(trimmed)) {
+            node.nodeValue = node.nodeValue.replace(trimmed, trans);
+            node.__cambrith_thought_translated = true;
+          }
+        });
+      }
+    }
+  }
+
+  function scanAndTranslateAllThoughts() {
+    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], button[aria-expanded]');
+    for (const trig of triggers) {
+      const text = trig.innerText || '';
+      if (!/pensou por|thought for/i.test(text)) continue;
+
+      const container = trig.nextElementSibling || trig.parentElement?.querySelector('.overflow-y-auto, .cursor-edit');
+      if (container) {
+        processThoughtContainer(container);
+      }
+    }
+
+    const directContainers = document.querySelectorAll('.cursor-edit.group, [class*="cursor-edit"]');
+    for (const c of directContainers) {
+      processThoughtContainer(c);
+    }
+  }
+
+  let thoughtDebounceTimer = null;
+  function scheduleThoughtScan(delay = 100) {
+    if (thoughtDebounceTimer) clearTimeout(thoughtDebounceTimer);
+    thoughtDebounceTimer = setTimeout(() => {
+      scanAndTranslateAllThoughts();
+    }, delay);
+  }
+
+  document.addEventListener('click', (e) => {
+    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button');
+    if (trig && /pensou por|thought for/i.test(trig.innerText || '')) {
+      setTimeout(scanAndTranslateAllThoughts, 50);
+      setTimeout(scanAndTranslateAllThoughts, 200);
+      setTimeout(scanAndTranslateAllThoughts, 500);
+    }
+  }, { capture: true, passive: true });
+
   const boot = () => {
     walkAndTranslate(document.body || document.documentElement);
     ensureFullscreenSettingsButton();
+    scanAndTranslateAllThoughts();
     if (window.__CAMBRITH_I18N_OBS__) {
       try { window.__CAMBRITH_I18N_OBS__.disconnect(); } catch (_) {}
     }
     const obs = new MutationObserver((mutations) => {
+      let shouldScanThoughts = false;
       for (const m of mutations) {
         if (m.type === 'characterData') {
           translateTextNode(m.target);
+          if (m.target?.parentElement?.closest('[data-testid="thinking-collapsible-trigger"] + div, .cursor-edit')) {
+            shouldScanThoughts = true;
+          }
         } else if (m.type === 'attributes') {
           translateElementAttrs(m.target);
         } else if (m.type === 'childList') {
           for (const node of m.addedNodes) {
             walkAndTranslate(node);
+            if (node.nodeType === 1 && (node.matches('[data-testid="thinking-collapsible-trigger"], .cursor-edit') || node.querySelector('[data-testid="thinking-collapsible-trigger"], .cursor-edit'))) {
+              shouldScanThoughts = true;
+            }
           }
         }
+      }
+      if (shouldScanThoughts) {
+        scheduleThoughtScan(120);
       }
     });
     obs.observe(document.documentElement, {
@@ -3698,6 +3852,9 @@ js_body = r'''(function() {
     boot();
   }
   window.__CAMBRITH_TRANSLATE_STR__ = translateString;
+  window.__CAMBRITH_TRANSLATE_THOUGHT__ = translateThoughtTextAsync;
+  window.__CAMBRITH_PROCESS_THOUGHTS__ = scanAndTranslateAllThoughts;
+  window.__CAMBRITH_IS_EN_THOUGHT__ = isEnglishThoughtText;
 })();
 '''
 

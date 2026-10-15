@@ -487,13 +487,42 @@ test('Tradução de Tooltips de Documentação e Atalhos de Clique (Click to Ope
   assert.equal(tr('Click to Retry'), 'Clique para tentar novamente');
 });
 
+test('Tradução Automática de Pensamentos (Thinking Auto-Translator)', () => {
+  const sandbox = setupSandbox();
+  const isEnThought = sandbox.window.__CAMBRITH_IS_EN_THOUGHT__;
+  const translateThought = sandbox.window.__CAMBRITH_TRANSLATE_THOUGHT__;
+  const processThoughts = sandbox.window.__CAMBRITH_PROCESS_THOUGHTS__;
 
+  assert.equal(typeof isEnThought, 'function');
+  assert.equal(typeof translateThought, 'function');
+  assert.equal(typeof processThoughts, 'function');
 
+  // Detecção de pensamento em inglês
+  assert.equal(
+    isEnThought("The user wants to keep thinking in English but display text in Portuguese."),
+    true
+  );
+  assert.equal(
+    isEnThought("We need to check the repository files and ensure everything is working."),
+    true
+  );
 
+  // Não deve detectar como inglês textos em português
+  assert.equal(
+    isEnThought("O usuário deseja manter o raciocínio em inglês mas exibir o texto em português."),
+    false
+  );
+  assert.equal(
+    isEnThought("Vamos verificar os arquivos do repositório e garantir que os testes passem."),
+    false
+  );
 
+  // Não deve detectar regras de CSS ou seletores
+  assert.equal(
+    isEnThought(".markdown-alert { border-left: .25em solid var(--borderColor-default); }"),
+    false
+  );
 
-
-
-
-
-
+  // Não deve detectar textos muito curtos
+  assert.equal(isEnThought("The file is here"), false);
+});
