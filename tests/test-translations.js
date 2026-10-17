@@ -844,7 +844,19 @@ test('Tradução de Avisos e Notificações do Gemini 4 Argon e Modelos Avançad
   const sandbox = setupSandbox();
   const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
 
-  // Frase original do aviso no canto inferior direito
+  // Frase original do aviso no canto inferior direito e no seletor de modelos
+  assert.equal(
+    tr('Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers.'),
+    'O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago.'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers'),
+    'O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is currently available to Ultra and paid Pro subscribers.'),
+    'O Gemini 4 Argon está disponível atualmente para assinantes do Ultra e Pro pago.'
+  );
   assert.equal(
     tr('Gemini 4 Argon is currently available to Ultra plan subscribers.'),
     'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.'

@@ -4,6 +4,18 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.8] - 2026-10-17
+
+### Adicionado
+- **Tradução de Avisos no Seletor de Modelos e Tooltips Flutuantes (`Model Selector Notices & Popovers`)**:
+  - Localização completa do aviso exibido no tooltip/popover ao passar o mouse ou focar no status de modelos indisponíveis (como o Gemini 4 Argon):
+    - `Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers.` $\rightarrow$ `O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago.`
+    - Suporte a todas as variações de pontuação, prefixos e composições (`is now available`, `is available`, `paid Pro and Ultra`, `Ultra and paid Pro subscribers`, etc.).
+  - **Ampla Cobertura Dinâmica de Planos (`translateDynamic`)**:
+    - Suporte a ordens invertidas e combinações de tiers (`Ultra and paid Pro`, `paid Pro and Ultra`, `Ultra and Pro`, etc.), garantindo concordância precisa em português brasileiro.
+  - **Suporte Abrangente a Tooltips e Popovers no DOM**:
+    - `isNotificationToastElement` expandido para capturar containers flutuantes de hover, tooltip e popovers (`[role="tooltip"]`, `[data-radix-popper-content-wrapper]`, `[data-floating-ui-portal]`, `.monaco-hover`, `[class*="tooltip"]`, `[class*="popover"]`, `[class*="hover"]`), garantindo tradução instantânea em popups e tooltips.
+
 ## [1.4.7] - 2026-10-17
 
 ### Adicionado

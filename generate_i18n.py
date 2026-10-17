@@ -151,6 +151,22 @@ EXACT_MAP = {
     "Opus 5.5 is now available on paid Pro and Ultra plans. Third-party model access will no longer be available on your current plan starting on November 2, 2026": "O Opus 5.5 já está disponível nos planos pagos Pro e Ultra. O acesso a modelos de terceiros não estará mais disponível em seu plano atual a partir de 2 de novembro de 2026",
     "GPT-OSS will be removed from Antigravity on November 2, 2026.": "O GPT-OSS será removido do Antigravity em 2 de novembro de 2026.",
     "GPT-OSS will be removed from Antigravity on November 2, 2026": "O GPT-OSS será removido do Antigravity em 2 de novembro de 2026",
+    "Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago.",
+    "Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago",
+    "Gemini 4 Argon is currently available to Ultra and paid Pro subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes do Ultra e Pro pago.",
+    "Gemini 4 Argon is currently available to Ultra and paid Pro subscribers": "O Gemini 4 Argon está disponível atualmente para assinantes do Ultra e Pro pago",
+    "Gemini 4 Argon is currently available to paid Pro and Ultra plan subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra.",
+    "Gemini 4 Argon is currently available to paid Pro and Ultra plan subscribers": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra",
+    "Gemini 4 Argon is currently available to paid Pro and Ultra subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra.",
+    "Gemini 4 Argon is currently available to paid Pro and Ultra subscribers": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra",
+    "Gemini 4 Argon is currently available to Ultra and Pro plan subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro.",
+    "Gemini 4 Argon is currently available to Ultra and Pro plan subscribers": "O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro",
+    "Gemini 4 Argon is now available to Ultra and paid Pro plan subscribers.": "O Gemini 4 Argon já está disponível para assinantes dos planos Ultra e Pro pago.",
+    "Gemini 4 Argon is now available to Ultra and paid Pro plan subscribers": "O Gemini 4 Argon já está disponível para assinantes dos planos Ultra e Pro pago",
+    "Gemini 4 Argon is available to Ultra and paid Pro plan subscribers.": "O Gemini 4 Argon está disponível para assinantes dos planos Ultra e Pro pago.",
+    "Gemini 4 Argon is available to Ultra and paid Pro plan subscribers": "O Gemini 4 Argon está disponível para assinantes dos planos Ultra e Pro pago",
+    "Gemini 4 Argon is available to Ultra and paid Pro subscribers.": "O Gemini 4 Argon está disponível para assinantes do Ultra e Pro pago.",
+    "Gemini 4 Argon is available to Ultra and paid Pro subscribers": "O Gemini 4 Argon está disponível para assinantes do Ultra e Pro pago",
     "Gemini 4 Argon is currently available to Ultra plan subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.",
     "Gemini 4 Argon is currently available to Ultra plan subscribers": "O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra",
     "Gemini 4 Argon is currently available to Ultra subscribers.": "O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.",
@@ -3375,26 +3391,62 @@ js_body = r'''(function() {
     }
 
     // Notificações e avisos de disponibilidade do Gemini 4 Argon e modelos avançados
-    if ((m = /^Gemini 4 Argon is (?:currently\s+|now\s+)?available to (?:paid\s+)?(Pro and Ultra|Ultra|Pro) (?:plan\s+)?subscribers(\.?)?$/i.exec(s))) {
-      const isProUltra = /pro and ultra/i.test(m[1]);
+    if ((m = /^Gemini 4 Argon is (?:currently\s+|now\s+)?available to (?:the\s+)?(.+?)\s+(?:plan\s+)?subscribers(\.?)?$/i.exec(s))) {
+      const plans = m[1].toLowerCase();
       const dot = m[2] || '';
-      return isProUltra
-        ? `O Gemini 4 Argon está disponível atualmente para assinantes dos planos Pro e Ultra${dot}`
-        : `O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra${dot}`;
+      const isNow = /is\s+now/i.test(s);
+      const adv = isNow ? 'já ' : 'atualmente ';
+      if (plans.includes('ultra') && plans.includes('pro')) {
+        if (plans.includes('paid pro') || plans.includes('pro pago')) {
+          return `O Gemini 4 Argon ${adv}está disponível para assinantes dos planos Ultra e Pro pago${dot}`;
+        }
+        if (plans.includes('paid') && plans.startsWith('paid pro')) {
+          return `O Gemini 4 Argon ${adv}está disponível para assinantes dos planos pagos Pro e Ultra${dot}`;
+        }
+        return `O Gemini 4 Argon ${adv}está disponível para assinantes dos planos Pro e Ultra${dot}`;
+      } else if (plans.includes('ultra')) {
+        const isPaid = plans.includes('paid');
+        return isPaid
+          ? `O Gemini 4 Argon ${adv}está disponível para assinantes do plano pago Ultra${dot}`
+          : `O Gemini 4 Argon ${adv}está disponível para assinantes do plano Ultra${dot}`;
+      } else if (plans.includes('pro')) {
+        const isPaid = plans.includes('paid');
+        return isPaid
+          ? `O Gemini 4 Argon ${adv}está disponível para assinantes do plano pago Pro${dot}`
+          : `O Gemini 4 Argon ${adv}está disponível para assinantes do plano Pro${dot}`;
+      }
     }
-    if ((m = /^Gemini 4 Argon is (?:currently\s+|now\s+)?available (?:on|for) (?:paid\s+)?(Pro and Ultra|Ultra|Pro) (?:plans?|subscribers?)(\.?)?$/i.exec(s))) {
-      const isProUltra = /pro and ultra/i.test(m[1]);
+    if ((m = /^Gemini 4 Argon is (?:currently\s+|now\s+)?available (?:on|for) (?:the\s+)?(.+?)\s+(?:plans?|subscribers?)(\.?)?$/i.exec(s))) {
+      const plans = m[1].toLowerCase();
       const dot = m[2] || '';
-      return isProUltra
-        ? `O Gemini 4 Argon está disponível atualmente nos planos Pro e Ultra${dot}`
-        : `O Gemini 4 Argon está disponível atualmente no plano Ultra${dot}`;
+      const isNow = /is\s+now/i.test(s);
+      const adv = isNow ? 'já ' : 'atualmente ';
+      if (plans.includes('ultra') && plans.includes('pro')) {
+        if (plans.includes('paid pro')) {
+          return `O Gemini 4 Argon ${adv}está disponível nos planos Ultra e Pro pago${dot}`;
+        }
+        return `O Gemini 4 Argon ${adv}está disponível nos planos Pro e Ultra${dot}`;
+      } else if (plans.includes('ultra')) {
+        return `O Gemini 4 Argon ${adv}está disponível no plano Ultra${dot}`;
+      } else if (plans.includes('pro')) {
+        return `O Gemini 4 Argon ${adv}está disponível no plano Pro${dot}`;
+      }
     }
-    if ((m = /^Gemini 4 Argon is (?:currently\s+|now\s+)?available exclusively to (?:paid\s+)?(Pro and Ultra|Ultra|Pro) (?:plan\s+)?subscribers(\.?)?$/i.exec(s))) {
-      const isProUltra = /pro and ultra/i.test(m[1]);
+    if ((m = /^Gemini 4 Argon is (?:currently\s+|now\s+)?available exclusively to (?:the\s+)?(.+?)\s+(?:plan\s+)?subscribers(\.?)?$/i.exec(s))) {
+      const plans = m[1].toLowerCase();
       const dot = m[2] || '';
-      return isProUltra
-        ? `O Gemini 4 Argon está disponível exclusivamente para assinantes dos planos Pro e Ultra${dot}`
-        : `O Gemini 4 Argon está disponível exclusivamente para assinantes do plano Ultra${dot}`;
+      const isNow = /is\s+now/i.test(s);
+      const adv = isNow ? 'já ' : 'atualmente ';
+      if (plans.includes('ultra') && plans.includes('pro')) {
+        if (plans.includes('paid pro')) {
+          return `O Gemini 4 Argon ${adv}está disponível exclusivamente para assinantes dos planos Ultra e Pro pago${dot}`;
+        }
+        return `O Gemini 4 Argon ${adv}está disponível exclusivamente para assinantes dos planos Pro e Ultra${dot}`;
+      } else if (plans.includes('ultra')) {
+        return `O Gemini 4 Argon ${adv}está disponível exclusivamente para assinantes do plano Ultra${dot}`;
+      } else if (plans.includes('pro')) {
+        return `O Gemini 4 Argon ${adv}está disponível exclusivamente para assinantes do plano Pro${dot}`;
+      }
     }
     if ((m = /^Upgrade to (Ultra|Pro) to (?:access|try|use) Gemini 4 Argon(\.?)?$/i.exec(s))) {
       const dot = m[2] || '';
@@ -3414,6 +3466,8 @@ js_body = r'''(function() {
     }
     if (/^Gemini 4 Argon is currently available/i.test(s)) {
       return s
+        .replace(/Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers\.?/gi, 'O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago.')
+        .replace(/Gemini 4 Argon is currently available to paid Pro and Ultra plan subscribers\.?/gi, 'O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra.')
         .replace(/Gemini 4 Argon is currently available to Ultra plan subscribers\.?/gi, 'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.')
         .replace(/Gemini 4 Argon is currently available to Ultra subscribers\.?/gi, 'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.')
         .replace(/Gemini 4 Argon is currently available on Ultra plans?\.?/gi, 'O Gemini 4 Argon está disponível atualmente nos planos Ultra.');
@@ -4072,7 +4126,7 @@ js_body = r'''(function() {
 
   function isNotificationToastElement(el) {
     if (!el || el.nodeType !== 1) return false;
-    if (el.closest && el.closest('.notifications-toasts, .notification-toast, .monaco-notification, [role="alert"], [role="status"], [class*="toast"], [class*="notification"]')) {
+    if (el.closest && el.closest('.notifications-toasts, .notification-toast, .monaco-notification, [role="alert"], [role="status"], [role="tooltip"], [data-radix-popper-content-wrapper], [data-floating-ui-portal], .monaco-hover, [class*="toast"], [class*="notification"], [class*="tooltip"], [class*="popover"], [class*="hover"]')) {
       if (el.closest('pre, .monaco-editor, .xterm, [data-testid="user-input-step"]')) return false;
       return true;
     }
@@ -4178,6 +4232,14 @@ js_body = r'''(function() {
     if (isNotificationToastElement(parent)) {
       let currentVal = val;
       const modelNotices = [
+        ['Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers.', 'O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago.'],
+        ['Gemini 4 Argon is currently available to Ultra and paid Pro plan subscribers', 'O Gemini 4 Argon está disponível atualmente para assinantes dos planos Ultra e Pro pago'],
+        ['Gemini 4 Argon is currently available to paid Pro and Ultra plan subscribers.', 'O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra.'],
+        ['Gemini 4 Argon is currently available to paid Pro and Ultra plan subscribers', 'O Gemini 4 Argon está disponível atualmente para assinantes dos planos pagos Pro e Ultra'],
+        ['Gemini 4 Argon is now available to Ultra and paid Pro plan subscribers.', 'O Gemini 4 Argon já está disponível para assinantes dos planos Ultra e Pro pago.'],
+        ['Gemini 4 Argon is now available to Ultra and paid Pro plan subscribers', 'O Gemini 4 Argon já está disponível para assinantes dos planos Ultra e Pro pago'],
+        ['Gemini 4 Argon is available to Ultra and paid Pro plan subscribers.', 'O Gemini 4 Argon está disponível para assinantes dos planos Ultra e Pro pago.'],
+        ['Gemini 4 Argon is available to Ultra and paid Pro plan subscribers', 'O Gemini 4 Argon está disponível para assinantes dos planos Ultra e Pro pago'],
         ['Gemini 4 Argon is currently available to Ultra plan subscribers.', 'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.'],
         ['Gemini 4 Argon is currently available to Ultra plan subscribers', 'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra'],
         ['Gemini 4 Argon is now available to Ultra plan subscribers.', 'O Gemini 4 Argon já está disponível para assinantes do plano Ultra.'],
