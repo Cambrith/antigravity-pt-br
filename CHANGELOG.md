@@ -4,6 +4,49 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.1] - 2026-10-17
+
+### Adicionado
+- **Tradução de Termos de Execução, Agrupamentos de Ferramentas, Tasks e Timers (`Tasks & Timed Execution Engine`)**:
+  - **Localização Completa de Contadores e Entidades de Ferramentas (`resolveEntityCounts`)**:
+    - Suporte nativo a contagem e concordância gramatical singular/plural para todas as entidades internas do modelo:
+      - `1 task` $\rightarrow$ `1 tarefa`, `N tasks` $\rightarrow$ `N tarefas`
+      - `1 page` $\rightarrow$ `1 página`, `N pages` $\rightarrow$ `N páginas`
+      - `1 browser` $\rightarrow$ `1 navegador`, `N browsers` $\rightarrow$ `N navegadores`
+      - `1 image` $\rightarrow$ `1 imagem`, `N images` $\rightarrow$ `N imagens`
+      - `1 artifact` $\rightarrow$ `1 artefato`, `N artifacts` $\rightarrow$ `N artefatos`
+      - `1 subagent` $\rightarrow$ `1 subagente`, `N subagents` $\rightarrow$ `N subagentes`
+      - `1 agent` $\rightarrow$ `1 agente`, `N agents` $\rightarrow$ `N agentes`
+      - `1 step` $\rightarrow$ `1 etapa`, `N steps` $\rightarrow$ `N etapas`
+      - `1 test` $\rightarrow$ `1 teste`, `N tests` $\rightarrow$ `N testes`
+      - `1 edit` $\rightarrow$ `1 edição`, `N edits` $\rightarrow$ `N edições`
+    - Suporte robusto a frases compostas e chevrons de abertura/fechamento (`>`, `v`, etc.):
+      - `Explorou 1 task >` $\rightarrow$ `Explorou 1 tarefa >`
+      - `Explorou 1 arquivo, 2 tasks, executou 2 comandos >` $\rightarrow$ `Explorou 1 arquivo, 2 tarefas, executou 2 comandos >`
+      - `Explorou 2 tasks, executou 1 comando >` $\rightarrow$ `Explorou 2 tarefas, executou 1 comando >`
+      - `Explorando 6 arquivos, executando 1 comando v` $\rightarrow$ `Explorando 6 arquivos, executando 1 comando v`
+  - **Localização Completa de Temporizadores (`schedule` e `Timer Collapsibles`)**:
+    - `Timed N seconds` $\rightarrow$ `Temporizou N segundos` (e `Temporizou 1 segundo`)
+    - `Timed N minutes` $\rightarrow$ `Temporizou N minutos`
+    - `Timed N hours` $\rightarrow$ `Temporizou N horas`
+    - `Timed N ms` $\rightarrow$ `Temporizou N ms`
+    - `Timing N seconds` $\rightarrow$ `Temporizando N segundos`
+    - `Finished waiting N seconds.` $\rightarrow$ `Concluiu espera de N segundos.`
+    - `Waiting for command completion (up to N seconds)` $\rightarrow$ `Aguardando conclusão do comando (até N segundos)`
+    - `Checking command status` $\rightarrow$ `Verificando status do comando`
+    - `Checked command status` $\rightarrow$ `Verificou status do comando`
+    - `Executing task: ...` $\rightarrow$ `Executando tarefa: ...`
+    - `task cancelled (reason: ...)` $\rightarrow$ `tarefa cancelada (motivo: ...)`
+    - `Timer has expired` $\rightarrow$ `O temporizador expirou`
+    - `Timer expired` $\rightarrow$ `Temporizador expirado`
+    - `Search tasks...` $\rightarrow$ `Pesquisar tarefas...`
+    - `Cancel task` $\rightarrow$ `Cancelar tarefa`
+    - `Edit task title` $\rightarrow$ `Editar título da tarefa`
+    - `Sent input to command` $\rightarrow$ `Enviou entrada para o comando`
+    - `Sent termination request to command` $\rightarrow$ `Enviou solicitação de encerramento para o comando`
+  - **Expansão de Regras Síncronas de Pensamento (`translateThoughtTextSync`)**:
+    - Tradução instantânea de raciocínio da IA em tarefas em segundo plano, temporizadores e conclusão de testes (vitest, svelte-check, build).
+
 ## [1.5.0] - 2026-10-17
 
 ### Adicionado

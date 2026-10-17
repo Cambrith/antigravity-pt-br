@@ -1585,6 +1585,7 @@ EXACT_MAP = {
     "Background task": "Tarefa em segundo plano",
     "Background Task Output": "Saída da tarefa em segundo plano",
     "No background tasks": "Nenhuma tarefa em segundo plano",
+    "Cancel task": "Cancelar tarefa",
     "Cancel Task": "Cancelar tarefa",
     "Cancel All Tasks": "Cancelar todas as tarefas",
     "Stop Task": "Parar tarefa",
@@ -1597,6 +1598,28 @@ EXACT_MAP = {
     "Tasks running...": "Tarefas em execução...",
     "1 task running": "1 tarefa em execução",
     "No tasks running": "Nenhuma tarefa em execução",
+    "Search tasks...": "Pesquisar tarefas...",
+    "Search tabs, files, plugins, subagents, artifacts, tasks...": "Pesquisar guias, arquivos, plugins, subagentes, artefatos, tarefas...",
+    "Edit task title": "Editar título da tarefa",
+    "Browser task": "Tarefa do navegador",
+    "Scheduled task": "Tarefa agendada",
+    "Scheduled tasks": "Tarefas agendadas",
+    "Cannot start best-of-N mode: background tasks are still running.": "Não é possível iniciar o modo best-of-N: tarefas em segundo plano ainda estão em execução.",
+    "Timer has expired": "O temporizador expirou",
+    "Timer expired": "Temporizador expirado",
+    "Finished waiting": "Espera concluída",
+    "Checking command status": "Verificando status do comando",
+    "Checked command status": "Verificou status do comando",
+    "Ask every time": "Perguntar sempre",
+    "Yes, allow this time": "Sim, permitir desta vez",
+    "Unable to travel back in time": "Não é possível voltar no tempo",
+    "Validation timed out.": "A validação expirou por tempo limite.",
+    "Request timed out": "A requisição expirou por tempo limite",
+    "Timed out waiting for the update to be installed.": "Tempo limite esgotado aguardando a instalação da atualização.",
+    "Timed out waiting for the updated instance to load.": "Tempo limite esgotado aguardando o carregamento da instância atualizada.",
+    "Timed out waiting for commit message generation": "Tempo limite esgotado aguardando a geração da mensagem de commit",
+    "Waiting for command completion": "Aguardando conclusão do comando",
+    "termination request": "solicitação de encerramento",
     "Tool execution was canceled": "A execução da ferramenta foi cancelada",
     "Tool execution was cancelled": "A execução da ferramenta foi cancelada",
     "The command was canceled.": "O comando foi cancelado.",
@@ -3043,6 +3066,36 @@ js_body = r'''(function() {
         .replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`)
         .replace(/\bcommands\b/gi, 'comandos')
         .replace(/\bcommand\b/gi, 'comando')
+        .replace(/(\d+)\s+tasks?/gi, (_, num) => `${num} ${num === '1' ? 'tarefa' : 'tarefas'}`)
+        .replace(/\btasks\b/gi, 'tarefas')
+        .replace(/\btask\b/gi, 'tarefa')
+        .replace(/(\d+)\s+pages?/gi, (_, num) => `${num} ${num === '1' ? 'página' : 'páginas'}`)
+        .replace(/\bpages\b/gi, 'páginas')
+        .replace(/\bpage\b/gi, 'página')
+        .replace(/(\d+)\s+browsers?/gi, (_, num) => `${num} ${num === '1' ? 'navegador' : 'navegadores'}`)
+        .replace(/\bbrowsers\b/gi, 'navegadores')
+        .replace(/\bbrowser\b/gi, 'navegador')
+        .replace(/(\d+)\s+images?/gi, (_, num) => `${num} ${num === '1' ? 'imagem' : 'imagens'}`)
+        .replace(/\bimages\b/gi, 'imagens')
+        .replace(/\bimage\b/gi, 'imagem')
+        .replace(/(\d+)\s+artifacts?/gi, (_, num) => `${num} ${num === '1' ? 'artefato' : 'artefatos'}`)
+        .replace(/\bartifacts\b/gi, 'artefatos')
+        .replace(/\bartifact\b/gi, 'artefato')
+        .replace(/(\d+)\s+subagents?/gi, (_, num) => `${num} ${num === '1' ? 'subagente' : 'subagentes'}`)
+        .replace(/\bsubagents\b/gi, 'subagentes')
+        .replace(/\bsubagent\b/gi, 'subagente')
+        .replace(/(\d+)\s+agents?/gi, (_, num) => `${num} ${num === '1' ? 'agente' : 'agentes'}`)
+        .replace(/\bagents\b/gi, 'agentes')
+        .replace(/\bagent\b/gi, 'agente')
+        .replace(/(\d+)\s+steps?/gi, (_, num) => `${num} ${num === '1' ? 'etapa' : 'etapas'}`)
+        .replace(/\bsteps\b/gi, 'etapas')
+        .replace(/\bstep\b/gi, 'etapa')
+        .replace(/(\d+)\s+tests?/gi, (_, num) => `${num} ${num === '1' ? 'teste' : 'testes'}`)
+        .replace(/\btests\b/gi, 'testes')
+        .replace(/\btest\b/gi, 'teste')
+        .replace(/(\d+)\s+edits?/gi, (_, num) => `${num} ${num === '1' ? 'edição' : 'edições'}`)
+        .replace(/\bedits\b/gi, 'edições')
+        .replace(/\bedit\b/gi, 'edição')
         .replace(/(\d+)\s+directories\b/gi, (_, num) => `${num} diretórios`)
         .replace(/(\d+)\s+directory\b/gi, (_, num) => `${num} diretório`)
         .replace(/\b1\s+comandos\b/gi, '1 comando')
@@ -3050,7 +3103,17 @@ js_body = r'''(function() {
         .replace(/\b1\s+arquivos\b/gi, '1 arquivo')
         .replace(/\b1\s+pastas\b/gi, '1 pasta')
         .replace(/\b1\s+ferramentas\b/gi, '1 ferramenta')
-        .replace(/\b1\s+pesquisas\b/gi, '1 pesquisa');
+        .replace(/\b1\s+pesquisas\b/gi, '1 pesquisa')
+        .replace(/\b1\s+tarefas\b/gi, '1 tarefa')
+        .replace(/\b1\s+páginas\b/gi, '1 página')
+        .replace(/\b1\s+navegadores\b/gi, '1 navegador')
+        .replace(/\b1\s+imagens\b/gi, '1 imagem')
+        .replace(/\b1\s+artefatos\b/gi, '1 artefato')
+        .replace(/\b1\s+subagentes\b/gi, '1 subagente')
+        .replace(/\b1\s+agentes\b/gi, '1 agente')
+        .replace(/\b1\s+etapas\b/gi, '1 etapa')
+        .replace(/\b1\s+testes\b/gi, '1 teste')
+        .replace(/\b1\s+edições\b/gi, '1 edição');
     }
 
     function resolveCommandCount(cmdStr) {
@@ -3063,53 +3126,177 @@ js_body = r'''(function() {
       return resolveEntityCounts(fileStr);
     }
 
-    if ((m = /^Exploring\s+(.+?),\s*running\s+(.+)$/i.exec(s))) {
-      return `Explorando ${resolveEntityCounts(m[1])}, executando ${resolveCommandCount(m[2])}`;
+    // Regras de Timed / Timing / Schedule / Timer
+    if ((m = /^Timed\s+(\d+)\s*seconds?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}${chev}`;
     }
-    if ((m = /^Explored\s+(.+?),\s*ran\s+(.+)$/i.exec(s))) {
-      return `Explorou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}`;
+    if ((m = /^Timed\s+(\d+)\s*minutes?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]} ${m[1] === '1' ? 'minuto' : 'minutos'}${chev}`;
     }
-    if ((m = /^Exploring\s+(.+?),\s*searching\s+(.+)$/i.exec(s))) {
-      return `Explorando ${resolveEntityCounts(m[1])}, pesquisando ${resolveEntityCounts(m[2])}`;
+    if ((m = /^Timed\s+(\d+)\s*hours?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]} ${m[1] === '1' ? 'hora' : 'horas'}${chev}`;
     }
-    if ((m = /^Explored\s+(.+?),\s*searched\s+(.+)$/i.exec(s))) {
-      return `Explorou ${resolveEntityCounts(m[1])}, pesquisou ${resolveEntityCounts(m[2])}`;
+    if ((m = /^Timed\s+(\d+)\s*(?:milliseconds?|ms)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]} ms${chev}`;
     }
-    if ((m = /^Searching\s+(.+?),\s*running\s+(.+)$/i.exec(s))) {
-      return `Pesquisando ${resolveEntityCounts(m[1])}, executando ${resolveCommandCount(m[2])}`;
+    if ((m = /^Timed\s+(\d+)s(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]}s${chev}`;
     }
-    if ((m = /^Searched\s+(.+?),\s*ran\s+(.+)$/i.exec(s))) {
-      return `Pesquisou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}`;
+    if ((m = /^Timed\s+(\d+)m(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]}m${chev}`;
     }
-    if ((m = /^Exploring\s+(.+)$/i.exec(s))) {
-      return `Explorando ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Timed\s+(\d+)h(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizou ${m[1]}h${chev}`;
     }
-    if ((m = /^Explored\s+(.+)$/i.exec(s))) {
-      return `Explorou ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Timing\s+(\d+)\s*seconds?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizando ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}${chev}`;
     }
-    if ((m = /^Searching\s+(.+)$/i.exec(s))) {
-      return `Pesquisando ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Timing\s+(\d+)\s*minutes?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizando ${m[1]} ${m[1] === '1' ? 'minuto' : 'minutos'}${chev}`;
     }
-    if ((m = /^Searched\s+(.+)$/i.exec(s))) {
-      return `Pesquisou ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Timing\s+(\d+)\s*hours?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizando ${m[1]} ${m[1] === '1' ? 'hora' : 'horas'}${chev}`;
     }
-    if ((m = /^Editing\s+(.+)$/i.exec(s))) {
-      return `Editando ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Timing\s+(\d+)s(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizando ${m[1]}s${chev}`;
     }
-    if ((m = /^Edited\s+(.+)$/i.exec(s))) {
-      return `Editou ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Timing\s+(\d+)m(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizando ${m[1]}m${chev}`;
     }
-    if ((m = /^Running\s+(.+)$/i.exec(s))) {
-      return `Executando ${resolveCommandCount(m[1])}`;
+    if ((m = /^Timing\s+(\d+)h(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Temporizando ${m[1]}h${chev}`;
     }
-    if ((m = /^Ran\s+(.+)$/i.exec(s))) {
-      return `Executou ${resolveCommandCount(m[1])}`;
+    if ((m = /^Finished waiting\s+(\d+)\s*seconds?\.?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Concluiu espera de ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}.${chev}`;
     }
-    if ((m = /^Reading\s+(.+)$/i.exec(s))) {
-      return `Lendo ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Finished waiting\s+(\d+)\s*minutes?\.?(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Concluiu espera de ${m[1]} ${m[1] === '1' ? 'minuto' : 'minutos'}.${chev}`;
     }
-    if ((m = /^Read\s+(.+)$/i.exec(s))) {
-      return `Leu ${resolveEntityCounts(m[1])}`;
+    if ((m = /^Waiting for command completion \(up to (\d+)\s*seconds?\)$/i.exec(s))) {
+      return `Aguardando conclusão do comando (até ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'})`;
+    }
+    if ((m = /^Waiting for (\d+)\s*seconds?$/i.exec(s))) {
+      return `Aguardando ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}`;
+    }
+    if ((m = /^Waited for (\d+)\s*seconds?$/i.exec(s))) {
+      return `Aguardou ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}`;
+    }
+    if ((m = /^Waited (\d+)\s*seconds?$/i.exec(s))) {
+      return `Aguardou ${m[1]} ${m[1] === '1' ? 'segundo' : 'segundos'}`;
+    }
+    if ((m = /^Timer:\s*(\d+)s(?:,\s*Prompt:\s*(.*))?$/i.exec(s))) {
+      return `Temporizador: ${m[1]}s${m[2] ? `, Instrução: ${m[2]}` : ''}`;
+    }
+    if (/^Timer has expired$/i.test(s)) {
+      return "O temporizador expirou";
+    }
+    if (/^Checking command status$/i.test(s)) {
+      return "Verificando status do comando";
+    }
+    if (/^Checked command status$/i.test(s)) {
+      return "Verificou status do comando";
+    }
+    if ((m = /^Executing task:\s*(.+)$/i.exec(s))) {
+      return `Executando tarefa: ${m[1]}`;
+    }
+    if ((m = /^task cancelled \(reason:\s*(.+)\)$/i.exec(s))) {
+      return `tarefa cancelada (motivo: ${m[1]})`;
+    }
+    if ((m = /^Rejected sending (termination request|input) to command$/i.exec(s))) {
+      return `Rejeitou o envio de ${m[1] === 'input' ? 'entrada' : 'solicitação de encerramento'} para o comando`;
+    }
+    if ((m = /^Sent (termination request|input) to command$/i.exec(s))) {
+      return `Enviou ${m[1] === 'input' ? 'entrada' : 'solicitação de encerramento'} para o comando`;
+    }
+    if ((m = /^Suggested sending (termination request|input) to command$/i.exec(s))) {
+      return `Sugeriu envio de ${m[1] === 'input' ? 'entrada' : 'solicitação de encerramento'} para o comando`;
+    }
+    if ((m = /^Error sending (termination request|input) to command$/i.exec(s))) {
+      return `Erro ao enviar ${m[1] === 'input' ? 'entrada' : 'solicitação de encerramento'} para o comando`;
+    }
+    if ((m = /^Sending (termination request|input) to command$/i.exec(s))) {
+      return `Enviando ${m[1] === 'input' ? 'entrada' : 'solicitação de encerramento'} para o comando`;
+    }
+
+    // Regras de agrupamento com suporte tanto a inglês quanto a português prévio e chevrons
+    if ((m = /^Explor(?:ou|ed)\s+(.+?),\s*(?:executou|ran)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[3] ? ` ${m[3]}` : '';
+      return `Explorou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}${chev}`;
+    }
+    if ((m = /^Explor(?:ando|ing)\s+(.+?),\s*(?:executando|running)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[3] ? ` ${m[3]}` : '';
+      return `Explorando ${resolveEntityCounts(m[1])}, executando ${resolveCommandCount(m[2])}${chev}`;
+    }
+    if ((m = /^Explor(?:ou|ed)\s+(.+?),\s*(?:pesquisou|searched)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[3] ? ` ${m[3]}` : '';
+      return `Explorou ${resolveEntityCounts(m[1])}, pesquisou ${resolveEntityCounts(m[2])}${chev}`;
+    }
+    if ((m = /^Explor(?:ando|ing)\s+(.+?),\s*(?:pesquisando|searching)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[3] ? ` ${m[3]}` : '';
+      return `Explorando ${resolveEntityCounts(m[1])}, pesquisando ${resolveEntityCounts(m[2])}${chev}`;
+    }
+    if ((m = /^(?:Searching|Pesquisando)\s+(.+?),\s*(?:running|executando)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[3] ? ` ${m[3]}` : '';
+      return `Pesquisando ${resolveEntityCounts(m[1])}, executando ${resolveCommandCount(m[2])}${chev}`;
+    }
+    if ((m = /^(?:Searched|Pesquisou)\s+(.+?),\s*(?:ran|executou)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[3] ? ` ${m[3]}` : '';
+      return `Pesquisou ${resolveEntityCounts(m[1])}, executou ${resolveCommandCount(m[2])}${chev}`;
+    }
+    if ((m = /^Explor(?:ou|ed)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Explorou ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^Explor(?:ando|ing)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Explorando ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Searching|Pesquisando)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Pesquisando ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Searched|Pesquisou)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Pesquisou ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Editing|Editando)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Editando ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Edited|Editou)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Editou ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Running|Executando)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Executando ${resolveCommandCount(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Ran|Executou)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Executou ${resolveCommandCount(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Reading|Lendo)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Lendo ${resolveEntityCounts(m[1])}${chev}`;
+    }
+    if ((m = /^(?:Read|Leu)\s+(.+?)(?:\s*([>v›▼▶]))?$/i.exec(s))) {
+      const chev = m[2] ? ` ${m[2]}` : '';
+      return `Leu ${resolveEntityCounts(m[1])}${chev}`;
     }
 
     // Ações de gerenciamento de tarefas (Checked task, Killed task, etc.)
@@ -4724,7 +4911,32 @@ js_body = r'''(function() {
       [/^Looking at the codebase,?/i, 'Analisando a base de código,'],
       [/^Looking at the repository,?/i, 'Analisando o repositório,'],
       [/^The goal is to\s+(.+)$/i, 'O objetivo é $1'],
-      [/^The main goal is to\s+(.+)$/i, 'O objetivo principal é $1']
+      [/^The main goal is to\s+(.+)$/i, 'O objetivo principal é $1'],
+      // Tarefas, temporizadores e processos em background
+      [/^Waiting for (?:the )?task notification\b.*$/i, 'Aguardando a notificação da tarefa'],
+      [/^Waiting for (?:the )?tests to finish\b.*$/i, 'Aguardando a conclusão dos testes'],
+      [/^Waiting for (?:the )?tests to complete\b.*$/i, 'Aguardando a conclusão dos testes'],
+      [/^Waiting for (?:the )?backend tests\b.*$/i, 'Aguardando os testes de backend'],
+      [/^Waiting for (?:the )?frontend tests\b.*$/i, 'Aguardando os testes de frontend'],
+      [/^Waiting for (?:the )?completion of\s+(.+)$/i, 'Aguardando a conclusão de $1'],
+      [/^Waiting for (?:the )?result of\s+(.+)$/i, 'Aguardando o resultado de $1'],
+      [/^Waiting for (?:the )?output of\s+(.+)$/i, 'Aguardando a saída de $1'],
+      [/^Waiting for (?:the )?(?:task|command|tests?|build|process)\s+(.+)$/i, 'Aguardando $1'],
+      [/^Checking (?:the )?task status\b.*$/i, 'Verificando o status da tarefa'],
+      [/^Checking (?:the )?status of\s+(.+)$/i, 'Verificando o status de $1'],
+      [/^Checking (?:the )?test results\b.*$/i, 'Verificando os resultados dos testes'],
+      [/^The task is still running\b.*$/i, 'A tarefa ainda está em execução'],
+      [/^The task has finished\b.*$/i, 'A tarefa foi finalizada'],
+      [/^The task has completed\b.*$/i, 'A tarefa foi concluída'],
+      [/^The task finished\b.*$/i, 'A tarefa foi concluída'],
+      [/^The command is still running\b.*$/i, 'O comando ainda está em execução'],
+      [/^The command has finished\b.*$/i, 'O comando foi finalizado'],
+      [/^The tests are running\b.*$/i, 'Os testes estão em execução'],
+      [/^The tests passed\b.*$/i, 'Os testes passaram'],
+      [/^The tests failed\b.*$/i, 'Os testes falharam'],
+      [/^Scheduling a timer for\s+(.+)$/i, 'Agendando um temporizador para $1'],
+      [/^Setting a timer for\s+(.+)$/i, 'Definindo um temporizador para $1'],
+      [/^Setting a timeout of\s+(.+)$/i, 'Definindo um tempo limite de $1']
     ];
 
     for (const [pattern, repl] of rules) {

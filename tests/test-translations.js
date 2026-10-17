@@ -1055,6 +1055,88 @@ test('Tradução de Auditoria Profunda da Interface e Motor Avançado de Pensame
   );
 });
 
+test('Tradução de Termos de Execução, Agrupamentos de Ferramentas, Tasks e Timers (v1.5.1)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  const thoughtSync = sandbox.window.__CAMBRITH_TRANSLATE_THOUGHT_SYNC__;
+
+  // Agrupamentos de ferramentas e tarefas
+  assert.equal(tr('Explored 1 task'), 'Explorou 1 tarefa');
+  assert.equal(tr('Explorou 1 task >'), 'Explorou 1 tarefa >');
+  assert.equal(tr('Explored 1 task >'), 'Explorou 1 tarefa >');
+  assert.equal(
+    tr('Explored 1 arquivo, 2 tasks, executou 2 comandos'),
+    'Explorou 1 arquivo, 2 tarefas, executou 2 comandos'
+  );
+  assert.equal(
+    tr('Explorou 1 arquivo, 2 tasks, executou 2 comandos >'),
+    'Explorou 1 arquivo, 2 tarefas, executou 2 comandos >'
+  );
+  assert.equal(
+    tr('Explored 2 tasks, ran 1 command'),
+    'Explorou 2 tarefas, executou 1 comando'
+  );
+  assert.equal(
+    tr('Explorou 2 tasks, executou 1 comando >'),
+    'Explorou 2 tarefas, executou 1 comando >'
+  );
+  assert.equal(
+    tr('Explorando 6 arquivos, executando 1 comando v'),
+    'Explorando 6 arquivos, executando 1 comando v'
+  );
+  assert.equal(
+    tr('Exploring 1 task, running 1 command'),
+    'Explorando 1 tarefa, executando 1 comando'
+  );
+
+  // Temporizadores e schedule
+  assert.equal(tr('Timed 2 seconds'), 'Temporizou 2 segundos');
+  assert.equal(tr('Timed 2 seconds >'), 'Temporizou 2 segundos >');
+  assert.equal(tr('Timed 1 second'), 'Temporizou 1 segundo');
+  assert.equal(tr('Timed 1 second >'), 'Temporizou 1 segundo >');
+  assert.equal(tr('Timed 500 ms'), 'Temporizou 500 ms');
+  assert.equal(tr('Timing 2 seconds'), 'Temporizando 2 segundos');
+  assert.equal(tr('Timing 2 seconds >'), 'Temporizando 2 segundos >');
+  assert.equal(tr('Finished waiting 2 seconds.'), 'Concluiu espera de 2 segundos.');
+  assert.equal(
+    tr('Waiting for command completion (up to 5 seconds)'),
+    'Aguardando conclusão do comando (até 5 segundos)'
+  );
+  assert.equal(tr('Checking command status'), 'Verificando status do comando');
+  assert.equal(tr('Checked command status'), 'Verificou status do comando');
+  assert.equal(tr('Executing task: build'), 'Executando tarefa: build');
+  assert.equal(tr('task cancelled (reason: aborted)'), 'tarefa cancelada (motivo: aborted)');
+  assert.equal(tr('Search tasks...'), 'Pesquisar tarefas...');
+  assert.equal(tr('Cancel task'), 'Cancelar tarefa');
+  assert.equal(tr('Edit task title'), 'Editar título da tarefa');
+  assert.equal(tr('Timer has expired'), 'O temporizador expirou');
+  assert.equal(tr('Timer expired'), 'Temporizador expirado');
+  assert.equal(tr('Sent input to command'), 'Enviou entrada para o comando');
+  assert.equal(
+    tr('Sent termination request to command'),
+    'Enviou solicitação de encerramento para o comando'
+  );
+
+  // Raciocínio síncrono sobre tarefas e temporizadores
+  assert.equal(
+    thoughtSync('Waiting for the task notification to proceed with the next steps.'),
+    'Aguardando a notificação da tarefa'
+  );
+  assert.equal(
+    thoughtSync('Checking the task status to ensure the build succeeded.'),
+    'Verificando o status da tarefa'
+  );
+  assert.equal(
+    thoughtSync('The task is still running in the background.'),
+    'A tarefa ainda está em execução'
+  );
+  assert.equal(
+    thoughtSync('The task has completed successfully without any errors.'),
+    'A tarefa foi concluída'
+  );
+});
+
+
 
 
 
