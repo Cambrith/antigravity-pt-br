@@ -4,6 +4,31 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.7] - 2026-10-17
+
+### Adicionado
+- **Tradução de Ações de Tarefas e Ferramentas Durante o Raciocínio (`Tasks & Tool Actions`)**:
+  - Localização integral das ações de tarefas e processos em background exibidos nos cards e fluxos de pensamento:
+    - `Checked task ...` $\rightarrow$ `Verificou tarefa ...`
+    - `Checking task ...` $\rightarrow$ `Verificando tarefa ...`
+    - `Killed task ...` $\rightarrow$ `Encerrou tarefa ...`
+    - `Killing task ...` $\rightarrow$ `Encerrando tarefa ...`
+    - `Started task ...` $\rightarrow$ `Iniciou tarefa ...`
+    - `Starting task ...` $\rightarrow$ `Iniciando tarefa ...`
+    - `Cancelled task ...` $\rightarrow$ `Cancelou tarefa ...`
+    - `Cancelling task ...` $\rightarrow$ `Cancelando tarefa ...`
+    - `Managed task ...` $\rightarrow$ `Gerenciou tarefa ...`
+    - `Managing task ...` $\rightarrow$ `Gerenciando tarefa ...`
+    - `Sent input to task ...` $\rightarrow$ `Enviou entrada para tarefa ...`
+    - `Sending input to task ...` $\rightarrow$ `Enviando entrada para tarefa ...`
+    - `Listed tasks` $\rightarrow$ `Listou tarefas`, `Listing tasks` $\rightarrow$ `Listando tarefas`.
+- **Motor Instantâneo de Tradução de Pensamento (Zero-Latency Thinking Translator)**:
+  - Adicionado processador síncrono `translateThoughtTextSync()` exposto globalmente como `window.__CAMBRITH_TRANSLATE_THOUGHT_SYNC__`.
+  - Tradução imediata de sentenças comuns de pensamento de LLMs no exato momento da injeção do texto na tela.
+  - Correção e expansão dos gatilhos em `scanAndTranslateAllThoughts()` para monitorar ativamente a fase "Pensando..." (`pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning`), sem aguardar a conclusão do bloco de pensamento.
+- **Correção Gramatical de Concordância Singular nos Agrupadores de Ações**:
+  - Correção definitiva do erro de concordância onde era exibido `1 comandos`: agora normalizado estritamente para `1 comando` (bem como `1 ação`, `1 arquivo`, `1 pasta`, `1 ferramenta`, `1 pesquisa`).
+
 ## [1.4.6] - 2026-10-17
 
 ### Adicionado

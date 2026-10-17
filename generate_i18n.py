@@ -100,6 +100,43 @@ EXACT_MAP = {
     "Searched code": "Pesquisou código",
     "Searching the web": "Pesquisando na web",
     "Searched the web": "Pesquisou na web",
+    "Listed tasks": "Listou tarefas",
+    "Listing tasks": "Listando tarefas",
+    "Listed subagents": "Listou subagentes",
+    "Listing subagents": "Listando subagentes",
+    "Checked task": "Verificou tarefa",
+    "Checking task": "Verificando tarefa",
+    "Killed task": "Encerrou tarefa",
+    "Killing task": "Encerrando tarefa",
+    "Cancelled task": "Cancelou tarefa",
+    "Cancelling task": "Cancelando tarefa",
+    "Canceled task": "Cancelou tarefa",
+    "Canceling task": "Cancelando tarefa",
+    "Started task": "Iniciou tarefa",
+    "Starting task": "Iniciando tarefa",
+    "Ran task": "Executou tarefa",
+    "Running task": "Executando tarefa",
+    "Managed task": "Gerenciou tarefa",
+    "Managing task": "Gerenciando tarefa",
+    "Sent input to task": "Enviou entrada para a tarefa",
+    "Sending input to task": "Enviando entrada para a tarefa",
+    "Invoked subagent": "Invocou subagente",
+    "Invoking subagent": "Invocando subagente",
+    "Sent message to": "Enviou mensagem para",
+    "Sending message to": "Enviando mensagem para",
+    "Viewed file": "Visualizou arquivo",
+    "Viewing file": "Visualizando arquivo",
+    "Created file": "Criou arquivo",
+    "Creating file": "Criando arquivo",
+    "Thinking...": "Pensando...",
+    "Thinking": "Pensando",
+    "Thinking process": "Processo de raciocínio",
+    "Thinking Process": "Processo de raciocínio",
+    "Thought process": "Processo de raciocínio",
+    "Thought Process": "Processo de raciocínio",
+    "Reasoning process": "Processo de raciocínio",
+    "Reasoning Process": "Processo de raciocínio",
+    "Reasoning": "Raciocínio",
     "Demoted": "Rebaixada",
     "demoted": "rebaixada",
     "Excluded": "Excluída",
@@ -2968,12 +3005,20 @@ js_body = r'''(function() {
         .replace(/\bcommands\b/gi, 'comandos')
         .replace(/\bcommand\b/gi, 'comando')
         .replace(/(\d+)\s+directories\b/gi, (_, num) => `${num} diretórios`)
-        .replace(/(\d+)\s+directory\b/gi, (_, num) => `${num} diretório`);
+        .replace(/(\d+)\s+directory\b/gi, (_, num) => `${num} diretório`)
+        .replace(/\b1\s+comandos\b/gi, '1 comando')
+        .replace(/\b1\s+ações\b/gi, '1 ação')
+        .replace(/\b1\s+arquivos\b/gi, '1 arquivo')
+        .replace(/\b1\s+pastas\b/gi, '1 pasta')
+        .replace(/\b1\s+ferramentas\b/gi, '1 ferramenta')
+        .replace(/\b1\s+pesquisas\b/gi, '1 pesquisa');
     }
 
     function resolveCommandCount(cmdStr) {
       if (!cmdStr) return cmdStr;
-      return resolveEntityCounts(cmdStr).replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`);
+      return resolveEntityCounts(cmdStr)
+        .replace(/(\d+)\s+commands?/gi, (_, num) => `${num} ${num === '1' ? 'comando' : 'comandos'}`)
+        .replace(/\b1\s+comandos\b/gi, '1 comando');
     }
     function resolveFileCount(fileStr) {
       return resolveEntityCounts(fileStr);
@@ -3026,6 +3071,88 @@ js_body = r'''(function() {
     }
     if ((m = /^Read\s+(.+)$/i.exec(s))) {
       return `Leu ${resolveEntityCounts(m[1])}`;
+    }
+
+    // Ações de gerenciamento de tarefas (Checked task, Killed task, etc.)
+    if ((m = /^Checked task\s+(.+)$/i.exec(s))) {
+      return `Verificou tarefa ${m[1]}`;
+    }
+    if ((m = /^Checking task\s+(.+)$/i.exec(s))) {
+      return `Verificando tarefa ${m[1]}`;
+    }
+    if ((m = /^Killed task\s+(.+)$/i.exec(s))) {
+      return `Encerrou tarefa ${m[1]}`;
+    }
+    if ((m = /^Killing task\s+(.+)$/i.exec(s))) {
+      return `Encerrando tarefa ${m[1]}`;
+    }
+    if ((m = /^(?:Cancelled|Canceled) task\s+(.+)$/i.exec(s))) {
+      return `Cancelou tarefa ${m[1]}`;
+    }
+    if ((m = /^Cancelling task\s+(.+)$/i.exec(s))) {
+      return `Cancelando tarefa ${m[1]}`;
+    }
+    if ((m = /^Started task\s+(.+)$/i.exec(s))) {
+      return `Iniciou tarefa ${m[1]}`;
+    }
+    if ((m = /^Starting task\s+(.+)$/i.exec(s))) {
+      return `Iniciando tarefa ${m[1]}`;
+    }
+    if ((m = /^Managed task\s+(.+)$/i.exec(s))) {
+      return `Gerenciou tarefa ${m[1]}`;
+    }
+    if ((m = /^Managing task\s+(.+)$/i.exec(s))) {
+      return `Gerenciando tarefa ${m[1]}`;
+    }
+    if ((m = /^Sent input to task\s+(.+)$/i.exec(s))) {
+      return `Enviou entrada para a tarefa ${m[1]}`;
+    }
+    if ((m = /^Sending input to task\s+(.+)$/i.exec(s))) {
+      return `Enviando entrada para a tarefa ${m[1]}`;
+    }
+    if (/^Listed tasks$/i.test(s)) {
+      return "Listou tarefas";
+    }
+    if (/^Listing tasks$/i.test(s)) {
+      return "Listando tarefas";
+    }
+    if ((m = /^Ran task\s+(.+)$/i.exec(s))) {
+      return `Executou tarefa ${m[1]}`;
+    }
+    if ((m = /^Running task\s+(.+)$/i.exec(s))) {
+      return `Executando tarefa ${m[1]}`;
+    }
+
+    // Ações de arquivos e subagentes
+    if ((m = /^Viewed file\s+(.+)$/i.exec(s))) {
+      return `Visualizou arquivo ${m[1]}`;
+    }
+    if ((m = /^Viewing file\s+(.+)$/i.exec(s))) {
+      return `Visualizando arquivo ${m[1]}`;
+    }
+    if ((m = /^Created file\s+(.+)$/i.exec(s))) {
+      return `Criou arquivo ${m[1]}`;
+    }
+    if ((m = /^Creating file\s+(.+)$/i.exec(s))) {
+      return `Criando arquivo ${m[1]}`;
+    }
+    if ((m = /^Invoked subagent\s+(.+)$/i.exec(s))) {
+      return `Invocou subagente ${m[1]}`;
+    }
+    if ((m = /^Invoking subagent\s+(.+)$/i.exec(s))) {
+      return `Invocando subagente ${m[1]}`;
+    }
+    if ((m = /^Sent message to\s+(.+)$/i.exec(s))) {
+      return `Enviou mensagem para ${m[1]}`;
+    }
+    if ((m = /^Sending message to\s+(.+)$/i.exec(s))) {
+      return `Enviando mensagem para ${m[1]}`;
+    }
+    if (/^Listed subagents$/i.test(s)) {
+      return "Listou subagentes";
+    }
+    if (/^Listing subagents$/i.test(s)) {
+      return "Listando subagentes";
     }
 
     // Sentenças de raciocínio, análise e fluxo do modelo
@@ -4353,6 +4480,61 @@ js_body = r'''(function() {
     }
   }
 
+  function translateThoughtTextSync(text) {
+    if (!text || typeof text !== 'string') return null;
+    const trimmed = text.trim();
+    if (!trimmed || !isEnglishThoughtText(trimmed)) return null;
+
+    let res = trimmed;
+    const rules = [
+      [/^The user wants me to\s+(.+)$/i, 'O usuário quer que eu $1'],
+      [/^The user wants to\s+(.+)$/i, 'O usuário quer $1'],
+      [/^The user is asking to\s+(.+)$/i, 'O usuário está pedindo para $1'],
+      [/^The user is asking for\s+(.+)$/i, 'O usuário está pedindo $1'],
+      [/^The user requested\s+(.+)$/i, 'O usuário solicitou $1'],
+      [/^The user noticed\s+(.+)$/i, 'O usuário notou $1'],
+      [/^The user reported\s+(.+)$/i, 'O usuário relatou $1'],
+      [/^The user provided\s+(.+)$/i, 'O usuário forneceu $1'],
+      [/^In the provided screenshot,?/i, 'Na captura de tela fornecida,'],
+      [/^In the uploaded image,?/i, 'Na imagem enviada,'],
+      [/^Looking at the image,?/i, 'Analisando a imagem,'],
+      [/^The screenshot shows\s+(.+)$/i, 'A captura de tela mostra $1'],
+      [/^The image shows\s+(.+)$/i, 'A imagem mostra $1'],
+      [/^Based on the user request,?/i, 'Com base na solicitação do usuário,'],
+      [/^To address this request,?/i, 'Para atender a esta solicitação,'],
+      [/^First, let['’]s check\s+(.+)$/i, 'Primeiro, vamos verificar $1'],
+      [/^First, let['’]s examine\s+(.+)$/i, 'Primeiro, vamos examinar $1'],
+      [/^First, let['’]s inspect\s+(.+)$/i, 'Primeiro, vamos inspecionar $1'],
+      [/^First, let['’]s\s+(.+)$/i, 'Primeiro, vamos $1'],
+      [/^First, I need to\s+(.+)$/i, 'Primeiro, preciso $1'],
+      [/^First, I should\s+(.+)$/i, 'Primeiro, devo $1'],
+      [/^Let['’]s check\s+(.+)$/i, 'Vamos verificar $1'],
+      [/^Let['’]s examine\s+(.+)$/i, 'Vamos examinar $1'],
+      [/^Let['’]s inspect\s+(.+)$/i, 'Vamos inspecionar $1'],
+      [/^Let['’]s search\s+(.+)$/i, 'Vamos pesquisar $1'],
+      [/^Let['’]s look at\s+(.+)$/i, 'Vamos dar uma olhada em $1'],
+      [/^Let['’]s find\s+(.+)$/i, 'Vamos encontrar $1'],
+      [/^Now, let['’]s\s+(.+)$/i, 'Agora, vamos $1'],
+      [/^Now I need to\s+(.+)$/i, 'Agora preciso $1'],
+      [/^We need to\s+(.+)$/i, 'Precisamos $1'],
+      [/^I need to\s+(.+)$/i, 'Preciso $1'],
+      [/^I will\s+(.+)$/i, 'Vou $1'],
+      [/^This requires\s+(.+)$/i, 'Isso requer $1']
+    ];
+
+    for (const [pattern, repl] of rules) {
+      if (pattern.test(res)) {
+        res = res.replace(pattern, repl);
+        break;
+      }
+    }
+
+    if (res !== trimmed) {
+      return res;
+    }
+    return null;
+  }
+
   function processThoughtContainer(container) {
     if (!container || container.__cambrith_processing) return;
 
@@ -4363,6 +4545,13 @@ js_body = r'''(function() {
         if (block.__cambrith_thought_translated) continue;
         const text = (block.innerText || '').trim();
         if (isEnglishThoughtText(text)) {
+          const syncTrans = translateThoughtTextSync(text);
+          if (syncTrans) {
+            block.innerText = syncTrans;
+            block.__cambrith_thought_translated = true;
+            thoughtCache.set(text, syncTrans);
+            continue;
+          }
           if (thoughtCache.has(text)) {
             const cached = thoughtCache.get(text);
             block.innerText = cached;
@@ -4399,6 +4588,13 @@ js_body = r'''(function() {
     for (const node of candidateNodes) {
       const orig = node.nodeValue;
       const trimmed = orig.trim();
+      const syncTrans = translateThoughtTextSync(trimmed);
+      if (syncTrans) {
+        node.nodeValue = orig.replace(trimmed, syncTrans);
+        node.__cambrith_thought_translated = true;
+        thoughtCache.set(trimmed, syncTrans);
+        continue;
+      }
       if (thoughtCache.has(trimmed)) {
         const cached = thoughtCache.get(trimmed);
         node.nodeValue = orig.replace(trimmed, cached);
@@ -4417,25 +4613,25 @@ js_body = r'''(function() {
   function scanAndTranslateAllThoughts() {
     prefetchAllTriggers();
 
-    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], button[aria-expanded]');
+    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], button[aria-expanded], [class*="thinking"], [class*="thought"]');
     for (const trig of triggers) {
       const text = trig.innerText || '';
-      if (!/pensou por|thought for/i.test(text)) continue;
+      if (!/pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(text)) continue;
 
-      const container = trig.nextElementSibling || trig.parentElement?.querySelector('.overflow-y-auto, .cursor-edit');
+      const container = trig.nextElementSibling || trig.parentElement?.querySelector('.overflow-y-auto, .cursor-edit, [class*="content"]');
       if (container) {
         processThoughtContainer(container);
       }
     }
 
-    const directContainers = document.querySelectorAll('.cursor-edit.group, [class*="cursor-edit"]');
+    const directContainers = document.querySelectorAll('.cursor-edit.group, [class*="cursor-edit"], [data-testid="thinking-content"], [class*="thought-content"], [class*="thinking-content"]');
     for (const c of directContainers) {
       processThoughtContainer(c);
     }
   }
 
   let thoughtDebounceTimer = null;
-  function scheduleThoughtScan(delay = 80) {
+  function scheduleThoughtScan(delay = 40) {
     if (thoughtDebounceTimer) clearTimeout(thoughtDebounceTimer);
     thoughtDebounceTimer = setTimeout(() => {
       scanAndTranslateAllThoughts();
@@ -4444,20 +4640,20 @@ js_body = r'''(function() {
 
   // Intercepta pointerdown imediatamente antes do clique do usuário
   document.addEventListener('pointerdown', (e) => {
-    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button');
-    if (trig && /pensou por|thought for/i.test(trig.innerText || '')) {
+    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button, [class*="thinking"], [class*="thought"]');
+    if (trig && /pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(trig.innerText || '')) {
       prefetchTriggerThinking(trig);
       scanAndTranslateAllThoughts();
     }
   }, { capture: true, passive: true });
 
   document.addEventListener('click', (e) => {
-    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button');
-    if (trig && /pensou por|thought for/i.test(trig.innerText || '')) {
+    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button, [class*="thinking"], [class*="thought"]');
+    if (trig && /pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(trig.innerText || '')) {
       scanAndTranslateAllThoughts();
-      setTimeout(scanAndTranslateAllThoughts, 20);
-      setTimeout(scanAndTranslateAllThoughts, 80);
-      setTimeout(scanAndTranslateAllThoughts, 250);
+      setTimeout(scanAndTranslateAllThoughts, 10);
+      setTimeout(scanAndTranslateAllThoughts, 50);
+      setTimeout(scanAndTranslateAllThoughts, 150);
     }
   }, { capture: true, passive: true });
 
@@ -4517,7 +4713,7 @@ js_body = r'''(function() {
         }
       }
       if (shouldScanThoughts) {
-        scheduleThoughtScan(120);
+        scheduleThoughtScan(40);
       }
     });
     obs.observe(document.documentElement, {
@@ -4537,6 +4733,7 @@ js_body = r'''(function() {
   }
   window.__CAMBRITH_TRANSLATE_STR__ = translateString;
   window.__CAMBRITH_TRANSLATE_THOUGHT__ = translateThoughtTextAsync;
+  window.__CAMBRITH_TRANSLATE_THOUGHT_SYNC__ = translateThoughtTextSync;
   window.__CAMBRITH_PROCESS_THOUGHTS__ = scanAndTranslateAllThoughts;
   window.__CAMBRITH_PREFETCH_THOUGHTS__ = prefetchAllTriggers;
   window.__CAMBRITH_IS_EN_THOUGHT__ = isEnglishThoughtText;

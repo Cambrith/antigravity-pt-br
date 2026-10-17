@@ -923,6 +923,80 @@ test('Tradução de Avisos e Notificações do Gemini 4 Argon e Modelos Avançad
   assert.equal(notif.options.body, 'Faça upgrade para o Ultra para acessar o Gemini 4 Argon.');
 });
 
+test('Tradução de Ações de Tarefas (Checked/Killed task), Concordância e Pensamento Instantâneo', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  const thoughtSync = sandbox.window.__CAMBRITH_TRANSLATE_THOUGHT_SYNC__;
+
+  // Ações de tarefas evidenciadas na interface do usuário
+  assert.equal(
+    tr('Checked task Busca por Antigravity e tradução'),
+    'Verificou tarefa Busca por Antigravity e tradução'
+  );
+  assert.equal(
+    tr('Killed task Busca por Antigravity e tradução'),
+    'Encerrou tarefa Busca por Antigravity e tradução'
+  );
+  assert.equal(
+    tr('Checking task Busca de repositórios Git'),
+    'Verificando tarefa Busca de repositórios Git'
+  );
+  assert.equal(
+    tr('Killing task Tarefa em execução'),
+    'Encerrando tarefa Tarefa em execução'
+  );
+  assert.equal(
+    tr('Started task Compilação do projeto'),
+    'Iniciou tarefa Compilação do projeto'
+  );
+  assert.equal(
+    tr('Cancelled task Processo de build'),
+    'Cancelou tarefa Processo de build'
+  );
+  assert.equal(tr('Listed tasks'), 'Listou tarefas');
+  assert.equal(tr('Listing tasks'), 'Listando tarefas');
+
+  // Concordância estrita de singular em ações compostas ("1 comando", nunca "1 comandos")
+  assert.equal(
+    tr('Exploring 2 files, 2 actions, running 1 commands'),
+    'Explorando 2 arquivos, 2 ações, executando 1 comando'
+  );
+  assert.equal(
+    tr('Explored 2 files, 2 actions, ran 1 command'),
+    'Explorou 2 arquivos, 2 ações, executou 1 comando'
+  );
+  assert.equal(
+    tr('Running 1 commands'),
+    'Executando 1 comando'
+  );
+  assert.equal(
+    tr('Ran 1 commands'),
+    'Executou 1 comando'
+  );
+
+  // Termos de cabeçalho de raciocínio
+  assert.equal(tr('Thinking...'), 'Pensando...');
+  assert.equal(tr('Thinking'), 'Pensando');
+  assert.equal(tr('Thought process'), 'Processo de raciocínio');
+  assert.equal(tr('Reasoning process'), 'Processo de raciocínio');
+  assert.equal(tr('Reasoning'), 'Raciocínio');
+
+  // Tradução síncrona instantânea de raciocínio (Zero Latency)
+  assert.equal(
+    thoughtSync('The user wants me to implement this translation feature.'),
+    'O usuário quer que eu implement this translation feature.'
+  );
+  assert.equal(
+    thoughtSync('First, let\'s check the files in the directory.'),
+    'Primeiro, vamos verificar the files in the directory.'
+  );
+  assert.equal(
+    thoughtSync('In the uploaded image, we can see the task list.'),
+    'Na imagem enviada, we can see the task list.'
+  );
+});
+
+
 
 
 
