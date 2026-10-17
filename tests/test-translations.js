@@ -20,7 +20,11 @@ function setupSandbox() {
       createElement: () => ({ setAttribute: () => {}, style: {}, addEventListener: () => {} })
     },
     window: {
-      addEventListener: () => {}
+      addEventListener: () => {},
+      Notification: function MockNotification(title, options) {
+        this.title = title;
+        this.options = options;
+      }
     },
     screen: { height: 1080 },
     MutationObserver: function() { return { observe: () => {}, disconnect: () => {} }; },
@@ -835,6 +839,90 @@ test('Tradução de Regras e Personalizações de Regras (Rules & Rule Previews)
   assert.equal(tr('AGENTS.md'), null);
   assert.equal(tr('flutter-hot-reload.md'), null);
 });
+
+test('Tradução de Avisos e Notificações do Gemini 4 Argon e Modelos Avançados', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Frase original do aviso no canto inferior direito
+  assert.equal(
+    tr('Gemini 4 Argon is currently available to Ultra plan subscribers.'),
+    'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is currently available to Ultra plan subscribers'),
+    'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is currently available to Ultra subscribers.'),
+    'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.'
+  );
+
+  // Variações de "now available" e "paid plans"
+  assert.equal(
+    tr('Gemini 4 Argon is now available to Ultra plan subscribers.'),
+    'O Gemini 4 Argon já está disponível para assinantes do plano Ultra.'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is now available to Ultra plan subscribers'),
+    'O Gemini 4 Argon já está disponível para assinantes do plano Ultra'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is now available on paid Pro and Ultra plans.'),
+    'O Gemini 4 Argon já está disponível nos planos pagos Pro e Ultra.'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is currently available on Ultra plans.'),
+    'O Gemini 4 Argon está disponível atualmente nos planos Ultra.'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon is available on the Ultra plan.'),
+    'O Gemini 4 Argon está disponível no plano Ultra.'
+  );
+
+  // Avisos de upgrade e acesso
+  assert.equal(
+    tr('Upgrade to Ultra to access Gemini 4 Argon.'),
+    'Faça upgrade para o Ultra para acessar o Gemini 4 Argon.'
+  );
+  assert.equal(
+    tr('Gemini 4 Argon requires an Ultra subscription.'),
+    'O Gemini 4 Argon requer uma assinatura do plano Ultra.'
+  );
+  assert.equal(
+    tr('Access Gemini 4 Argon with an Ultra plan.'),
+    'Acesse o Gemini 4 Argon com um plano Ultra.'
+  );
+
+  // Ações e botões
+  assert.equal(tr('Gemini 4 Argon is now available.'), 'O Gemini 4 Argon já está disponível.');
+  assert.equal(tr('Gemini 4 Argon is available.'), 'O Gemini 4 Argon está disponível.');
+  assert.equal(tr('Try Gemini 4 Argon'), 'Experimente o Gemini 4 Argon');
+  assert.equal(tr('Switch to Gemini 4 Argon'), 'Mudar para o Gemini 4 Argon');
+
+  // Sonnet 5.5, Opus 5.5 e GPT-OSS
+  assert.equal(
+    tr('Sonnet 5.5 is now available on paid Pro and Ultra plans. Third-party model access will no longer be available on your current plan starting on November 2, 2026.'),
+    'O Sonnet 5.5 já está disponível nos planos pagos Pro e Ultra. O acesso a modelos de terceiros não estará mais disponível em seu plano atual a partir de 2 de novembro de 2026.'
+  );
+  assert.equal(
+    tr('Opus 5.5 is now available on paid Pro and Ultra plans. Third-party model access will no longer be available on your current plan starting on November 2, 2026.'),
+    'O Opus 5.5 já está disponível nos planos pagos Pro e Ultra. O acesso a modelos de terceiros não estará mais disponível em seu plano atual a partir de 2 de novembro de 2026.'
+  );
+  assert.equal(
+    tr('GPT-OSS will be removed from Antigravity on November 2, 2026.'),
+    'O GPT-OSS será removido do Antigravity em 2 de novembro de 2026.'
+  );
+
+  // Validação da interceptação da API Notification do navegador/Electron
+  const notif = new sandbox.window.Notification(
+    'Gemini 4 Argon is currently available to Ultra plan subscribers.',
+    { body: 'Upgrade to Ultra to access Gemini 4 Argon.' }
+  );
+  assert.equal(notif.title, 'O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.');
+  assert.equal(notif.options.body, 'Faça upgrade para o Ultra para acessar o Gemini 4 Argon.');
+});
+
 
 
 

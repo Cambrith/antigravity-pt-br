@@ -4,6 +4,24 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.6] - 2026-10-17
+
+### Adicionado
+- **Tradução Completa e Resiliente de Avisos de Modelos e Gemini 4 Argon (`Gemini 4 Argon & Model Notifications`)**:
+  - Localização integral das notificações e alertas exibidos no canto inferior direito sobre disponibilidade de modelos:
+    - `Gemini 4 Argon is currently available to Ultra plan subscribers.` $\rightarrow$ `O Gemini 4 Argon está disponível atualmente para assinantes do plano Ultra.`
+    - Suporte para todas as variações pontuais e estruturais com ou sem pontuação final (`is now available`, `on Ultra plans`, `for Ultra subscribers`, `Upgrade to Ultra to access Gemini 4 Argon`, `Gemini 4 Argon requires an Ultra subscription`, `Access Gemini 4 Argon with an Ultra plan`, etc.).
+    - Variações sem ponto final para anúncios de novos modelos (`Sonnet 5.5 is now available on paid Pro and Ultra plans...`, `Opus 5.5...`, `GPT-OSS will be removed...`).
+  - **Regras Dinâmicas de Modelos (`translateDynamic`)**:
+    - Expressões regulares especializadas para capturar avisos e notificações de modelos e tiers (Ultra / Pro), garantindo concordância gramatical idiomática.
+  - **Interceptação Global da API Notification (`window.Notification`)**:
+    - Interceptador do construtor nativo `window.Notification` do navegador e Electron, traduzindo automaticamente `title` e `options.body` antes de serem renderizados pelo sistema.
+  - **Proteção e Tradução Direta de Toasts**:
+    - Garantia de que containers de avisos e notificações (`.notifications-toasts`, `.notification-toast`, `.monaco-notification`, `[role="alert"]`, `[role="status"]`) nunca sejam ignorados por `shouldSkipElement`, com decomposição e substituição sob demanda para toasts compostos.
+  - **Persistência Multi-Camada**:
+    - Sincronização automática para o Golden Master persistente em `~/.config/Antigravity/i18n/` e `resources/`, garantindo preservação mesmo após atualizações do Antigravity.
+  - Suíte de testes automatizados expandida para 29 testes aprovados (100% de sucesso).
+
 ## [1.4.5] - 2026-10-15
 
 ### Corrigido
