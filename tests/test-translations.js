@@ -1008,6 +1008,53 @@ test('Tradução de Ações de Tarefas (Checked/Killed task), Concordância e Pe
   );
 });
 
+test('Tradução de Auditoria Profunda da Interface e Motor Avançado de Pensamento', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  const thoughtSync = sandbox.window.__CAMBRITH_TRANSLATE_THOUGHT_SYNC__;
+
+  // Itens encontrados na auditoria profunda da interface ao vivo
+  assert.equal(tr('Terminal tab'), 'Aba do terminal');
+  assert.equal(
+    tr('Load older messages, showing 135 of 502'),
+    'Carregar mensagens anteriores, exibindo 135 de 502'
+  );
+  assert.equal(tr('Load older messages'), 'Carregar mensagens anteriores');
+  assert.equal(tr('Clear conversation'), 'Limpar conversa');
+  assert.equal(tr('Delete conversation'), 'Excluir conversa');
+  assert.equal(tr('Rename conversation'), 'Renomear conversa');
+  assert.equal(tr('Pin conversation'), 'Fixar conversa');
+  assert.equal(tr('Unpin conversation'), 'Desafixar conversa');
+  assert.equal(tr('Share conversation'), 'Compartilhar conversa');
+  assert.equal(tr('Fork conversation'), 'Bifurcar conversa');
+  assert.equal(tr('Export conversation'), 'Exportar conversa');
+  assert.equal(tr('Archive conversation'), 'Arquivar conversa');
+  assert.equal(tr('Search past conversations...'), 'Pesquisar conversas anteriores...');
+  assert.equal(tr('No past conversations found'), 'Nenhuma conversa anterior encontrada');
+
+  // Regras de pensamento síncrono expandidas
+  assert.equal(
+    thoughtSync('The user changed setting Model Selection from Gemini 3.8 Flash (Medium) to Gemini 3.8 Flash (High).'),
+    'O usuário alterou a configuração Model Selection from Gemini 3.8 Flash (Medium) to Gemini 3.8 Flash (High).'
+  );
+  assert.equal(
+    thoughtSync('Observed durations for a specific task varied significantly across several runs: 2 minutes, 30 seconds, and 3 minutes.'),
+    'As durações observadas para uma tarefa específica varied significantly across several runs: 2 minutes, 30 seconds, and 3 minutes.'
+  );
+  assert.equal(
+    thoughtSync('Concurrently, tool usage metrics reveal exploration of differing numbers of files and commands across these runs.'),
+    'Simultaneamente, as métricas de uso de ferramentas revelam exploration of differing numbers of files and commands across these runs.'
+  );
+  assert.equal(
+    thoughtSync('The critical observation is the absence of content within the DOM when a button is collapsed.'),
+    'A observação crítica é the absence of content within the DOM when a button is collapsed.'
+  );
+  assert.equal(
+    thoughtSync('In order to ensure that all thinking blocks are localized, we must inspect the React Fiber tree.'),
+    'Para garantir que all thinking blocks are localized, we must inspect the React Fiber tree.'
+  );
+});
+
 
 
 

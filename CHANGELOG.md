@@ -4,6 +4,20 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.0] - 2026-10-17
+
+### Adicionado
+- **Motor Instantâneo de Pensamento com Injeção Direta no React Fiber (Zero-Latency Thinking Engine)**:
+  - Resolução arquitetural definitiva para que a IA pense em Português do Brasil na interface do front-end com zero latência:
+    - **Injeção no React Fiber**: Pré-tradução proativa dos blocos de pensamento diretamente nas propriedades do React (`fiber.memoizedProps.thinking` e `fiber.pendingProps.thinking`). Quando o usuário clica para abrir o colapsável ou durante o ciclo de vida do componente, o React monta a árvore DOM já em português nativamente, eliminando qualquer atraso ou piscar de tela.
+    - **Biblioteca Síncrona Expandida**: Mais de 80 regras e estruturas sintáticas cobrindo introduções, deduções, transições e conclusões de raciocínio de modelos de IA (Gemini, Claude, GPT), traduzindo sentenças no mesmo milissegundo de inserção.
+    - **Blindagem Visual Suave**: Injeção da classe `.cambrith-translating` com transição suave para evitar o "flash" de texto em inglês durante a resolução de traduções assíncronas.
+    - **Tradução em Streaming**: Monitoramento reativo via `characterData` e `childList` para processar cada sentença à medida que novos tokens são gerados.
+- **Auditoria Profunda de Toda a Interface e Histórico de Conversas**:
+  - **Histórico da Barra Lateral**: Tradução em tempo real de títulos de conversas gerados pelo backend em inglês (`translateSidebarConversations()`).
+  - **Paginação e Acessibilidade**: Localização de `Load older messages, showing X of Y` $\rightarrow$ `Carregar mensagens anteriores, exibindo X de Y`.
+  - **Abas e Menus**: Localização de `Terminal tab` $\rightarrow$ `Aba do terminal`, `Show Context Menu`, `Clear conversation`, `Delete conversation`, `Rename conversation`, `Pin/Unpin conversation`, `Search past conversations...`, etc.
+
 ## [1.4.8] - 2026-10-17
 
 ### Adicionado

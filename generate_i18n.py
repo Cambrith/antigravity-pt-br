@@ -234,6 +234,29 @@ EXACT_MAP = {
     "Switch model to Gemini 4 Argon": "Mudar modelo para o Gemini 4 Argon",
     "Switch model to Gemini 4 Argon.": "Mudar modelo para o Gemini 4 Argon.",
     "Gemini 4 Argon": "Gemini 4 Argon",
+    "Terminal tab": "Aba do terminal",
+    "Load older messages": "Carregar mensagens anteriores",
+    "Load older messages, showing": "Carregar mensagens anteriores, exibindo",
+    "Show Context Menu": "Exibir menu de contexto",
+    "Toggle Sidebar": "Alternar barra lateral",
+    "More actions": "Mais ações",
+    "Clear conversation": "Limpar conversa",
+    "Delete conversation": "Excluir conversa",
+    "Rename conversation": "Renomear conversa",
+    "Pin conversation": "Fixar conversa",
+    "Unpin conversation": "Desafixar conversa",
+    "Share conversation": "Compartilhar conversa",
+    "Fork conversation": "Bifurcar conversa",
+    "Export conversation": "Exportar conversa",
+    "Archive conversation": "Arquivar conversa",
+    "Search past conversations...": "Pesquisar conversas anteriores...",
+    "Search past conversations": "Pesquisar conversas anteriores",
+    "Search conversations...": "Pesquisar conversas...",
+    "Search conversations": "Pesquisar conversas",
+    "No past conversations found": "Nenhuma conversa anterior encontrada",
+    "No conversations found": "Nenhuma conversa encontrada",
+    "Conversation settings": "Configurações da conversa",
+    "Conversation details": "Detalhes da conversa",
     "Permanently delete": "Excluir permanentemente",
     "Permanently delete ": "Excluir permanentemente ",
     "Are you sure you want to delete the ": "Tem certeza de que deseja excluir o ",
@@ -3934,6 +3957,17 @@ js_body = r'''(function() {
       }
     }
 
+    // Paginação e abas da interface
+    if ((m = /^Load older messages,\s*showing\s*(\d+)\s*of\s*(\d+)$/i.exec(s))) {
+      return `Carregar mensagens anteriores, exibindo ${m[1]} de ${m[2]}`;
+    }
+    if ((m = /^Load older messages$/i.exec(s))) {
+      return "Carregar mensagens anteriores";
+    }
+    if ((m = /^Terminal tab$/i.exec(s))) {
+      return "Aba do terminal";
+    }
+
     // Ambiente e Worktree Dinâmicos
     if ((m = /^Environment:\s*(.+)$/i.exec(s))) {
       const trEnv = translateString(m[1]) || m[1];
@@ -4421,12 +4455,16 @@ js_body = r'''(function() {
     if (trimmed.startsWith('{') && trimmed.endsWith('}')) return false;
 
     const enIndicators = [
-      'the', 'is', 'are', 'was', 'were', 'this', 'that', 'these', 'those',
-      'will', 'would', 'can', 'could', 'should', 'with', 'from', 'have', 'has', 'had',
-      'been', 'we', 'need', 'check', 'let', 'now', 'first', 'user', 'request',
-      'thinking', 'inspect', 'determine', 'implement', 'generate', 'examine',
-      'search', 'file', 'ensure', 'looking', 'trying', 'going', 'about', 'because',
-      'reveals', 'indicating', 'evident', 'present', 'presence', 'focus', 'approach'
+      'the', 'and', 'for', 'with', 'from', 'to', 'in', 'on', 'of', 'by',
+      'is', 'are', 'was', 'were', 'this', 'that', 'these', 'those',
+      'will', 'would', 'can', 'could', 'should', 'have', 'has', 'had',
+      'been', 'we', 'our', 'you', 'your', 'need', 'check', 'let', 'now',
+      'first', 'user', 'request', 'thinking', 'thought', 'inspect',
+      'determine', 'implement', 'generate', 'examine', 'search', 'file',
+      'ensure', 'looking', 'trying', 'going', 'about', 'because', 'reveals',
+      'indicating', 'evident', 'present', 'presence', 'focus', 'approach',
+      'task', 'tasks', 'data', 'step', 'steps', 'action', 'actions', 'runs',
+      'across', 'specific', 'several', 'observed', 'varied', 'durations'
     ];
     const ptIndicators = [
       'o', 'a', 'os', 'as', 'um', 'uma', 'de', 'do', 'da', 'em', 'no', 'na',
@@ -4498,6 +4536,23 @@ js_body = r'''(function() {
     return promise;
   }
 
+  function injectThinkingIntoFiber(trigger, translatedText) {
+    if (!trigger || !translatedText) return;
+    try {
+      const fiberKey = Object.keys(trigger).find(k => k.startsWith('__reactFiber'));
+      if (!fiberKey) return;
+      let fiber = trigger[fiberKey];
+      while (fiber) {
+        if (fiber.memoizedProps && typeof fiber.memoizedProps.thinking === 'string') {
+          fiber.memoizedProps.thinking = translatedText;
+          if (fiber.pendingProps) fiber.pendingProps.thinking = translatedText;
+          break;
+        }
+        fiber = fiber.return;
+      }
+    } catch (_) {}
+  }
+
   function extractThinkingFromTrigger(trigger) {
     if (!trigger) return null;
     try {
@@ -4519,14 +4574,34 @@ js_body = r'''(function() {
     prefetchedTriggers.add(trigger);
     const text = extractThinkingFromTrigger(trigger);
     if (!text || typeof text !== 'string') return;
+    if (!isEnglishThoughtText(text)) return;
 
-    // Divide em parágrafos e frases principais
-    const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length >= 20);
+    // 1. Tenta tradução síncrona imediata
+    const syncTrans = translateThoughtTextSync(text);
+    if (syncTrans) {
+      thoughtCache.set(text, syncTrans);
+      injectThinkingIntoFiber(trigger, syncTrans);
+    }
+
+    // 2. Tradução assíncrona do texto completo e injeção direta no React Fiber
+    translateThoughtTextAsync(text).then((trans) => {
+      if (trans && trans !== text) {
+        thoughtCache.set(text, trans);
+        injectThinkingIntoFiber(trigger, trans);
+        const container = trigger.nextElementSibling || trigger.parentElement?.querySelector('.overflow-y-auto, [role="group"], .cursor-edit, [class*="content"]');
+        if (container) {
+          processThoughtContainer(container);
+        }
+      }
+    });
+
+    // 3. Divide em parágrafos e frases para pré-carregar cache
+    const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length >= 15);
     for (const p of paragraphs) {
       if (isEnglishThoughtText(p) && !thoughtCache.has(p) && !pendingTranslations.has(p)) {
         translateThoughtTextAsync(p);
       }
-      const lines = p.split(/\n/).map(l => l.trim()).filter(l => l.length >= 20);
+      const lines = p.split(/\n/).map(l => l.trim()).filter(l => l.length >= 15);
       for (const l of lines) {
         if (isEnglishThoughtText(l) && !thoughtCache.has(l) && !pendingTranslations.has(l)) {
           translateThoughtTextAsync(l);
@@ -4536,7 +4611,7 @@ js_body = r'''(function() {
   }
 
   function prefetchAllTriggers() {
-    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"]');
+    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"]');
     for (const trig of triggers) {
       prefetchTriggerThinking(trig);
     }
@@ -4549,39 +4624,107 @@ js_body = r'''(function() {
 
     let res = trimmed;
     const rules = [
+      // Solicitação e intenção do usuário
       [/^The user wants me to\s+(.+)$/i, 'O usuário quer que eu $1'],
       [/^The user wants to\s+(.+)$/i, 'O usuário quer $1'],
       [/^The user is asking to\s+(.+)$/i, 'O usuário está pedindo para $1'],
       [/^The user is asking for\s+(.+)$/i, 'O usuário está pedindo $1'],
+      [/^The user requested to\s+(.+)$/i, 'O usuário solicitou $1'],
       [/^The user requested\s+(.+)$/i, 'O usuário solicitou $1'],
+      [/^The user noticed that\s+(.+)$/i, 'O usuário notou que $1'],
       [/^The user noticed\s+(.+)$/i, 'O usuário notou $1'],
+      [/^The user reported that\s+(.+)$/i, 'O usuário relatou que $1'],
       [/^The user reported\s+(.+)$/i, 'O usuário relatou $1'],
       [/^The user provided\s+(.+)$/i, 'O usuário forneceu $1'],
+      [/^The user changed setting\s+(.+)$/i, 'O usuário alterou a configuração $1'],
+      [/^The user changed the model to\s+(.+)$/i, 'O usuário alterou o modelo para $1'],
+      // Imagens e capturas de tela
       [/^In the provided screenshot,?/i, 'Na captura de tela fornecida,'],
       [/^In the uploaded image,?/i, 'Na imagem enviada,'],
+      [/^Looking at the screenshot,?/i, 'Analisando a captura de tela,'],
       [/^Looking at the image,?/i, 'Analisando a imagem,'],
+      [/^Looking at the provided image,?/i, 'Analisando a imagem fornecida,'],
+      [/^The screenshot shows that\s+(.+)$/i, 'A captura de tela mostra que $1'],
       [/^The screenshot shows\s+(.+)$/i, 'A captura de tela mostra $1'],
+      [/^The image shows that\s+(.+)$/i, 'A imagem mostra que $1'],
       [/^The image shows\s+(.+)$/i, 'A imagem mostra $1'],
+      // Deduções e introduções
       [/^Based on the user request,?/i, 'Com base na solicitação do usuário,'],
+      [/^Based on the output,?/i, 'Com base na saída,'],
+      [/^Based on the error,?/i, 'Com base no erro,'],
+      [/^Based on the above,?/i, 'Com base no exposto acima,'],
       [/^To address this request,?/i, 'Para atender a esta solicitação,'],
+      [/^To fulfill this request,?/i, 'Para cumprir esta solicitação,'],
+      [/^To resolve this issue,?/i, 'Para resolver este problema,'],
+      [/^In order to address this,?/i, 'Para resolver isso,'],
+      [/^In order to ensure that\s+(.+)$/i, 'Para garantir que $1'],
+      [/^In order to\s+(.+)$/i, 'Para $1'],
+      // Primeiros passos e ações iniciais
       [/^First, let['’]s check\s+(.+)$/i, 'Primeiro, vamos verificar $1'],
       [/^First, let['’]s examine\s+(.+)$/i, 'Primeiro, vamos examinar $1'],
       [/^First, let['’]s inspect\s+(.+)$/i, 'Primeiro, vamos inspecionar $1'],
+      [/^First, let['’]s search\s+(.+)$/i, 'Primeiro, vamos pesquisar $1'],
+      [/^First, let['’]s see\s+(.+)$/i, 'Primeiro, vamos ver $1'],
       [/^First, let['’]s\s+(.+)$/i, 'Primeiro, vamos $1'],
       [/^First, I need to\s+(.+)$/i, 'Primeiro, preciso $1'],
       [/^First, I should\s+(.+)$/i, 'Primeiro, devo $1'],
+      [/^First, I will\s+(.+)$/i, 'Primeiro, vou $1'],
+      // Ações no presente
       [/^Let['’]s check\s+(.+)$/i, 'Vamos verificar $1'],
       [/^Let['’]s examine\s+(.+)$/i, 'Vamos examinar $1'],
       [/^Let['’]s inspect\s+(.+)$/i, 'Vamos inspecionar $1'],
+      [/^Let['’]s search for\s+(.+)$/i, 'Vamos pesquisar por $1'],
       [/^Let['’]s search\s+(.+)$/i, 'Vamos pesquisar $1'],
       [/^Let['’]s look at\s+(.+)$/i, 'Vamos dar uma olhada em $1'],
       [/^Let['’]s find\s+(.+)$/i, 'Vamos encontrar $1'],
+      [/^Let['’]s verify\s+(.+)$/i, 'Vamos verificar $1'],
+      [/^Let['’]s see if\s+(.+)$/i, 'Vamos ver se $1'],
+      [/^Let['’]s see\s+(.+)$/i, 'Vamos ver $1'],
+      // Transições de raciocínio
+      [/^Now, let['’]s check\s+(.+)$/i, 'Agora, vamos verificar $1'],
       [/^Now, let['’]s\s+(.+)$/i, 'Agora, vamos $1'],
       [/^Now I need to\s+(.+)$/i, 'Agora preciso $1'],
+      [/^Now I should\s+(.+)$/i, 'Agora devo $1'],
+      [/^Now I will\s+(.+)$/i, 'Agora vou $1'],
+      [/^Next, let['’]s\s+(.+)$/i, 'A seguir, vamos $1'],
+      [/^Next, I need to\s+(.+)$/i, 'A seguir, preciso $1'],
+      [/^Next, I should\s+(.+)$/i, 'A seguir, devo $1'],
+      [/^Finally, let['’]s\s+(.+)$/i, 'Por fim, vamos $1'],
+      // Obrigações e intenções
       [/^We need to\s+(.+)$/i, 'Precisamos $1'],
+      [/^We should\s+(.+)$/i, 'Devemos $1'],
+      [/^We can see that\s+(.+)$/i, 'Podemos ver que $1'],
+      [/^We can see\s+(.+)$/i, 'Podemos ver $1'],
       [/^I need to\s+(.+)$/i, 'Preciso $1'],
+      [/^I should\s+(.+)$/i, 'Devo $1'],
       [/^I will\s+(.+)$/i, 'Vou $1'],
-      [/^This requires\s+(.+)$/i, 'Isso requer $1']
+      [/^This requires\s+(.+)$/i, 'Isso requer $1'],
+      [/^This suggests that\s+(.+)$/i, 'Isso sugere que $1'],
+      [/^This suggests\s+(.+)$/i, 'Isso sugere $1'],
+      [/^This indicates that\s+(.+)$/i, 'Isso indica que $1'],
+      [/^This indicates\s+(.+)$/i, 'Isso indica $1'],
+      [/^This means that\s+(.+)$/i, 'Isso significa que $1'],
+      [/^This means\s+(.+)$/i, 'Isso significa $1'],
+      [/^It seems that\s+(.+)$/i, 'Parece que $1'],
+      [/^It appears that\s+(.+)$/i, 'Parece que $1'],
+      // Observações analíticas
+      [/^Observed durations for a specific task\s+(.+)$/i, 'As durações observadas para uma tarefa específica $1'],
+      [/^Observed task durations\s+(.+)$/i, 'As durações observadas da tarefa $1'],
+      [/^Concurrently, tool usage metrics reveal\s+(.+)$/i, 'Simultaneamente, as métricas de uso de ferramentas revelam $1'],
+      [/^The critical observation is\s+(.+)$/i, 'A observação crítica é $1'],
+      [/^The next step is to\s+(.+)$/i, 'O próximo passo é $1'],
+      [/^A script will be written to\s+(.+)$/i, 'Um script será criado para $1'],
+      [/^This data suggests\s+(.+)$/i, 'Estes dados sugerem $1'],
+      [/^Observing the button labeled\s+(.+)$/i, 'Observando o botão rotulado $1'],
+      [/^Correlating these disparate data points\s+(.+)$/i, 'Correlacionar esses diferentes pontos de dados $1'],
+      [/^We should also check\s+(.+)$/i, 'Também devemos verificar $1'],
+      [/^After reviewing\s+(.+)$/i, 'Após revisar $1'],
+      [/^Upon checking\s+(.+)$/i, 'Ao verificar $1'],
+      [/^Upon inspecting\s+(.+)$/i, 'Ao inspecionar $1'],
+      [/^Looking at the codebase,?/i, 'Analisando a base de código,'],
+      [/^Looking at the repository,?/i, 'Analisando o repositório,'],
+      [/^The goal is to\s+(.+)$/i, 'O objetivo é $1'],
+      [/^The main goal is to\s+(.+)$/i, 'O objetivo principal é $1']
     ];
 
     for (const [pattern, repl] of rules) {
@@ -4597,20 +4740,64 @@ js_body = r'''(function() {
     return null;
   }
 
+  function injectThoughtStyles() {
+    if (document.getElementById('cambrith-thought-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'cambrith-thought-styles';
+    style.textContent = `
+      .cambrith-translating {
+        opacity: 0.3 !important;
+        filter: blur(1.5px) !important;
+        transition: opacity 0.15s ease-out, filter 0.15s ease-out !important;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function translateSidebarConversations() {
+    const links = document.querySelectorAll('a[href*="/c/"], [data-testid="conversation-link"], [data-testid="conversation-item"], [data-testid="conversation-kebab"]');
+    for (const link of links) {
+      const textSpan = link.querySelector('span.truncate') || (link.tagName === 'SPAN' ? link : null);
+      if (!textSpan) continue;
+      const val = (textSpan.innerText || '').trim();
+      if (!val || val.length < 4 || val.length > 120) continue;
+      if (textSpan.__cambrith_conv_translated && textSpan.__cambrith_last_val === val) continue;
+
+      if (isEnglishThoughtText(val) || /\b(overview|protocol|servers|installing|update|updating|create|creating|build|building|setup|fixing|adding|running|workflow|guide|review|project)\b/i.test(val)) {
+        if (thoughtCache.has(val)) {
+          textSpan.innerText = thoughtCache.get(val);
+          textSpan.__cambrith_conv_translated = true;
+          textSpan.__cambrith_last_val = textSpan.innerText;
+        } else {
+          translateThoughtTextAsync(val).then((trans) => {
+            if (trans && textSpan.isConnected) {
+              textSpan.innerText = trans;
+              textSpan.__cambrith_conv_translated = true;
+              textSpan.__cambrith_last_val = trans;
+            }
+          });
+        }
+      }
+    }
+  }
+
   function processThoughtContainer(container) {
     if (!container || container.__cambrith_processing) return;
 
-    // 1. Processa elementos de parágrafo estruturados (<p>, blockquote, li)
-    const blocks = container.querySelectorAll('p, blockquote, li');
+    // 1. Processa blocos estruturados (<p>, blockquote, li, div)
+    const blocks = container.querySelectorAll('p, blockquote, li, div.whitespace-pre-wrap');
     if (blocks.length > 0) {
       for (const block of blocks) {
-        if (block.__cambrith_thought_translated) continue;
         const text = (block.innerText || '').trim();
+        if (!text) continue;
+        if (block.__cambrith_last_text === text && block.__cambrith_thought_translated) continue;
+
         if (isEnglishThoughtText(text)) {
           const syncTrans = translateThoughtTextSync(text);
           if (syncTrans) {
             block.innerText = syncTrans;
             block.__cambrith_thought_translated = true;
+            block.__cambrith_last_text = syncTrans;
             thoughtCache.set(text, syncTrans);
             continue;
           }
@@ -4618,11 +4805,15 @@ js_body = r'''(function() {
             const cached = thoughtCache.get(text);
             block.innerText = cached;
             block.__cambrith_thought_translated = true;
+            block.__cambrith_last_text = cached;
           } else {
+            block.classList.add('cambrith-translating');
             translateThoughtTextAsync(text).then((trans) => {
+              block.classList.remove('cambrith-translating');
               if (trans && block.isConnected) {
                 block.innerText = trans;
                 block.__cambrith_thought_translated = true;
+                block.__cambrith_last_text = trans;
               }
             });
           }
@@ -4630,22 +4821,21 @@ js_body = r'''(function() {
       }
     }
 
-    // 2. Processa nós de texto individuais (fallback preciso para estruturas dinâmicas)
+    // 2. Processa nós de texto individuais (para nós diretos e streaming dinâmico)
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     const candidateNodes = [];
     let n;
     while ((n = walker.nextNode())) {
       const parent = n.parentElement;
       if (!parent || parent.closest('pre, code, style, script, svg')) continue;
-      if (n.__cambrith_thought_translated || parent.__cambrith_thought_translated) continue;
-
       const val = n.nodeValue;
-      if (val && isEnglishThoughtText(val)) {
+      if (!val) continue;
+      if (n.__cambrith_last_val === val && n.__cambrith_thought_translated) continue;
+
+      if (isEnglishThoughtText(val)) {
         candidateNodes.push(n);
       }
     }
-
-    if (candidateNodes.length === 0) return;
 
     for (const node of candidateNodes) {
       const orig = node.nodeValue;
@@ -4654,6 +4844,7 @@ js_body = r'''(function() {
       if (syncTrans) {
         node.nodeValue = orig.replace(trimmed, syncTrans);
         node.__cambrith_thought_translated = true;
+        node.__cambrith_last_val = node.nodeValue;
         thoughtCache.set(trimmed, syncTrans);
         continue;
       }
@@ -4661,11 +4852,16 @@ js_body = r'''(function() {
         const cached = thoughtCache.get(trimmed);
         node.nodeValue = orig.replace(trimmed, cached);
         node.__cambrith_thought_translated = true;
+        node.__cambrith_last_val = node.nodeValue;
       } else {
+        const parent = node.parentElement;
+        if (parent) parent.classList.add('cambrith-translating');
         translateThoughtTextAsync(trimmed).then((trans) => {
+          if (parent) parent.classList.remove('cambrith-translating');
           if (trans && node.nodeValue && node.nodeValue.includes(trimmed)) {
             node.nodeValue = node.nodeValue.replace(trimmed, trans);
             node.__cambrith_thought_translated = true;
+            node.__cambrith_last_val = node.nodeValue;
           }
         });
       }
@@ -4674,19 +4870,20 @@ js_body = r'''(function() {
 
   function scanAndTranslateAllThoughts() {
     prefetchAllTriggers();
+    translateSidebarConversations();
 
-    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], button[aria-expanded], [class*="thinking"], [class*="thought"]');
+    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], button[aria-expanded], [class*="thinking"], [class*="thought"]');
     for (const trig of triggers) {
       const text = trig.innerText || '';
       if (!/pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(text)) continue;
 
-      const container = trig.nextElementSibling || trig.parentElement?.querySelector('.overflow-y-auto, .cursor-edit, [class*="content"]');
+      const container = trig.nextElementSibling || trig.parentElement?.querySelector('.overflow-y-auto, [role="group"], .cursor-edit, [class*="content"]');
       if (container) {
         processThoughtContainer(container);
       }
     }
 
-    const directContainers = document.querySelectorAll('.cursor-edit.group, [class*="cursor-edit"], [data-testid="thinking-content"], [class*="thought-content"], [class*="thinking-content"]');
+    const directContainers = document.querySelectorAll('[role="group"][aria-labelledby], .cursor-edit.group, [class*="cursor-edit"], [data-testid="thinking-content"], [class*="thought-content"], [class*="thinking-content"]');
     for (const c of directContainers) {
       processThoughtContainer(c);
     }
@@ -4702,7 +4899,7 @@ js_body = r'''(function() {
 
   // Intercepta pointerdown imediatamente antes do clique do usuário
   document.addEventListener('pointerdown', (e) => {
-    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button, [class*="thinking"], [class*="thought"]');
+    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], button, [class*="thinking"], [class*="thought"]');
     if (trig && /pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(trig.innerText || '')) {
       prefetchTriggerThinking(trig);
       scanAndTranslateAllThoughts();
@@ -4749,6 +4946,7 @@ js_body = r'''(function() {
   }
 
   const boot = () => {
+    injectThoughtStyles();
     walkAndTranslate(document.body || document.documentElement);
     ensureFullscreenSettingsButton();
     scanAndTranslateAllThoughts();
@@ -4760,7 +4958,7 @@ js_body = r'''(function() {
       for (const m of mutations) {
         if (m.type === 'characterData') {
           translateTextNode(m.target);
-          if (m.target?.parentElement?.closest('[data-testid="thinking-collapsible-trigger"] + div, .cursor-edit')) {
+          if (m.target?.parentElement?.closest('[data-testid="thinking-collapsible-trigger"] + div, [role="group"][aria-labelledby], .cursor-edit')) {
             shouldScanThoughts = true;
           }
         } else if (m.type === 'attributes') {
@@ -4768,7 +4966,7 @@ js_body = r'''(function() {
         } else if (m.type === 'childList') {
           for (const node of m.addedNodes) {
             walkAndTranslate(node);
-            if (node.nodeType === 1 && (node.matches('[data-testid="thinking-collapsible-trigger"], .cursor-edit') || node.querySelector('[data-testid="thinking-collapsible-trigger"], .cursor-edit'))) {
+            if (node.nodeType === 1 && (node.matches('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], [role="group"], .cursor-edit') || node.querySelector('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], [role="group"], .cursor-edit'))) {
               shouldScanThoughts = true;
             }
           }
