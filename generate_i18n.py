@@ -4590,8 +4590,17 @@ js_body = r'''(function() {
       style.id = "cambrith-settings-access-style";
       style.textContent = `
         [data-cambrith-settings-sidebar] { min-height: 0; }
-        [data-cambrith-settings-footer] { flex: 0 0 auto; margin-top: auto; }
-        [data-testid="settings-button"] { min-height: 32px; flex-shrink: 0; }
+        [data-cambrith-settings-footer] {
+          flex: 0 0 auto; margin-top: auto; padding-top: 8px; padding-bottom: 4px;
+          border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+        }
+        [data-testid="settings-button"] {
+          min-height: 36px; flex-shrink: 0; font-weight: 500; color: inherit;
+          background: color-mix(in srgb, currentColor 7%, transparent);
+        }
+        [data-testid="settings-button"]:hover {
+          background: color-mix(in srgb, currentColor 12%, transparent);
+        }
         [data-testid="settings-button"]:focus-visible {
           outline: 2px solid var(--ring, currentColor); outline-offset: -2px;
         }

@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v4';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v8';
 
 // 1. Resolução Multiplataforma de Caminhos
 function detectAsarPath() {
@@ -251,6 +251,29 @@ try {
 
 function patchUtils(code) {
   let out = code;
+  // Ajusta a janela inicial à área útil: painéis do desktop não podem cortar o rodapé.
+  out = out.replace(/width: 1400,\s*height: 900,/, `...(() => {
+            const area = electron_1.screen.getPrimaryDisplay().workArea;
+            const width = Math.min(1400, area.width);
+            const height = Math.min(900, Math.floor(area.height * 0.9));
+            return {
+                x: area.x + Math.floor((area.width - width) / 2),
+                y: area.y + Math.floor((area.height - height) / 2),
+                width,
+                height,
+            };
+        })(),`);
+  // Atualiza também arquivos que receberam a primeira versão do ajuste de altura.
+  out = out.replace('const height = Math.min(900, area.height);',
+                    'const height = Math.min(900, Math.floor(area.height * 0.9));');
+  if (!out.includes('// Cambrith: maximiza em telas compactas')) {
+    out = out.replace("win.on('page-title-updated',", `// Cambrith: maximiza em telas compactas usando a área útil do gerenciador de janelas.
+    const initialWorkArea = electron_1.screen.getPrimaryDisplay().workArea;
+    if (initialWorkArea.width < 1400 || initialWorkArea.height < 900) {
+        win.maximize();
+    }
+    win.on('page-title-updated',`);
+  }
   const domReadyHook = `win.webContents.on('dom-ready', () => {
             try {
                 const fs = require('fs');

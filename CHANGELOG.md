@@ -7,6 +7,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ## [Não lançado]
 
 ### Corrigido
+- Janela inicial limitada à área útil do monitor, evitando cortar o rodapé atrás dos painéis do desktop; botão Configurações com contraste e área clicável maiores.
 - Acesso às configurações pelo botão original no rodapé da barra lateral em janela normal e tela cheia, com rodapé protegido contra compressão e foco visível para navegação por teclado.
 - Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.
 - Atalho Ctrl+, / ⌘+, fecha apenas o modal de configurações, sem acionar o botão de fechar a janela.
