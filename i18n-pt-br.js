@@ -1882,18 +1882,15 @@
       modal.innerHTML = `
         <div class="bg-card text-foreground border border-border rounded-xl shadow-2xl p-6 w-[500px] max-w-[94vw] flex flex-col gap-5 cambrith-modal-card" style="background-color: var(--card, #18181b); color: var(--foreground, #fafafa); border-color: var(--border, #27272a);">
           <!-- Cabeçalho -->
-          <div class="flex items-center justify-between border-b border-border/50 pb-3.5" style="border-color: var(--border, #27272a);">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold" style="background-color: color-mix(in srgb, var(--primary, #3b82f6) 15%, transparent); color: var(--primary, #3b82f6);">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="flex items-center justify-between pb-1">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold" style="background-color: color-mix(in srgb, var(--primary, #3b82f6) 15%, transparent); color: var(--primary, #3b82f6);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
                 </svg>
               </div>
-              <div>
-                <h2 class="text-sm font-semibold leading-tight text-foreground" style="color: var(--foreground, #fafafa);">Criar Novo Projeto</h2>
-                <p class="text-xs text-muted-foreground mt-0.5" style="color: var(--muted-foreground, #a1a1aa);">O projeto será criado diretamente na pasta do Antigravity</p>
-              </div>
+              <h2 class="text-sm font-semibold leading-tight text-foreground" style="color: var(--foreground, #fafafa);">Criar Novo Projeto</h2>
             </div>
             <button type="button" id="cambrith-modal-close-btn" class="text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-md p-1.5 transition-colors cursor-pointer outline-none" title="Fechar (Esc)">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1931,7 +1928,7 @@
               />
               <div class="text-[11px] text-muted-foreground flex items-center gap-1 truncate font-mono mt-0.5" style="color: var(--muted-foreground, #a1a1aa);">
                 <span class="opacity-70">Destino:</span>
-                <span class="truncate text-foreground/85">~/Documents/antigravity/<span id="cambrith-path-subfolder" class="text-primary font-semibold" style="color: var(--primary, #3b82f6);">meu-novo-projeto</span></span>
+                <span class="truncate text-foreground/85">~/Documents/antigravity<span id="cambrith-path-subfolder" class="text-primary font-semibold" style="color: var(--primary, #3b82f6);"></span></span>
               </div>
               <div id="cambrith-input-error" class="text-xs text-red-400 hidden font-medium mt-0.5"></div>
             </div>
@@ -1993,7 +1990,7 @@
       input.oninput = () => {
         const raw = input.value;
         const sanitized = raw.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '-').replace(/-+/g, '-').toLowerCase();
-        preview.textContent = sanitized || 'meu-novo-projeto';
+        preview.textContent = sanitized ? '/' + sanitized : '';
         errorDiv.classList.add('hidden');
       };
 
@@ -2057,13 +2054,10 @@
     modal.classList.remove('hidden');
     const input = modal.querySelector('#cambrith-project-input');
     if (input) {
-      if (!input.value && typeof window.__ANTIGRAVITY_GERAR_NOME_PTBR__ === 'function') {
-        input.value = window.__ANTIGRAVITY_GERAR_NOME_PTBR__();
-        input.dispatchEvent(new Event('input'));
-      }
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
       setTimeout(() => {
         input.focus();
-        input.select();
       }, 50);
     }
   }
