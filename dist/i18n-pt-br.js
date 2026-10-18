@@ -40,6 +40,27 @@
         const sub = SUBSTANTIVOS_PT_BR[Math.floor(Math.random() * SUBSTANTIVOS_PT_BR.length)];
         return `${adj}-${sub}`;
       };
+
+      let customProjectName = null;
+      function hookGUb() {
+        try {
+          if (typeof window.GUb === 'function' && !window.GUb.__cambrith_patched) {
+            const origGUb = window.GUb;
+            const patched = function() {
+              if (customProjectName) {
+                const name = customProjectName;
+                customProjectName = null;
+                return name;
+              }
+              return origGUb.apply(this, arguments);
+            };
+            patched.__cambrith_patched = true;
+            window.GUb = patched;
+          }
+        } catch (_) {}
+      }
+      window.__CAMBRITH_HOOK_GUB__ = hookGUb;
+      hookGUb();
     }
   } catch (e) {
     console.warn("[i18n-pt-br] Erro ao registrar gerador de nomes scratch em pt-BR:", e);
@@ -2342,10 +2363,433 @@
     } catch (_) {}
   }
 
+  // =========================================================================
+  // Gerenciador de Criação de Projetos Antigravity (3 Opções + Tooltips do Tema)
+  // =========================================================================
+  function getNativeScratchAction() {
+    try {
+      const btn = document.querySelector('[data-testid="sidebar-add-project-button"]');
+      if (!btn) return null;
+      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber$'));
+      if (!fiberKey) return null;
+      let fiber = btn[fiberKey];
+      while (fiber && fiber.type?.name !== 'yVb') fiber = fiber.return;
+      if (!fiber) return null;
+
+      let hook = fiber.memoizedState;
+      while (hook) {
+        const val = Array.isArray(hook.memoizedState) ? hook.memoizedState[0] : null;
+        if (Array.isArray(val) && val.length > 1 && val[1]?.onClick) {
+          return val[1].onClick;
+        }
+        hook = hook.next;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function injectProjectModalStyles() {
+    if (document.getElementById('cambrith-project-modal-style')) return;
+    const style = document.createElement('style');
+    style.id = 'cambrith-project-modal-style';
+    style.textContent = `
+      @keyframes cambrithFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes cambrithScaleIn {
+        from { opacity: 0; transform: scale(0.96) translateY(4px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .cambrith-modal-backdrop {
+        animation: cambrithFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .cambrith-modal-card {
+        animation: cambrithScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function showProjectTooltip(target, text) {
+    hideProjectTooltip();
+    if (!target || !text) return;
+
+    const rect = target.getBoundingClientRect();
+    const tip = document.createElement('div');
+    tip.id = 'cambrith-floating-tooltip';
+    tip.className = 'cambrith-floating-tooltip fixed pointer-events-none select-none z-[999999]';
+    tip.setAttribute('role', 'tooltip');
+    
+    tip.style.cssText = [
+      'position: fixed',
+      'left: ' + Math.round(rect.right + 8) + 'px',
+      'top: ' + Math.round(rect.top + (rect.height / 2)) + 'px',
+      'transform: translateY(-50%)',
+      'background-color: var(--card, #18181b)',
+      'color: var(--secondary-foreground, #e4e4e7)',
+      'border: 1px solid var(--border, #27272a)',
+      'border-radius: 6px',
+      'padding: 6px 10px',
+      'font-size: 12px',
+      'line-height: 1.4',
+      'max-width: 240px',
+      'box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35)',
+      'z-index: 999999',
+      'pointer-events: none',
+      'user-select: none',
+      'white-space: normal',
+      'word-break: break-word'
+    ].join('; ');
+
+    tip.textContent = text;
+    document.body.appendChild(tip);
+
+    const tipRect = tip.getBoundingClientRect();
+    if (tipRect.bottom > window.innerHeight - 10) {
+      tip.style.top = (window.innerHeight - tipRect.height - 10) + 'px';
+      tip.style.transform = 'none';
+    }
+    if (tipRect.top < 10) {
+      tip.style.top = '10px';
+      tip.style.transform = 'none';
+    }
+  }
+
+  function hideProjectTooltip() {
+    const tip = document.getElementById('cambrith-floating-tooltip');
+    if (tip) tip.remove();
+  }
+  window.__CAMBRITH_HIDE_PROJECT_TOOLTIP__ = hideProjectTooltip;
+
+  const TOOLTIPS_PROJECTS = {
+    'Selecionar pasta': 'Selecione uma pasta existente no computador para abrir como projeto.',
+    'Início rápido': 'Crie instantaneamente um novo projeto com pasta dedicada para começar a desenvolver.',
+    'Criar projeto': 'Crie um novo projeto escolhendo o nome na hora.'
+  };
+
+  function setupProjectDropdown(pop) {
+    if (!pop) return;
+
+    // 1. Remove qualquer botão manual duplicado caso exista
+    pop.querySelectorAll('.cambrith-create-project-btn').forEach(el => el.remove());
+
+    // 2. Sanitização estrita: NUNCA ter o atributo title (elimina o aviso preto nativo)
+    pop.removeAttribute('title');
+    pop.querySelectorAll('*').forEach(el => el.removeAttribute('title'));
+
+    // 3. Anexa tooltip padronizado do tema em cada uma das opções
+    const buttons = pop.querySelectorAll('button');
+    buttons.forEach(btn => {
+      btn.removeAttribute('title');
+      const text = btn.innerText.trim();
+      const matchKey = Object.keys(TOOLTIPS_PROJECTS).find(k => text.includes(k));
+      if (matchKey && !btn.__cambrith_tip_attached) {
+        btn.__cambrith_tip_attached = true;
+        const tipText = TOOLTIPS_PROJECTS[matchKey];
+        btn.addEventListener('mouseenter', () => showProjectTooltip(btn, tipText));
+        btn.addEventListener('mouseleave', hideProjectTooltip);
+      }
+    });
+  }
+
+  function openCambrithProjectModal() {
+    if (typeof window.__CAMBRITH_HOOK_GUB__ === 'function') {
+      window.__CAMBRITH_HOOK_GUB__();
+    }
+    injectProjectModalStyles();
+    hideProjectTooltip();
+
+    let modal = document.getElementById('cambrith-project-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'cambrith-project-modal';
+      modal.className = 'fixed inset-0 z-[999999] flex items-center justify-center bg-black/65 backdrop-blur-sm cambrith-modal-backdrop select-none';
+      modal.innerHTML = `
+        <div class="bg-card text-foreground border border-border rounded-xl shadow-2xl p-6 w-[500px] max-w-[94vw] flex flex-col gap-5 cambrith-modal-card" style="background-color: var(--card, #18181b); color: var(--foreground, #fafafa); border-color: var(--border, #27272a);">
+          <!-- Cabeçalho -->
+          <div class="flex items-center justify-between pb-1">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold" style="background-color: color-mix(in srgb, var(--primary, #3b82f6) 15%, transparent); color: var(--primary, #3b82f6);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                </svg>
+              </div>
+              <h2 class="text-sm font-semibold leading-tight text-foreground" style="color: var(--foreground, #fafafa);">Criar Novo Projeto</h2>
+            </div>
+            <button type="button" id="cambrith-modal-close-btn" class="text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-md p-1.5 transition-colors cursor-pointer outline-none" title="Fechar (Esc)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Formulário -->
+          <form id="cambrith-modal-form" class="flex flex-col gap-4 text-left">
+            <!-- Campo de Nome -->
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center justify-between">
+                <label for="cambrith-project-input" class="text-xs font-medium text-foreground flex items-center gap-1" style="color: var(--foreground, #fafafa);">
+                  Nome do projeto <span class="text-primary" style="color: var(--primary, #3b82f6);">*</span>
+                </label>
+                <button type="button" id="cambrith-suggest-name-btn" class="text-[11px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium" style="color: var(--primary, #3b82f6);">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.5 2-5 5L12 2.5 7.5 7 2 2.5"></path>
+                    <path d="M7 11.5v6.5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.5"></path>
+                  </svg>
+                  Sugerir nome
+                </button>
+              </div>
+              <input 
+                type="text" 
+                id="cambrith-project-input" 
+                required 
+                autocomplete="off" 
+                spellcheck="false"
+                placeholder="Ex: meu-projeto-ia" 
+                class="w-full px-3 py-2 text-xs bg-background text-foreground border border-border rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                style="background-color: var(--background, #09090b); color: var(--foreground, #fafafa); border-color: var(--border, #27272a);"
+              />
+              <span class="text-[11px] text-muted-foreground" id="cambrith-folder-preview">
+                Pasta de destino: <code class="font-mono text-secondary-foreground" id="cambrith-target-preview">~/Documents/antigravity/...</code>
+              </span>
+            </div>
+
+            <!-- Opções adicionais -->
+            <div class="flex flex-col gap-2 pt-1 border-t border-border/50">
+              <label class="flex items-center gap-2 cursor-pointer text-xs text-secondary-foreground">
+                <input type="checkbox" id="cambrith-opt-readme" checked class="rounded border-border text-primary focus:ring-primary h-3.5 w-3.5 accent-primary cursor-pointer" />
+                <span>Criar arquivo <code class="font-mono text-[11px] bg-secondary/50 px-1 py-0.5 rounded">README.md</code> inicial</span>
+              </label>
+            </div>
+
+            <!-- Mensagem de Erro -->
+            <div id="cambrith-modal-error" class="hidden text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-2"></div>
+
+            <!-- Botões de Ação -->
+            <div class="flex items-center justify-end gap-2 pt-2">
+              <button 
+                type="button" 
+                id="cambrith-modal-cancel-btn" 
+                class="px-3.5 py-1.5 text-xs font-medium text-secondary-foreground hover:bg-secondary rounded-lg transition-colors cursor-pointer outline-none"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="submit" 
+                id="cambrith-modal-submit-btn" 
+                class="px-4 py-1.5 text-xs font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg shadow-sm transition-all flex items-center gap-1.5 cursor-pointer outline-none"
+                style="background-color: var(--primary, #3b82f6); color: var(--primary-foreground, #ffffff);"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+                <span>Criar Projeto</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      const closeModal = () => {
+        modal.classList.add('hidden');
+        hideProjectTooltip();
+      };
+
+      modal.querySelector('#cambrith-modal-close-btn').onclick = closeModal;
+      modal.querySelector('#cambrith-modal-cancel-btn').onclick = closeModal;
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      const input = modal.querySelector('#cambrith-project-input');
+      const targetPreview = modal.querySelector('#cambrith-target-preview');
+      const suggestBtn = modal.querySelector('#cambrith-suggest-name-btn');
+      const form = modal.querySelector('#cambrith-modal-form');
+      const errorDiv = modal.querySelector('#cambrith-modal-error');
+      const submitBtn = modal.querySelector('#cambrith-modal-submit-btn');
+
+      const formatSlug = (val) => {
+        return val
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9_-]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+      };
+
+      input.addEventListener('input', () => {
+        const clean = formatSlug(input.value);
+        targetPreview.textContent = clean ? `~/Documents/antigravity/${clean}` : '~/Documents/antigravity/...';
+        errorDiv.classList.add('hidden');
+      });
+
+      suggestBtn.onclick = () => {
+        const adjs = window.__ANTIGRAVITY_PTBR_ADJETIVOS__ || ["audaz", "inovador", "visionario", "criativo"];
+        const subs = window.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__ || ["cosmos", "aurora", "galaxia", "nexus"];
+        const randAdj = adjs[Math.floor(Math.random() * adjs.length)];
+        const randSub = subs[Math.floor(Math.random() * subs.length)];
+        input.value = `${randAdj}-${randSub}`;
+        input.dispatchEvent(new Event('input'));
+        input.focus();
+        input.select();
+      };
+
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const raw = input.value.trim();
+        const clean = formatSlug(raw);
+
+        if (!clean) {
+          errorDiv.textContent = 'Por favor, insira um nome válido para o projeto.';
+          errorDiv.classList.remove('hidden');
+          input.focus();
+          return;
+        }
+
+        const shouldCreateReadme = modal.querySelector('#cambrith-opt-readme').checked;
+        const scratchAction = window.__cambrith_handleStartScratchFlow || getNativeScratchAction();
+
+        if (scratchAction) {
+          submitBtn.disabled = true;
+          submitBtn.querySelector('span').textContent = 'Criando...';
+
+          try {
+            customProjectName = clean;
+            scratchAction();
+            if (shouldCreateReadme && window.__CAMBRITH_NATIVE_BRIDGE__?.createReadme) {
+              setTimeout(() => {
+                try {
+                  window.__CAMBRITH_NATIVE_BRIDGE__.createReadme(clean, raw);
+                } catch (_) {}
+              }, 400);
+            }
+            closeModal();
+          } catch (err) {
+            console.error('[Cambrith] Falha ao criar projeto:', err);
+            errorDiv.textContent = 'Erro ao criar projeto: ' + (err.message || err);
+            errorDiv.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.querySelector('span').textContent = 'Criar Projeto';
+          }
+        } else {
+          errorDiv.textContent = 'Ação de criação do Antigravity indisponível.';
+          errorDiv.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.querySelector('span').textContent = 'Criar Projeto';
+        }
+      };
+    }
+
+    modal.classList.remove('hidden');
+    const input = modal.querySelector('#cambrith-project-input');
+    if (input) {
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+      setTimeout(() => {
+        input.focus();
+      }, 50);
+    }
+  }
+  window.__CAMBRITH_OPEN_CREATE_PROJECT_MODAL__ = openCambrithProjectModal;
+
+  function hookProjectsCustomizations() {
+    try {
+      const btn = document.querySelector('[data-testid="sidebar-add-project-button"]');
+      if (!btn) return false;
+      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber$'));
+      if (!fiberKey) return false;
+      let curr = btn[fiberKey];
+      while (curr) {
+        if (curr.type === window.oka?.Provider || curr.type?._context === window.oka) {
+          const q = curr.memoizedProps?.value;
+          if (q && typeof q.get === 'function') {
+            const cust = q.get('projectsCustomizations');
+            if (cust && !cust.__cambrith_entrypoints_hooked) {
+              cust.__cambrith_entrypoints_hooked = true;
+              const orig = cust.sidebarDropdownEntrypoints;
+              cust.sidebarDropdownEntrypoints = function(args) {
+                if (args && args.handleStartScratchFlow) {
+                  window.__cambrith_handleStartScratchFlow = args.handleStartScratchFlow;
+                }
+                const items = orig ? orig.call(this, args) : [];
+                if (items.length >= 2) {
+                  items[0].label = 'Selecionar pasta';
+                  items[0].tooltipText = 'Selecione uma pasta existente no computador para abrir como projeto.';
+                  
+                  items[1].label = 'Início rápido';
+                  items[1].tooltipText = 'Crie instantaneamente um novo projeto com pasta dedicada para começar a desenvolver.';
+
+                  if (items.length === 2) {
+                    items.push({
+                      label: 'Criar projeto',
+                      tooltipText: 'Crie um novo projeto escolhendo o nome na hora.',
+                      disabled: false,
+                      icon: items[0].icon,
+                      onClick: () => {
+                        openCambrithProjectModal();
+                      }
+                    });
+                  }
+                }
+                return items;
+              };
+              return true;
+            }
+          }
+        }
+        curr = curr.return;
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  function ensureProjectsCustomizations() {
+    hookProjectsCustomizations();
+    const addProjectBtn = document.querySelector('[data-testid="sidebar-add-project-button"]');
+    if (addProjectBtn && !addProjectBtn.__cambrith_click_hooked) {
+      addProjectBtn.__cambrith_click_hooked = true;
+      const triggerHandler = () => {
+        hookProjectsCustomizations();
+        setTimeout(() => {
+          const pop = document.querySelector('[role="dialog"], [class*="!w-[210px]"]');
+          if (pop) setupProjectDropdown(pop);
+        }, 40);
+      };
+      addProjectBtn.addEventListener('click', triggerHandler);
+      addProjectBtn.addEventListener('pointerdown', triggerHandler);
+    }
+  }
+
+  // Listeners globais de fechamento de tooltips
+  if (typeof document !== 'undefined') {
+    document.addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('#cambrith-floating-tooltip')) {
+        hideProjectTooltip();
+      }
+    }, { capture: true });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hideProjectTooltip();
+    });
+  }
+
   const boot = () => {
     injectThoughtStyles();
     walkAndTranslate(document.body || document.documentElement);
     ensureSettingsAccess();
+    ensureProjectsCustomizations();
     scanAndTranslateAllThoughts();
     if (window.__CAMBRITH_I18N_OBS__) {
       try { window.__CAMBRITH_I18N_OBS__.disconnect(); } catch (_) {}
