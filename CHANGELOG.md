@@ -17,6 +17,34 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.
 - Atalho Ctrl+, / ⌘+, fecha apenas o modal de configurações, sem acionar o botão de fechar a janela.
 
+## [1.6.1] - 2026-10-18
+
+### Adicionado
+- **Tradução Dinâmica de Atualização de Horário e Timestamps (`Updated`, `Created`, `Last updated`, `Edited`)**:
+  - **Localização de Horários de Conversas e Tarefas na Interface**:
+    - Suporte nativo ao formato de atualização exibido nos cards de conversas e tarefas do Antigravity:
+      - `Updated 17:41` $\rightarrow$ `Atualizado às 17:41`
+      - `Updated 09:05` $\rightarrow$ `Atualizado às 09:05`
+      - `Updated 5:41 PM` $\rightarrow$ `Atualizado às 17:41` (conversão automática de 12h AM/PM para 24h)
+    - Suporte a datas com meses em inglês ou abreviados com dia e horário:
+      - `Updated Oct 18, 17:41` $\rightarrow$ `Atualizado em 18 de out., às 17:41`
+      - `Updated 18 de out., 17:41` $\rightarrow$ `Atualizado em 18 de out., às 17:41`
+      - `Updated May 5, 09:30` $\rightarrow$ `Atualizado em 5 de mai., às 09:30`
+    - Suporte a timestamps relativos e expressões temporais:
+      - `Updated just now` $\rightarrow$ `Atualizado agora mesmo`
+      - `Updated today` $\rightarrow$ `Atualizado hoje`
+      - `Updated yesterday` $\rightarrow$ `Atualizado ontem`
+      - `Updated N seconds/minutes/hours/days ago` $\rightarrow$ `Atualizado há N segundos/minutos/horas/dias`
+  - **Localização de Criação, Última Atualização e Edição de Arquivos**:
+    - `Created 17:41` $\rightarrow$ `Criado às 17:41`
+    - `Created Oct 18, 17:41` $\rightarrow$ `Criado em 18 de out., às 17:41`
+    - `Last updated 17:41` $\rightarrow$ `Última atualização às 17:41`
+    - `Last updated: 17:41` $\rightarrow$ `Última atualização: 17:41`
+    - `Edited 17:41` $\rightarrow$ `Editado às 17:41`
+    - Preservação correta das ações de arquivos da ferramenta: `Created index.js` $\rightarrow$ `Criou index.js`, `Edited package.json` $\rightarrow$ `Editou package.json`, `Deleted old_file.ts` $\rightarrow$ `Excluiu old_file.ts`.
+  - **Dicionário Expandido**: Total de 3.029 entradas exatas mapeadas.
+  - **Suíte de Testes Automatizados**: Adicionado novo teste unitário validando todos os formatos temporais (50 testes passando com 100% de sucesso).
+
 ## [1.6.0] - 2026-10-18
 
 ### Adicionado

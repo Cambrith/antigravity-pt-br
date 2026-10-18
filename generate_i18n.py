@@ -1460,8 +1460,18 @@ EXACT_MAP = {
     "Executing": "Executando",
     "Created": "Criou",
     "Creating": "Criando",
-    "Updated": "Atualizou",
+    "Created just now": "Criado agora mesmo",
+    "Created today": "Criado hoje",
+    "Created yesterday": "Criado ontem",
+    "Updated": "Atualizado",
     "Updating": "Atualizando",
+    "Updated just now": "Atualizado agora mesmo",
+    "Updated today": "Atualizado hoje",
+    "Updated yesterday": "Atualizado ontem",
+    "Last updated": "Última atualização",
+    "Last updated.": "Última atualização.",
+    "Last modified": "Última modificação",
+    "Last modified.": "Última modificação.",
     "Asked": "Perguntou",
     "Asking": "Perguntando",
     "Tested": "Testou",
@@ -2988,6 +2998,11 @@ js_body = r'''(function() {
 
   const EXACT_MAP = ''' + map_str + r''';
 
+  const SHORT_MONTHS_MAP = {
+    jan: 'jan.', feb: 'fev.', mar: 'mar.', apr: 'abr.', may: 'mai.', jun: 'jun.',
+    jul: 'jul.', aug: 'ago.', sep: 'set.', sept: 'set.', oct: 'out.', nov: 'nov.', dec: 'dez.'
+  };
+
   function formatDateTimePtBr(str) {
     if (!str || typeof str !== 'string') return str;
     let res = str;
@@ -3002,6 +3017,12 @@ js_body = r'''(function() {
       if (isAM && h === 12) h = 0;
       const h24 = String(h).padStart(2, '0');
       return sStr ? `${h24}:${m}:${sStr}` : `${h24}:${m}`;
+    });
+
+    // Invert month + day in English: "Oct 18" -> "18 de out."
+    res = res.replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep(?:t)?|Oct|Nov|Dec)\s+(\d{1,2})\b/gi, (match, m, d) => {
+      const ptM = SHORT_MONTHS_MAP[m.toLowerCase()] || m;
+      return `${d} de ${ptM}`;
     });
 
     // Relative dates
@@ -3047,13 +3068,18 @@ js_body = r'''(function() {
 
     // Months (short)
     res = res
-      .replace(/\bFeb\b/gi, 'Fev')
-      .replace(/\bApr\b/gi, 'Abr')
-      .replace(/\bAug\b/gi, 'Ago')
-      .replace(/\bSep(?:t)?\b/gi, 'Set')
-      .replace(/\bOct\b/gi, 'Out')
-      .replace(/\bNov\b/gi, 'Nov')
-      .replace(/\bDec\b/gi, 'Dez');
+      .replace(/\bJan\b/gi, 'jan.')
+      .replace(/\bFeb\b/gi, 'fev.')
+      .replace(/\bMar\b/gi, 'mar.')
+      .replace(/\bApr\b/gi, 'abr.')
+      .replace(/\bMay\b/gi, 'mai.')
+      .replace(/\bJun\b/gi, 'jun.')
+      .replace(/\bJul\b/gi, 'jul.')
+      .replace(/\bAug\b/gi, 'ago.')
+      .replace(/\bSep(?:t)?\b/gi, 'set.')
+      .replace(/\bOct\b/gi, 'out.')
+      .replace(/\bNov\b/gi, 'nov.')
+      .replace(/\bDec\b/gi, 'dez.');
 
     return res;
   }
@@ -3082,6 +3108,62 @@ js_body = r'''(function() {
     if ((m = /^Worked for (\d+)m$/.exec(s))) return `Trabalhou por ${m[1]}m`;
     if ((m = /^Worked for (\d+)h (\d+)m$/.exec(s))) return `Trabalhou por ${m[1]}h ${m[2]}m`;
     if ((m = /^Worked for (\d+)h$/.exec(s))) return `Trabalhou por ${m[1]}h`;
+
+    // Atualização de horário e timestamps de conversas, arquivos e tarefas (Updated / Created / Last updated)
+    if ((m = /^Updated\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
+      return `Atualizado às ${formatDateTimePtBr(m[1])}`;
+    }
+    if ((m = /^Updated\s+([A-Za-zçãéíóú\d\s.,/-]+?),\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
+      return `Atualizado em ${formatDateTimePtBr(m[1].trim())}, às ${formatDateTimePtBr(m[2])}`;
+    }
+    if ((m = /^Updated\s+([A-Za-zçãéíóú\d\s.,/-]+)$/i.exec(s))) {
+      const raw = m[1].trim();
+      if (/^(?:just now|agora mesmo)$/i.test(raw)) return "Atualizado agora mesmo";
+      if (/^(?:yesterday|ontem)$/i.test(raw)) return "Atualizado ontem";
+      if (/^(?:today|hoje)$/i.test(raw)) return "Atualizado hoje";
+      let relM;
+      if ((relM = /^(\d+)\s*(?:s|sec|seconds?)\s*ago$/i.exec(raw))) return `Atualizado há ${relM[1]} ${relM[1] === '1' ? 'segundo' : 'segundos'}`;
+      if ((relM = /^(\d+)\s*(?:m|min|minutes?)\s*ago$/i.exec(raw))) return `Atualizado há ${relM[1]} ${relM[1] === '1' ? 'minuto' : 'minutos'}`;
+      if ((relM = /^(\d+)\s*(?:h|hr|hours?)\s*ago$/i.exec(raw))) return `Atualizado há ${relM[1]} ${relM[1] === '1' ? 'hora' : 'horas'}`;
+      if ((relM = /^(\d+)\s*(?:d|days?)\s*ago$/i.exec(raw))) return `Atualizado há ${relM[1]} ${relM[1] === '1' ? 'dia' : 'dias'}`;
+      return `Atualizado em ${formatDateTimePtBr(raw)}`;
+    }
+    if ((m = /^Created\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
+      return `Criado às ${formatDateTimePtBr(m[1])}`;
+    }
+    if ((m = /^Created\s+([A-Za-zçãéíóú\d\s.,/-]+?),\s*(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
+      return `Criado em ${formatDateTimePtBr(m[1].trim())}, às ${formatDateTimePtBr(m[2])}`;
+    }
+    if ((m = /^Created\s+([A-Za-zçãéíóú\d\s.,/-]+)$/i.exec(s))) {
+      const raw = m[1].trim();
+      if (/^(?:just now|agora mesmo)$/i.test(raw)) return "Criado agora mesmo";
+      if (/^(?:yesterday|ontem)$/i.test(raw)) return "Criado ontem";
+      if (/^(?:today|hoje)$/i.test(raw)) return "Criado hoje";
+      let relM;
+      if ((relM = /^(\d+)\s*(?:s|sec|seconds?)\s*ago$/i.exec(raw))) return `Criado há ${relM[1]} ${relM[1] === '1' ? 'segundo' : 'segundos'}`;
+      if ((relM = /^(\d+)\s*(?:m|min|minutes?)\s*ago$/i.exec(raw))) return `Criado há ${relM[1]} ${relM[1] === '1' ? 'minuto' : 'minutos'}`;
+      if ((relM = /^(\d+)\s*(?:h|hr|hours?)\s*ago$/i.exec(raw))) return `Criado há ${relM[1]} ${relM[1] === '1' ? 'hora' : 'horas'}`;
+      if ((relM = /^(\d+)\s*(?:d|days?)\s*ago$/i.exec(raw))) return `Criado há ${relM[1]} ${relM[1] === '1' ? 'dia' : 'dias'}`;
+      // Ação de arquivo: Created index.js
+      if (/^[A-Za-z0-9_.\-\/\\]+\.[a-zA-Z0-9_-]+$/.test(raw)) return `Criou ${raw}`;
+      return `Criado em ${formatDateTimePtBr(raw)}`;
+    }
+    if ((m = /^Last updated\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
+      return `Última atualização às ${formatDateTimePtBr(m[1])}`;
+    }
+    if ((m = /^Last updated:\s*(.+)$/i.exec(s))) {
+      return `Última atualização: ${formatDateTimePtBr(m[1])}`;
+    }
+    if ((m = /^Edited\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
+      return `Editado às ${formatDateTimePtBr(m[1])}`;
+    }
+    if ((m = /^Edited\s+([A-Za-z0-9_.\-\/\\]+\.[a-zA-Z0-9_-]+)$/.exec(s))) {
+      return `Editou ${m[1]}`;
+    }
+    if ((m = /^Deleted\s+([A-Za-z0-9_.\-\/\\]+\.[a-zA-Z0-9_-]+)$/.exec(s))) {
+      return `Excluiu ${m[1]}`;
+    }
+
     // Ações de execução de comandos e ferramentas em tempo real (Tool Group Collapsible)
     function resolveEntityCounts(str) {
       if (!str) return str;
@@ -3780,7 +3862,6 @@ js_body = r'''(function() {
     if (/^\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM)$/i.test(s)) {
       return formatDateTimePtBr(s);
     }
-
     // Version dynamic labels
     if ((m = /^Version\s+(.+)$/i.exec(s))) {
       return `Versão ${m[1]}`;

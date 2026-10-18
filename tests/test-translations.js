@@ -1136,8 +1136,39 @@ test('Tradução de Termos de Execução, Agrupamentos de Ferramentas, Tasks e T
   );
 });
 
+test('Tradução de Atualização de Horário e Timestamps (Updated / Created / Last updated)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
 
+  // Horários simples (24h e 12h AM/PM)
+  assert.equal(tr('Updated 17:41'), 'Atualizado às 17:41');
+  assert.equal(tr('Updated 09:05'), 'Atualizado às 09:05');
+  assert.equal(tr('Updated 5:41 PM'), 'Atualizado às 17:41');
+  assert.equal(tr('Updated 12:00 AM'), 'Atualizado às 00:00');
 
+  // Datas e horários compostos
+  assert.equal(tr('Updated Oct 18, 17:41'), 'Atualizado em 18 de out., às 17:41');
+  assert.equal(tr('Updated 18 de out., 17:41'), 'Atualizado em 18 de out., às 17:41');
+  assert.equal(tr('Updated May 5, 09:30'), 'Atualizado em 5 de mai., às 09:30');
 
+  // Timestamps relativos
+  assert.equal(tr('Updated just now'), 'Atualizado agora mesmo');
+  assert.equal(tr('Updated today'), 'Atualizado hoje');
+  assert.equal(tr('Updated yesterday'), 'Atualizado ontem');
+  assert.equal(tr('Updated 1 minute ago'), 'Atualizado há 1 minuto');
+  assert.equal(tr('Updated 5 minutes ago'), 'Atualizado há 5 minutos');
+  assert.equal(tr('Updated 2 hours ago'), 'Atualizado há 2 horas');
+  assert.equal(tr('Updated 3 days ago'), 'Atualizado há 3 dias');
 
+  // Created e Last updated
+  assert.equal(tr('Created 17:41'), 'Criado às 17:41');
+  assert.equal(tr('Created Oct 18, 17:41'), 'Criado em 18 de out., às 17:41');
+  assert.equal(tr('Last updated 17:41'), 'Última atualização às 17:41');
+  assert.equal(tr('Last updated: 17:41'), 'Última atualização: 17:41');
+  assert.equal(tr('Edited 17:41'), 'Editado às 17:41');
 
+  // Ações de etapas de arquivos
+  assert.equal(tr('Created index.js'), 'Criou index.js');
+  assert.equal(tr('Edited package.json'), 'Editou package.json');
+  assert.equal(tr('Deleted old_file.ts'), 'Excluiu old_file.ts');
+});

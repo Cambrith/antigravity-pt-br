@@ -4,7 +4,7 @@
 [![Segurança](https://github.com/Cambrith/antigravity-pt-br/actions/workflows/security.yml/badge.svg)](https://github.com/Cambrith/antigravity-pt-br/actions)
 [![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](LICENSE)
 [![Plataformas](https://img.shields.io/badge/suporte-Linux%20%7C%20ChromeOS%20%7C%20Windows%20%7C%20macOS-brightgreen.svg)](docs/COMPATIBILITY.md)
-[![Traduções](https://img.shields.io/badge/entradas-2.270%2B-blueviolet.svg)](#-o-que-está-traduzido)
+[![Traduções](https://img.shields.io/badge/entradas-3.020%2B-blueviolet.svg)](#-o-que-está-traduzido)
 [![Testes Automatizados](https://img.shields.io/badge/testes-100%25%20passando-success.svg)](tests/)
 
 Sistema profissional, robusto e persistente de localização em Português do Brasil (pt-BR) para o **Google Antigravity**, projetado para funcionar de forma transparente no **Linux** (múltiplas distribuições), **ChromeOS**, **Windows** e **macOS**.
@@ -16,7 +16,7 @@ Sistema profissional, robusto e persistente de localização em Português do Br
 O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
 
 Este projeto resolve essa barreira entregando:
-1. **Tradução Integral e Fiel**: Mais de 2.270 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+1. **Tradução Integral e Fiel**: Mais de 3.020 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
 2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
 3. **Multiplataforma Real**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
 4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.
