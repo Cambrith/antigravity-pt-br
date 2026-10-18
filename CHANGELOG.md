@@ -17,6 +17,26 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.
 - Atalho Ctrl+, / ⌘+, fecha apenas o modal de configurações, sem acionar o botão de fechar a janela.
 
+## [1.6.0] - 2026-10-18
+
+### Adicionado
+- **Suporte Oficial a Antigravity Mobile PWA (Controle Remoto no Smartphone em pt-BR)**:
+  - **Módulo `mobile-bridge.js` & Executável `./mobile.sh`**:
+    - Permite controlar o Google Antigravity à distância pelo celular (Android via Google Chrome / iOS via Safari) em 4G, 5G ou qualquer rede externa com 100% da interface traduzida para Português do Brasil.
+    - Zero dependências npm externas (construído puramente com Node.js nativo: `http`, `https`, `crypto`, `child_process`, `fs`, `path`, `os`).
+  - **Injeção de PWA e Tradução em Tempo Real**:
+    - Servidor bridge intercepta a rota inicial e injeta dinamicamente o manifesto PWA (`manifest.json`), meta tags de aplicativo móvel para tela cheia e o script `i18n-pt-br.js`.
+    - Suporte a streaming bidirecional via WebSocket duplex TLS para o Language Server.
+  - **Túnel Seguro Automático (Cloudflare Tunnel)**:
+    - Integração transparente com `cloudflared` para criar URLs HTTPS com certificados válidos na nuvem (sem necessidade de abrir portas no roteador).
+    - Auto-download do binário oficial seguro da Cloudflare caso não esteja no sistema.
+  - **Proteção por PIN e Token de Acesso**:
+    - Bloqueia acessos indevidos da internet por meio de chave de segurança e tela de autenticação estilizada em Português do Brasil.
+  - **Gerador de QR Code ASCII no Terminal (`qr-engine.js`)**:
+    - Renderiza instantaneamente um QR Code nítido no terminal usando blocos Unicode para conexão com 1 toque através da câmera do smartphone.
+  - **Suíte de Testes Automatizados**:
+    - Adicionado `tests/test-mobile-bridge.js` cobrindo sintaxe, integridade do gerador de QR Code e permissões executáveis (49 testes passando com 100% de sucesso).
+
 ## [1.5.1] - 2026-10-17
 
 ### Adicionado

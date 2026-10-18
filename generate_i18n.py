@@ -2940,6 +2940,52 @@ if os.path.exists(plugins_map_file):
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
 
 js_body = r'''(function() {
+  // --- Gerador Inteligente de Nomes em Português do Brasil para Projetos Scratch (Início Rápido) ---
+  try {
+    const ADJETIVOS_PT_BR = [
+      "audaz", "brilhante", "criativo", "curioso", "destemido", "elegante",
+      "epico", "esplendido", "esperto", "focado", "fulgurante", "habil",
+      "harmonioso", "ilustre", "inovador", "inteligente", "intrepido",
+      "lucido", "magico", "magnifico", "notavel", "otimista", "pacifico",
+      "pioneiro", "poderoso", "prudente", "radiante", "resiliente", "sagaz",
+      "sereno", "soberano", "tenaz", "valente", "veloz", "vibrante", "visionario"
+    ];
+
+    const SUBSTANTIVOS_PT_BR = [
+      "santos-dumont", "lattes", "chagas", "oswaldo-cruz", "vital-brazil",
+      "bertha-lutz", "nise-silveira", "machado", "villa-lobos", "guimaraes",
+      "aurora", "cosmos", "orion", "nebula", "pulsar", "galaxia", "eclipse",
+      "cometa", "astro", "supernova", "quasar", "zenite", "horizonte",
+      "arara", "guara", "jaguar", "harpia", "carcara", "tuiuiu",
+      "quantum", "sinapse", "prisma", "espectro", "vetor", "nucleo", "nexus",
+      "codigo", "algoritmo", "laboratorio"
+    ];
+
+    const origSplit = String.prototype.split;
+    String.prototype.split = function(separator, limit) {
+      const str = String(this);
+      if (str.startsWith("adventurous agitated amazing")) {
+        return ADJETIVOS_PT_BR;
+      }
+      if (str.startsWith("archimedes babbage bardeen")) {
+        return SUBSTANTIVOS_PT_BR;
+      }
+      return origSplit.apply(this, arguments);
+    };
+
+    if (typeof window !== "undefined") {
+      window.__ANTIGRAVITY_PTBR_ADJETIVOS__ = ADJETIVOS_PT_BR;
+      window.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__ = SUBSTANTIVOS_PT_BR;
+      window.__ANTIGRAVITY_GERAR_NOME_PTBR__ = function() {
+        const adj = ADJETIVOS_PT_BR[Math.floor(Math.random() * ADJETIVOS_PT_BR.length)];
+        const sub = SUBSTANTIVOS_PT_BR[Math.floor(Math.random() * SUBSTANTIVOS_PT_BR.length)];
+        return `${adj}-${sub}`;
+      };
+    }
+  } catch (e) {
+    console.warn("[i18n-pt-br] Erro ao registrar gerador de nomes scratch em pt-BR:", e);
+  }
+
   const EXACT_MAP = ''' + map_str + r''';
 
   function formatDateTimePtBr(str) {

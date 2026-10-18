@@ -1,12 +1,13 @@
 {
   "name": "antigravity-pt-br",
-  "version": "1.5.1",
-  "description": "Tradução completa da interface do Google Antigravity para Português do Brasil com instaladores multiplataforma (Linux, Windows, macOS)",
+  "version": "1.6.0",
+  "description": "Tradução completa da interface do Google Antigravity para Português do Brasil com suporte a Desktop e Mobile PWA (Linux, Windows, macOS, Android, iOS)",
   "main": "dist/patch-asar.js",
   "scripts": {
     "test": "node --test",
-    "build": "python3 generate_i18n.py && cp i18n-pt-br.js dist/ && cp patch-asar.js dist/ && cp cambrith-window-controls.js dist/",
-    "lint": "node -c patch-asar.js dist/patch-asar.js i18n-pt-br.js dist/i18n-pt-br.js tests/test-no-regression.js tests/test-path-resolver.js tests/test-quotas.js tests/test-translations.js tests/test-distro-matrix.js"
+    "build": "python3 generate_i18n.py && cp i18n-pt-br.js dist/ && cp patch-asar.js dist/ && cp cambrith-window-controls.js dist/ && cp icon.png dist/ && cp mobile-bridge.js dist/ && cp qr-engine.js dist/ && cp mobile.sh dist/",
+    "lint": "node -c patch-asar.js dist/patch-asar.js i18n-pt-br.js dist/i18n-pt-br.js mobile-bridge.js qr-engine.js tests/*.js",
+    "mobile": "node mobile-bridge.js"
   },
   "repository": {
     "type": "git",

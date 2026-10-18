@@ -237,11 +237,7 @@ try {
                 electron_1.webFrame.executeJavaScript(i18nCode);
             } catch (e) {}
         };
-        if (document.readyState === 'loading') {
-            window.addEventListener('DOMContentLoaded', runI18n, { once: true });
-        } else {
-            runI18n();
-        }
+        runI18n();
     }
 } catch (err) {
     console.error('[i18n-pt-br] preload error:', err);

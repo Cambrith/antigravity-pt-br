@@ -175,6 +175,31 @@ Os controles da janela ficam em `cambrith-window-controls.js`, fora do pacote do
 Para entender em detalhes como o patcher manipula o arquivo `app.asar` mantendo integridade SHA-256 e como o `MutationObserver` atua no ciclo de vida do Electron, consulte o documento:
 👉 **[Documentação de Arquitetura (docs/ARCHITECTURE.md)](docs/ARCHITECTURE.md)**
 
+## 📱 Antigravity Mobile PWA (Controle Remoto no Celular em pt-BR)
+
+Você pode controlar o seu Google Antigravity à distância pelo celular através do **Google Chrome oficial** (ou Safari no iOS), em **4G, 5G ou qualquer rede Wi-Fi**, com a interface **100% traduzida em Português do Brasil**:
+
+### Como Iniciar o Acesso Móvel:
+No terminal do seu computador (onde o Antigravity está aberto):
+```bash
+./mobile.sh
+# ou via npm:
+npm run mobile
+```
+
+### O que o sistema faz automaticamente:
+1. **Detecta o Antigravity ativo**: Conecta-se à instância do Antigravity em execução no seu computador.
+2. **Injeta a Tradução pt-BR e o Manifesto PWA**: Garante que o celular receba todo o dicionário e componentes em português.
+3. **Cria um Túnel Seguro (Cloudflare Tunnel)**: Gera uma URL HTTPS protegida na nuvem com certificado SSL válido para o PWA.
+4. **Proteção por PIN**: Bloqueia acessos não autorizados da internet gerando um PIN de segurança exibido no seu terminal.
+5. **Desenha um QR Code no Terminal**: Basta apontar a câmera do smartphone para abrir o link imediatamente!
+
+### Como Instalar como Aplicativo (PWA) no Celular:
+1. Escaneie o QR Code ou abra a URL no **Google Chrome** do celular.
+2. Digite o PIN de 6 dígitos exibido no seu terminal (ou acesse com o link automático que já inclui a chave).
+3. Toque no menu do Chrome (três pontinhos) e escolha **"Instalar aplicativo"** ou **"Adicionar à tela inicial"**.
+4. Pronto! O Antigravity abrirá como um aplicativo nativo em tela cheia e totalmente em português do Brasil!
+
 ---
 
 ## 🧪 Qualidade e Testes Automatizados
