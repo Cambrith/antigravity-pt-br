@@ -40,6 +40,26 @@
         const sub = SUBSTANTIVOS_PT_BR[Math.floor(Math.random() * SUBSTANTIVOS_PT_BR.length)];
         return `${adj}-${sub}`;
       };
+
+      function hookGUb() {
+        try {
+          const target = window.GUb || (typeof GUb !== "undefined" ? GUb : null);
+          if (target && !window.__CAMBRITH_GUB_HOOKED__) {
+            window.__CAMBRITH_GUB_ORIG__ = target;
+            window.GUb = function(sections) {
+              if (window.__CAMBRITH_CUSTOM_NAME_OVERRIDE__) {
+                const custom = window.__CAMBRITH_CUSTOM_NAME_OVERRIDE__;
+                window.__CAMBRITH_CUSTOM_NAME_OVERRIDE__ = null;
+                return custom;
+              }
+              return window.__CAMBRITH_GUB_ORIG__(sections);
+            };
+            window.__CAMBRITH_GUB_HOOKED__ = true;
+          }
+        } catch (e) {}
+      }
+      hookGUb();
+      window.__CAMBRITH_HOOK_GUB__ = hookGUb;
     }
   } catch (e) {
     console.warn("[i18n-pt-br] Erro ao registrar gerador de nomes scratch em pt-BR:", e);
@@ -1801,6 +1821,342 @@
   }
 
   // =========================================================================
+  // Gerenciador de Criação de Projetos Antigravity (3 Opções + Modal Customizado)
+  // =========================================================================
+  function getNativeScratchAction() {
+    try {
+      const btn = document.querySelector('[data-testid="sidebar-add-project-button"]');
+      if (!btn) return null;
+      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber'));
+      if (!fiberKey) return null;
+      let fiber = btn[fiberKey];
+      while (fiber && fiber.type?.name !== 'yVb') fiber = fiber.return;
+      if (!fiber) return null;
+
+      let hook = fiber.memoizedState;
+      while (hook) {
+        const val = Array.isArray(hook.memoizedState) ? hook.memoizedState[0] : null;
+        if (Array.isArray(val) && val.length > 1 && val[1]?.onClick) {
+          return val[1].onClick;
+        }
+        hook = hook.next;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function injectProjectModalStyles() {
+    if (document.getElementById('cambrith-project-modal-style')) return;
+    const style = document.createElement('style');
+    style.id = 'cambrith-project-modal-style';
+    style.textContent = `
+      @keyframes cambrithFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes cambrithScaleIn {
+        from { opacity: 0; transform: scale(0.96) translateY(4px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .cambrith-modal-backdrop {
+        animation: cambrithFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .cambrith-modal-card {
+        animation: cambrithScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function openCambrithProjectModal() {
+    if (typeof window.__CAMBRITH_HOOK_GUB__ === 'function') {
+      window.__CAMBRITH_HOOK_GUB__();
+    }
+    injectProjectModalStyles();
+
+    let modal = document.getElementById('cambrith-project-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'cambrith-project-modal';
+      modal.className = 'fixed inset-0 z-[999999] flex items-center justify-center bg-black/65 backdrop-blur-sm cambrith-modal-backdrop select-none';
+      modal.innerHTML = `
+        <div class="bg-card text-foreground border border-border rounded-xl shadow-2xl p-6 w-[500px] max-w-[94vw] flex flex-col gap-5 cambrith-modal-card" style="background-color: var(--card, #18181b); color: var(--foreground, #fafafa); border-color: var(--border, #27272a);">
+          <!-- Cabeçalho -->
+          <div class="flex items-center justify-between border-b border-border/50 pb-3.5" style="border-color: var(--border, #27272a);">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold" style="background-color: color-mix(in srgb, var(--primary, #3b82f6) 15%, transparent); color: var(--primary, #3b82f6);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-sm font-semibold leading-tight text-foreground" style="color: var(--foreground, #fafafa);">Criar Novo Projeto</h2>
+                <p class="text-xs text-muted-foreground mt-0.5" style="color: var(--muted-foreground, #a1a1aa);">O projeto será criado diretamente na pasta do Antigravity</p>
+              </div>
+            </div>
+            <button type="button" id="cambrith-modal-close-btn" class="text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-md p-1.5 transition-colors cursor-pointer outline-none" title="Fechar (Esc)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Formulário -->
+          <form id="cambrith-modal-form" class="flex flex-col gap-4 text-left">
+            <!-- Campo de Nome -->
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center justify-between">
+                <label for="cambrith-project-input" class="text-xs font-medium text-foreground flex items-center gap-1" style="color: var(--foreground, #fafafa);">
+                  Nome do projeto <span class="text-primary" style="color: var(--primary, #3b82f6);">*</span>
+                </label>
+                <button type="button" id="cambrith-suggest-name-btn" class="text-[11px] text-primary hover:underline cursor-pointer flex items-center gap-1 font-medium" style="color: var(--primary, #3b82f6);">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.5 2-5 5L12 2.5 7.5 7 2 2.5"></path>
+                    <path d="M7 11.5v6.5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6.5"></path>
+                  </svg>
+                  Sugerir nome
+                </button>
+              </div>
+              <input 
+                type="text" 
+                id="cambrith-project-input" 
+                required 
+                autocomplete="off" 
+                spellcheck="false"
+                placeholder="ex: meu-novo-projeto"
+                class="w-full rounded-lg px-3 py-2 text-sm outline-none transition-all"
+                style="background-color: var(--secondary, #27272a); color: var(--foreground, #fafafa); border: 1px solid var(--border, #3f3f46);"
+              />
+              <div class="text-[11px] text-muted-foreground flex items-center gap-1 truncate font-mono mt-0.5" style="color: var(--muted-foreground, #a1a1aa);">
+                <span class="opacity-70">Destino:</span>
+                <span class="truncate text-foreground/85">~/Documents/antigravity/<span id="cambrith-path-subfolder" class="text-primary font-semibold" style="color: var(--primary, #3b82f6);">meu-novo-projeto</span></span>
+              </div>
+              <div id="cambrith-input-error" class="text-xs text-red-400 hidden font-medium mt-0.5"></div>
+            </div>
+
+            <!-- Opções Adicionais -->
+            <div class="flex flex-col gap-2 pt-2 border-t border-border/40" style="border-color: var(--border, #27272a);">
+              <span class="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider" style="color: var(--muted-foreground, #a1a1aa);">Opções adicionais</span>
+              <label class="flex items-center gap-2.5 text-xs text-foreground cursor-pointer select-none" style="color: var(--foreground, #fafafa);">
+                <input type="checkbox" id="cambrith-chk-git" checked class="rounded border-border accent-primary cursor-pointer w-4 h-4" />
+                <span>Inicializar repositório Git (<code class="text-[11px] opacity-80">git init</code>)</span>
+              </label>
+              <label class="flex items-center gap-2.5 text-xs text-foreground cursor-pointer select-none" style="color: var(--foreground, #fafafa);">
+                <input type="checkbox" id="cambrith-chk-readme" checked class="rounded border-border accent-primary cursor-pointer w-4 h-4" />
+                <span>Criar arquivo inicial <code class="text-[11px] opacity-80">README.md</code></span>
+              </label>
+            </div>
+
+            <!-- Rodapé -->
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-border/50" style="border-color: var(--border, #27272a);">
+              <button type="button" id="cambrith-modal-cancel-btn" class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-secondary-foreground hover:bg-secondary/80 hover:text-foreground transition-colors cursor-pointer" style="color: var(--secondary-foreground, #d4d4d8);">
+                Cancelar
+              </button>
+              <button type="submit" id="cambrith-modal-submit-btn" class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer flex items-center gap-1.5 shadow-sm" style="background-color: var(--primary, #3b82f6); color: var(--primary-foreground, #ffffff);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Criar Projeto</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const input = modal.querySelector('#cambrith-project-input');
+      const preview = modal.querySelector('#cambrith-path-subfolder');
+      const errorDiv = modal.querySelector('#cambrith-input-error');
+      const form = modal.querySelector('#cambrith-modal-form');
+      const submitBtn = modal.querySelector('#cambrith-modal-submit-btn');
+      const closeBtn = modal.querySelector('#cambrith-modal-close-btn');
+      const cancelBtn = modal.querySelector('#cambrith-modal-cancel-btn');
+      const suggestBtn = modal.querySelector('#cambrith-suggest-name-btn');
+      const readmeChk = modal.querySelector('#cambrith-chk-readme');
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = 'Criar Projeto';
+      }
+
+      closeBtn.onclick = closeModal;
+      cancelBtn.onclick = closeModal;
+      modal.onclick = (e) => {
+        if (e.target === modal) closeModal();
+      };
+
+      input.oninput = () => {
+        const raw = input.value;
+        const sanitized = raw.trim().replace(/[^a-zA-Z0-9_\-\.]/g, '-').replace(/-+/g, '-').toLowerCase();
+        preview.textContent = sanitized || 'meu-novo-projeto';
+        errorDiv.classList.add('hidden');
+      };
+
+      suggestBtn.onclick = () => {
+        if (typeof window.__ANTIGRAVITY_GERAR_NOME_PTBR__ === 'function') {
+          const rnd = window.__ANTIGRAVITY_GERAR_NOME_PTBR__();
+          input.value = rnd;
+          input.dispatchEvent(new Event('input'));
+          input.focus();
+        }
+      };
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const raw = input.value.trim();
+        const clean = raw.replace(/[^a-zA-Z0-9_\-\.]/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+        if (!clean) {
+          errorDiv.textContent = 'Por favor, digite um nome válido para o projeto.';
+          errorDiv.classList.remove('hidden');
+          input.focus();
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = 'Criando projeto...';
+
+        if (typeof window.__CAMBRITH_HOOK_GUB__ === 'function') {
+          window.__CAMBRITH_HOOK_GUB__();
+        }
+        window.__CAMBRITH_CUSTOM_NAME_OVERRIDE__ = clean;
+
+        const shouldCreateReadme = readmeChk?.checked;
+        const nativeAction = getNativeScratchAction();
+        if (typeof nativeAction === 'function') {
+          try {
+            await nativeAction();
+            if (shouldCreateReadme && window.__CAMBRITH_NATIVE_BRIDGE__?.createReadme) {
+              setTimeout(() => {
+                try {
+                  window.__CAMBRITH_NATIVE_BRIDGE__.createReadme(clean, raw);
+                } catch (_) {}
+              }, 400);
+            }
+            closeModal();
+          } catch (err) {
+            console.error('[Cambrith] Falha ao criar projeto:', err);
+            errorDiv.textContent = 'Erro ao criar projeto: ' + (err.message || err);
+            errorDiv.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.querySelector('span').textContent = 'Criar Projeto';
+          }
+        } else {
+          errorDiv.textContent = 'Ação de criação do Antigravity indisponível.';
+          errorDiv.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.querySelector('span').textContent = 'Criar Projeto';
+        }
+      };
+    }
+
+    modal.classList.remove('hidden');
+    const input = modal.querySelector('#cambrith-project-input');
+    if (input) {
+      if (!input.value && typeof window.__ANTIGRAVITY_GERAR_NOME_PTBR__ === 'function') {
+        input.value = window.__ANTIGRAVITY_GERAR_NOME_PTBR__();
+        input.dispatchEvent(new Event('input'));
+      }
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      }, 50);
+    }
+  }
+
+  function enhanceProjectDropdown(pop) {
+    if (!pop || pop.__cambrith_done) return;
+    const buttons = pop.querySelectorAll('button');
+    if (buttons.length < 2) return;
+
+    // Opção 1: Selecionar pasta
+    const b1 = buttons[0];
+    const span1 = b1.querySelector('span');
+    if (span1) {
+      span1.textContent = 'Selecionar pasta';
+      span1.setAttribute('data-cambrith-label', 'select-folder');
+    }
+    b1.setAttribute('title', 'Selecione uma pasta existente no computador');
+
+    // Opção 2: Início rápido
+    const b2 = buttons[1];
+    const span2 = b2.querySelector('span');
+    if (span2) {
+      span2.textContent = 'Início rápido';
+    }
+    b2.setAttribute('title', 'Cria instantaneamente um projeto com nome automático na pasta do Antigravity');
+
+    // Opção 3: Criar projeto
+    if (!pop.querySelector('.cambrith-create-project-btn')) {
+      const b3 = b1.cloneNode(true);
+      b3.className = b1.className + ' cambrith-create-project-btn';
+      b3.removeAttribute('id');
+      b3.removeAttribute('data-tooltip-id');
+      b3.setAttribute('title', 'Crie um novo projeto escolhendo o nome na hora');
+
+      const span3 = b3.querySelector('span');
+      if (span3) span3.textContent = 'Criar projeto';
+
+      const iconContainer = b3.querySelector('.shrink-0.flex');
+      if (iconContainer) {
+        iconContainer.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-secondary-foreground shrink-0">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        `;
+      }
+
+      b3.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+        openCambrithProjectModal();
+      });
+
+      pop.appendChild(b3);
+    }
+
+    pop.__cambrith_done = true;
+  }
+
+  function checkProjectDropdowns() {
+    try {
+      const pop = document.querySelector('.' + CSS.escape('!w-[210px]'));
+      if (pop) enhanceProjectDropdown(pop);
+    } catch (_) {}
+  }
+
+  function setupProjectCreationFeatures() {
+    if (typeof window !== 'undefined') {
+      window.__CAMBRITH_OPEN_CREATE_PROJECT_MODAL__ = openCambrithProjectModal;
+      window.__CAMBRITH_ENHANCE_DROPDOWN__ = enhanceProjectDropdown;
+    }
+
+    if (!window.__CAMBRITH_PROJECT_CREATION_BOUND__) {
+      window.__CAMBRITH_PROJECT_CREATION_BOUND__ = true;
+      document.addEventListener('pointerdown', (e) => {
+        if (e.target && e.target.closest && e.target.closest('[data-testid="sidebar-add-project-button"]')) {
+          [20, 50, 100, 200].forEach(delay => setTimeout(checkProjectDropdowns, delay));
+        }
+      }, { capture: true, passive: true });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const modal = document.getElementById('cambrith-project-modal');
+          if (modal && !modal.classList.contains('hidden')) {
+            modal.classList.add('hidden');
+          }
+        }
+      });
+    }
+  }
+
+  // =========================================================================
   // Tradutor Instantâneo de Pensamentos (Proactive Zero-Latency Auto-Translator)
   // =========================================================================
   const thoughtCache = new Map();
@@ -2336,12 +2692,14 @@
     injectThoughtStyles();
     walkAndTranslate(document.body || document.documentElement);
     ensureSettingsAccess();
+    setupProjectCreationFeatures();
     scanAndTranslateAllThoughts();
     if (window.__CAMBRITH_I18N_OBS__) {
       try { window.__CAMBRITH_I18N_OBS__.disconnect(); } catch (_) {}
     }
     const obs = new MutationObserver((mutations) => {
       let shouldScanThoughts = false;
+      let hasChildList = false;
       for (const m of mutations) {
         if (m.type === 'characterData') {
           translateTextNode(m.target);
@@ -2351,15 +2709,24 @@
         } else if (m.type === 'attributes') {
           translateElementAttrs(m.target);
         } else if (m.type === 'childList') {
+          hasChildList = true;
           for (const node of m.addedNodes) {
             walkAndTranslate(node);
-            if (node.nodeType === 1 && (node.matches('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], [role="group"], .cursor-edit') || node.querySelector('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], [role="group"], .cursor-edit'))) {
-              shouldScanThoughts = true;
+            if (node.nodeType === 1) {
+              if (node.matches('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], [role="group"], .cursor-edit') || node.querySelector('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], [role="group"], .cursor-edit')) {
+                shouldScanThoughts = true;
+              }
+              if (node.matches?.('.' + CSS.escape('!w-[210px]') + ', [role="dialog"]') || node.querySelector?.('.' + CSS.escape('!w-[210px]') + ', [role="dialog"]')) {
+                checkProjectDropdowns();
+              }
             }
           }
         }
       }
-      if (mutations.some(m => m.type === 'childList')) scheduleSettingsAccess();
+      if (hasChildList) {
+        scheduleSettingsAccess();
+        checkProjectDropdowns();
+      }
       if (shouldScanThoughts) {
         scheduleThoughtScan(40);
       }

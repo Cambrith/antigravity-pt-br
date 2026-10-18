@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v9';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v11';
 
 // 1. Resolução Multiplataforma de Caminhos
 function detectAsarPath() {
@@ -234,10 +234,36 @@ try {
         const i18nCode = fs.readFileSync(i18nPath, 'utf-8');
         const runI18n = () => {
             try {
+                const nativeBridge = {
+                    createReadme: (folderName, projectName) => {
+                        try {
+                            const targetDir = path.join(os.homedir(), 'Documents', 'antigravity', folderName);
+                            if (fs.existsSync(targetDir)) {
+                                const readmePath = path.join(targetDir, 'README.md');
+                                if (!fs.existsSync(readmePath)) {
+                                    const titleStr = projectName || folderName;
+                                    const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visao Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
+                                    fs.writeFileSync(readmePath, content, 'utf8');
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('[Cambrith] Erro ao criar README:', e);
+                        }
+                    }
+                };
+                if (typeof electron_1 !== 'undefined' && electron_1.contextBridge && electron_1.contextBridge.exposeInMainWorld) {
+                    try { electron_1.contextBridge.exposeInMainWorld('__CAMBRITH_NATIVE_BRIDGE__', nativeBridge); } catch (_) { window.__CAMBRITH_NATIVE_BRIDGE__ = nativeBridge; }
+                } else if (typeof window !== 'undefined') {
+                    window.__CAMBRITH_NATIVE_BRIDGE__ = nativeBridge;
+                }
                 electron_1.webFrame.executeJavaScript(i18nCode);
             } catch (e) {}
         };
-        runI18n();
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', runI18n, { once: true });
+        } else {
+            runI18n();
+        }
     }
 } catch (err) {
     console.error('[i18n-pt-br] preload error:', err);
@@ -271,6 +297,21 @@ function patchUtils(code) {
         win.maximize();
     }
     win.on('page-title-updated',`);
+  }
+  // Cambrith: padroniza a identificação da janela no Alt+Tab, barra de tarefas e sistema
+  const origTitlePattern = /win\.on\('page-title-updated',\s*\(event,\s*title\)\s*=>\s*\{[\s\S]*?win\.setTitle\(truncated\s*\+\s*wslBadge\);\s*\}\s*\}\);/;
+  const brandedTitleHandler = `win.on('page-title-updated', (event, title) => {
+        event.preventDefault();
+        const appName = 'Google Antigravity';
+        let base = (title && typeof title === 'string') ? title.trim() : '';
+        if (base.length > 35) {
+            base = base.substring(0, 35) + '...';
+        }
+        const fullTitle = base && !base.includes(appName) ? \`\${base} — \${appName}\` : (base || appName);
+        win.setTitle(fullTitle + (wslBadge || ''));
+    });`;
+  if (origTitlePattern.test(out)) {
+    out = out.replace(origTitlePattern, brandedTitleHandler);
   }
   const domReadyHook = `win.webContents.on('dom-ready', () => {
             try {
