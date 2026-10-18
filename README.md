@@ -164,6 +164,12 @@ curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.
 
 ---
 
+## 🔄 Personalizações que sobrevivem às atualizações (Linux)
+
+O inicializador reaplica o patcher antes de abrir o aplicativo e sincroniza os arquivos mestres guardados em `~/.config/Antigravity/i18n`. Na instalação padrão do usuário, o instalador também habilita uma unidade `systemd --user` que observa alterações na pasta `resources` e reaplica as personalizações depois que o `app.asar` estabiliza. Assim, a tradução, o acesso às configurações, o dimensionamento inicial da janela e os controles personalizados permanecem disponíveis após atualizações. O monitor pode ser desativado com `systemctl --user disable --now antigravity-patch-after-update.path`; o inicializador continua fazendo a verificação antes de abrir o app.
+
+Os controles da janela ficam em `cambrith-window-controls.js`, fora do pacote do Antigravity. O patcher mantém esse arquivo e o reaplica junto com a tradução, sem depender de mudanças feitas manualmente dentro do `app.asar`.
+
 ## 🛡️ Arquitetura e Engenharia de Persistência
 
 Para entender em detalhes como o patcher manipula o arquivo `app.asar` mantendo integridade SHA-256 e como o `MutationObserver` atua no ciclo de vida do Electron, consulte o documento:

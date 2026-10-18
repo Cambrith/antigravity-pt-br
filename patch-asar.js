@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v8';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v9';
 
 // 1. Resolução Multiplataforma de Caminhos
 function detectAsarPath() {
@@ -87,6 +87,8 @@ const GOLDEN_DIR = getGoldenConfigDir();
 const GOLDEN_I18N = path.join(GOLDEN_DIR, 'i18n-pt-br.js');
 const SOURCE_I18N = path.join(SCRIPT_DIR, 'i18n-pt-br.js');
 const TARGET_I18N = path.join(RESOURCES_DIR, 'i18n-pt-br.js');
+const SOURCE_CONTROLS = path.join(SCRIPT_DIR, 'cambrith-window-controls.js');
+const TARGET_CONTROLS = path.join(RESOURCES_DIR, 'cambrith-window-controls.js');
 
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
@@ -301,6 +303,10 @@ function patchUtils(code) {
                 if (i18nPath && fs.existsSync(i18nPath)) {
                     win.webContents.executeJavaScript(fs.readFileSync(i18nPath, 'utf-8')).catch(() => {});
                 }
+                const controlsPath = path.join(process.resourcesPath || path.join(__dirname, '..', '..'), 'cambrith-window-controls.js');
+                if (fs.existsSync(controlsPath)) {
+                    win.webContents.executeJavaScript(fs.readFileSync(controlsPath, 'utf-8')).catch(() => {});
+                }
             } catch (_) {}
         });`;
 
@@ -308,6 +314,20 @@ function patchUtils(code) {
     out = out.replace(/win\.webContents\.on\('dom-ready',\s*\(\)\s*=>\s*\{[\s\S]*?\n        \}\);(?=\n        win\.webContents\.on\('did-finish-load')/, domReadyHook);
   } else if (out.includes("win.webContents.on('did-finish-load', () => {")) {
     out = out.replace("win.webContents.on('did-finish-load', () => {", domReadyHook + "\n        win.webContents.on('did-finish-load', () => {");
+  }
+  const titleBarOverlayPattern = /titleBarOverlay: isMacOS\(\)\s*\? false\s*:\s*\{\s*color: backgroundColor,\s*symbolColor: foregroundColor,\s*height: 30,\s*\},/;
+  const customControlsOverlay = `titleBarOverlay: process.platform === 'linux' || isMacOS()
+            ? false
+            : {
+                color: backgroundColor,
+                symbolColor: foregroundColor,
+                height: 30,
+            },`;
+  if (!out.includes("titleBarOverlay: process.platform === 'linux' || isMacOS()")) {
+    if (!titleBarOverlayPattern.test(out)) {
+      throw new Error('Não foi possível localizar a configuração original dos controles da janela.');
+    }
+    out = out.replace(titleBarOverlayPattern, customControlsOverlay);
   }
   return out;
 }
@@ -369,6 +389,13 @@ function run() {
     }
   } catch (err) {
     log(`Aviso ao sincronizar i18n-pt-br.js: ${err.message}`);
+  }
+  try {
+    if (fs.existsSync(SOURCE_CONTROLS) && fs.existsSync(RESOURCES_DIR)) {
+      fs.copyFileSync(SOURCE_CONTROLS, TARGET_CONTROLS);
+    }
+  } catch (err) {
+    log(`Aviso ao sincronizar controles da janela: ${err.message}`);
   }
 
   // 2. Ler ASAR e verificar assinatura

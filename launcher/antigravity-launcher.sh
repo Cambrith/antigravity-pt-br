@@ -1,34 +1,40 @@
 #!/usr/bin/env bash
-# Antigravity Persistent Localization Launcher (v3)
-# Mantém a integridade da tradução pt-BR mesmo após atualizações automáticas do Antigravity
+# Inicia Antigravity com as personalizações Cambrith persistentes.
+set -u
 
 APP_DIR="${ANTIGRAVITY_APP_DIR:-$HOME/.local/opt/antigravity}"
 ASAR="$APP_DIR/resources/app.asar"
-I18N_RES="$APP_DIR/resources/i18n-pt-br.js"
-GOLDEN_I18N="$HOME/.config/Antigravity/i18n/i18n-pt-br.js"
-PATCHER="$HOME/.config/Antigravity/i18n/patch-asar.js"
+PATCHER="${ANTIGRAVITY_PATCHER:-$HOME/.config/Antigravity/i18n/patch-asar.js}"
+LOG_DIR="$HOME/.local/state/antigravity-cambrith"
+LOG_FILE="$LOG_DIR/update-guard.log"
 
-# 1. Garantir que i18n-pt-br.js em resources/ esteja sempre sincronizado com o Golden Master
-if [[ -f "$GOLDEN_I18N" ]]; then
-    if [[ ! -f "$I18N_RES" ]] || ! cmp -s "$GOLDEN_I18N" "$I18N_RES"; then
-        cp -f "$GOLDEN_I18N" "$I18N_RES" 2>/dev/null
+# Sempre executar o patcher: ele sincroniza os arquivos mestres e só regrava
+# app.asar quando a assinatura da versão não estiver presente.
+if [[ -f "$ASAR" && -f "$PATCHER" ]]; then
+    mkdir -p "$LOG_DIR"
+    if ! node "$PATCHER" "--asar=$ASAR" >>"$LOG_FILE" 2>&1; then
+        printf '[%s] Falha ao reaplicar as personalizações antes da abertura.\n' "$(date -Is)" >>"$LOG_FILE"
     fi
 fi
 
-# 2. Verificar se o app.asar perdeu a injeção da tradução (ex: atualização recente do Antigravity)
-if [[ -f "$ASAR" ]] && ! grep -q "Cambrith pt-BR Localization Injection v3" "$ASAR" 2>/dev/null; then
-    if [[ -f "$PATCHER" ]]; then
-        node "$PATCHER" --asar="$ASAR" >/dev/null 2>&1
-    fi
-fi
+launch_antigravity() {
+    local binary="$1"
+    shift
+    for argument in "$@"; do
+        if [[ "$argument" == --lang=* ]]; then
+            exec "$binary" "$@"
+        fi
+    done
+    exec "$binary" --lang=pt-BR "$@"
+}
 
-# 3. Executar o binário real do Antigravity passando argumentos e forçando idioma
 if [[ -x "$APP_DIR/antigravity" ]]; then
-    exec "$APP_DIR/antigravity" --lang=pt-BR "$@"
-else
-    # Fallback procurando no PATH
-    REAL_BIN=$(which antigravity 2>/dev/null)
-    if [[ -n "$REAL_BIN" && "$REAL_BIN" != "$HOME/.local/bin/antigravity" ]]; then
-        exec "$REAL_BIN" --lang=pt-BR "$@"
-    fi
+    launch_antigravity "$APP_DIR/antigravity" "$@"
 fi
+
+REAL_BIN="$(command -v antigravity || true)"
+if [[ -n "$REAL_BIN" && "$REAL_BIN" != "$HOME/.local/bin/antigravity" ]]; then
+    launch_antigravity "$REAL_BIN" "$@"
+fi
+printf 'Antigravity não foi encontrado em %s.\n' "$APP_DIR" >&2
+exit 127

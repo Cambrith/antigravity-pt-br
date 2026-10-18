@@ -1,0 +1,6 @@
+[Unit]
+Description=Reaplica as personalizações Cambrith após atualizações do Antigravity
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/Antigravity/i18n/patch-after-update.sh

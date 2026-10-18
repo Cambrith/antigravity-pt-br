@@ -6,7 +6,12 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Não lançado]
 
+### Adicionado
+- Controles personalizados da janela versionados fora do pacote do Antigravity e sincronizados novamente pelo patcher.
+- Monitor `systemd --user` na instalação padrão do Linux; aguarda atualizações do `app.asar` terminarem e reaplica as personalizações.
+
 ### Corrigido
+- O inicializador verifica a assinatura do patch e sincroniza os arquivos mestres antes de cada abertura, recuperando personalizações após atualizações.
 - Janela inicial limitada à área útil do monitor, evitando cortar o rodapé atrás dos painéis do desktop; botão Configurações com contraste e área clicável maiores.
 - Acesso às configurações pelo botão original no rodapé da barra lateral em janela normal e tela cheia, com rodapé protegido contra compressão e foco visível para navegação por teclado.
 - Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.

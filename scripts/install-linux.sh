@@ -60,6 +60,9 @@ mkdir -p "$CONFIG_I18N_DIR"
 cp "$SCRIPT_DIR/i18n-pt-br.js" "$CONFIG_I18N_DIR/i18n-pt-br.js"
 cp "$SCRIPT_DIR/patch-asar.js" "$CONFIG_I18N_DIR/patch-asar.js"
 chmod +x "$CONFIG_I18N_DIR/patch-asar.js"
+if [ -f "$SCRIPT_DIR/cambrith-window-controls.js" ]; then
+    cp "$SCRIPT_DIR/cambrith-window-controls.js" "$CONFIG_I18N_DIR/cambrith-window-controls.js"
+fi
 if [ -f "$SCRIPT_DIR/generate_i18n.py" ]; then
     cp "$SCRIPT_DIR/generate_i18n.py" "$CONFIG_I18N_DIR/generate_i18n.py"
 fi
@@ -82,6 +85,19 @@ echo "🔧 Aplicando tradução no app.asar..."
 node "$CONFIG_I18N_DIR/patch-asar.js" --asar="$ASAR_PATH" --force
 
 # 5. Configurar inicializador persistente (Launcher)
+# 5.1 Vigiar atualizações do app.asar (somente instalação padrão no perfil do usuário)
+if [ "$ASAR_PATH" = "$HOME/.local/opt/antigravity/resources/app.asar" ] && command -v systemctl >/dev/null 2>&1 && systemctl --user show-environment >/dev/null 2>&1; then
+    USER_CONFIG_DIR="$HOME/.config/systemd/user"
+    mkdir -p "$USER_CONFIG_DIR"
+    cp "$SCRIPT_DIR/linux/patch-after-update.sh" "$CONFIG_I18N_DIR/patch-after-update.sh"
+    chmod +x "$CONFIG_I18N_DIR/patch-after-update.sh"
+    cp "$SCRIPT_DIR/linux/systemd/antigravity-patch-after-update.path" "$USER_CONFIG_DIR/antigravity-patch-after-update.path"
+    cp "$SCRIPT_DIR/linux/systemd/antigravity-patch-after-update.service" "$USER_CONFIG_DIR/antigravity-patch-after-update.service"
+    systemctl --user daemon-reload
+    systemctl --user enable --now antigravity-patch-after-update.path
+    echo "🛡️ Proteção contra atualizações ativada para o Antigravity."
+fi
+
 if [ -d "$LOCAL_BIN" ] && [ -f "$SCRIPT_DIR/launcher/antigravity-launcher.sh" ]; then
     echo "🚀 Configurando inicializador automático em $LOCAL_BIN/antigravity..."
     cp "$SCRIPT_DIR/launcher/antigravity-launcher.sh" "$LOCAL_BIN/antigravity"

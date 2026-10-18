@@ -10,7 +10,15 @@ const functionSource = code.slice(start, code.indexOf('\nfunction patchMain(code
 const context = vm.createContext({});
 vm.runInContext(functionSource, context);
 const original = `function createWindow() {
-  const win = new electron_1.BrowserWindow({width: 1400, height: 900, minWidth: 500, minHeight: 400});
+  const win = new electron_1.BrowserWindow({width: 1400, height: 900, minWidth: 500, minHeight: 400,
+    titleBarOverlay: isMacOS()
+      ? false
+      : {
+          color: backgroundColor,
+          symbolColor: foregroundColor,
+          height: 30,
+        },
+  });
   win.on('page-title-updated', () => {});
   return win;
 }`;
@@ -18,7 +26,7 @@ const patched = context.patchUtils(original);
 new vm.Script(patched);
 
 function bounds(area) {
-  const sandbox = vm.createContext({ electron_1: {
+  const sandbox = vm.createContext({ process: { platform: 'linux' }, electron_1: {
     screen: { getPrimaryDisplay: () => ({ workArea: area }) },
     BrowserWindow: class { constructor(options) { Object.assign(this, options); this.maximized = false; } on() {} maximize() { this.maximized = true; } }
   }});
