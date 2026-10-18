@@ -1600,27 +1600,22 @@
   }
 
 
-  // Global settings access & fullscreen support
+  // Acesso integrado às configurações, independente do modo da janela.
   function toggleSettingsModal() {
-    const closeBtn = document.querySelector('[data-testid="close-settings"], button[aria-label="Fechar"], button[aria-label="Close"]');
-    const modal = document.querySelector('[data-testid="settings-modal"], [role="dialog"]');
-    if (closeBtn && modal && (modal.innerText.includes("Configurações") || modal.innerText.includes("Settings"))) {
-      closeBtn.click();
+    const modal = Array.from(document.querySelectorAll('[data-testid="settings-modal"], [role="dialog"]'))
+      .find(el => /Configurações|Settings/.test(el.innerText));
+    if (modal) {
+      // Limita a busca ao modal: o botão "Fechar" da janela não deve ser acionado.
+      const closeBtn = modal.querySelector('[data-testid="close-settings"], button[aria-label="Fechar"], button[aria-label="Close"]');
+      if (closeBtn) closeBtn.click();
       return;
     }
-    const settingsBtn = document.querySelector('[data-testid="settings-button"]');
-    if (settingsBtn) {
-      settingsBtn.click();
-      return;
-    }
-    const allButtons = Array.from(document.querySelectorAll("button"));
-    const sb = allButtons.find(b => b.innerText.trim() === "Configurações" || b.innerText.trim() === "Settings");
-    if (sb) {
-      sb.click();
-    }
+    const settingsBtn = document.querySelector('[data-testid="settings-button"]') ||
+      Array.from(document.querySelectorAll("button"))
+        .find(b => b.innerText.trim() === "Configurações" || b.innerText.trim() === "Settings");
+    if (settingsBtn) settingsBtn.click();
   }
 
-  // Keyboard shortcut Ctrl+, and Cmd+, (accessible from anywhere, including fullscreen)
   if (!window.__CAMBRITH_SETTINGS_SHORTCUT_BOUND__) {
     window.__CAMBRITH_SETTINGS_SHORTCUT_BOUND__ = true;
     window.addEventListener("keydown", (e) => {
@@ -1630,58 +1625,53 @@
         toggleSettingsModal();
       }
     }, true);
-    window.addEventListener("resize", ensureFullscreenSettingsButton);
-    document.addEventListener("fullscreenchange", ensureFullscreenSettingsButton);
-    setInterval(ensureFullscreenSettingsButton, 2000);
+    window.addEventListener("resize", scheduleSettingsAccess);
+    document.addEventListener("fullscreenchange", scheduleSettingsAccess);
   }
 
-  // Floating Fullscreen Settings button (gear icon in fullscreen mode)
-  function ensureFullscreenSettingsButton() {
-    if (!document.body) return;
-    let btn = document.getElementById("cambrith-fullscreen-settings-btn");
-    const isFullscreen = !!(document.fullscreenElement || window.fullScreen || (window.innerHeight === screen.height));
+  function scheduleSettingsAccess() {
+    if (window.__CAMBRITH_SETTINGS_ACCESS_PENDING__) return;
+    window.__CAMBRITH_SETTINGS_ACCESS_PENDING__ = true;
+    setTimeout(() => {
+      window.__CAMBRITH_SETTINGS_ACCESS_PENDING__ = false;
+      ensureSettingsAccess();
+    }, 0);
+  }
 
-    if (!btn) {
-      btn = document.createElement("button");
-      btn.id = "cambrith-fullscreen-settings-btn";
-      btn.setAttribute("aria-label", "Configurações (Ctrl+,)");
-      btn.setAttribute("title", "Configurações (Ctrl+,)");
-      btn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`;
-      Object.assign(btn.style, {
-        position: "fixed",
-        top: "8px",
-        right: "12px",
-        zIndex: "9999",
-        display: "none",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "30px",
-        height: "30px",
-        borderRadius: "6px",
-        background: "rgba(255, 255, 255, 0.08)",
-        border: "1px solid rgba(255, 255, 255, 0.15)",
-        color: "#e4e4e7",
-        cursor: "pointer",
-        backdropFilter: "blur(8px)",
-        transition: "all 0.15s ease",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
-      });
-      btn.addEventListener("mouseenter", () => {
-        btn.style.background = "rgba(255, 255, 255, 0.18)";
-        btn.style.transform = "scale(1.05)";
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.background = "rgba(255, 255, 255, 0.08)";
-        btn.style.transform = "scale(1)";
-      });
-      btn.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        toggleSettingsModal();
-      });
-      document.body.appendChild(btn);
+  function ensureSettingsAccess() {
+    if (!document.body) return;
+    // Remove o antigo botão flutuante, inclusive ao reaplicar a tradução.
+    const legacyButton = document.getElementById("cambrith-fullscreen-settings-btn");
+    if (legacyButton) legacyButton.remove();
+
+    if (!document.getElementById("cambrith-settings-access-style")) {
+      const style = document.createElement("style");
+      style.id = "cambrith-settings-access-style";
+      style.textContent = `
+        [data-cambrith-settings-sidebar] { min-height: 0; }
+        [data-cambrith-settings-footer] { flex: 0 0 auto; margin-top: auto; }
+        [data-testid="settings-button"] { min-height: 32px; flex-shrink: 0; }
+        [data-testid="settings-button"]:focus-visible {
+          outline: 2px solid var(--ring, currentColor); outline-offset: -2px;
+        }
+      `;
+      document.head.appendChild(style);
     }
-    btn.style.display = isFullscreen ? "flex" : "none";
+
+    const settingsBtn = document.querySelector?.('[data-testid="settings-button"]');
+    if (!settingsBtn) return;
+    if (settingsBtn.getAttribute("aria-keyshortcuts") !== "Control+, Meta+,") {
+      settingsBtn.setAttribute("aria-keyshortcuts", "Control+, Meta+,");
+    }
+    if (settingsBtn.title !== "Configurações (Ctrl+, / ⌘+,)") {
+      settingsBtn.title = "Configurações (Ctrl+, / ⌘+,)";
+    }
+    const footer = settingsBtn.parentElement;
+    const sidebar = footer?.parentElement;
+    if (sidebar?.getAttribute("role") === "navigation") {
+      if (!footer.hasAttribute("data-cambrith-settings-footer")) footer.setAttribute("data-cambrith-settings-footer", "");
+      if (!sidebar.hasAttribute("data-cambrith-settings-sidebar")) sidebar.setAttribute("data-cambrith-settings-sidebar", "");
+    }
   }
 
   // =========================================================================
@@ -2219,7 +2209,7 @@
   const boot = () => {
     injectThoughtStyles();
     walkAndTranslate(document.body || document.documentElement);
-    ensureFullscreenSettingsButton();
+    ensureSettingsAccess();
     scanAndTranslateAllThoughts();
     if (window.__CAMBRITH_I18N_OBS__) {
       try { window.__CAMBRITH_I18N_OBS__.disconnect(); } catch (_) {}
@@ -2243,6 +2233,7 @@
           }
         }
       }
+      if (mutations.some(m => m.type === 'childList')) scheduleSettingsAccess();
       if (shouldScanThoughts) {
         scheduleThoughtScan(40);
       }

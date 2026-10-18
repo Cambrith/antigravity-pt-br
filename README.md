@@ -23,6 +23,8 @@ Este projeto resolve essa barreira entregando:
 
 ---
 
+O acesso a **Configurações** usa o botão original no rodapé da barra lateral, em janela normal e em tela cheia. O rodapé mantém seu espaço em janelas menores, sem uma engrenagem flutuante sobre os controles da janela. Também é possível usar **Ctrl+,** (ou **⌘+,** no macOS).
+
 ## 🖥️ Matriz de Sistemas e Distribuições Homologadas
 
 O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
