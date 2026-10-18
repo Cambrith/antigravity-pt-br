@@ -5431,6 +5431,9 @@ js_body = r'''(function() {
     'Criar projeto': 'Crie um novo projeto escolhendo o nome na hora.'
   };
 
+  const ARROW_INDICATOR_PATH = 'M14.5 17.75C14.0858 17.75 13.75 17.4142 13.75 17C13.75 16.5858 14.0858 16.25 14.5 16.25H19.4393L17.7197 14.5303C17.4268 14.2374 17.4268 13.7626 17.7197 13.4697C18.0126 13.1768 18.4874 13.1768 18.7803 13.4697L21.7803 16.4697C22.0732 16.7626 22.0732 17.2374 21.7803 17.5303L18.7803 20.5303C18.4874 20.8232 18.0126 20.8232 17.7197 20.5303C17.4268 20.2374 17.4268 19.7626 17.7197 19.4697L19.4393 17.75H14.5Z';
+  const PLUS_INDICATOR_PATH = 'M17.5 20V17.75H15.25C15.0372 17.75 14.859 17.6782 14.7155 17.5345C14.5718 17.391 14.5 17.2128 14.5 17C14.5 16.7872 14.5718 16.609 14.7155 16.4655C14.859 16.3218 15.0372 16.25 15.25 16.25H17.5V14C17.5 13.7872 17.5718 13.609 17.7155 13.4655C17.859 13.3218 18.0372 13.25 18.25 13.25C18.4628 13.25 18.641 13.3218 18.7845 13.4655C18.9282 13.609 19 13.7872 19 14V16.25H21.25C21.4628 16.25 21.641 16.3218 21.7845 16.4655C21.9282 16.609 22 16.7872 22 17C22 17.2128 21.9282 17.391 21.7845 17.5345C21.641 17.6782 21.4628 17.75 21.25 17.75H19V20C19 20.2128 18.9282 20.391 18.7845 20.5345C18.641 20.6782 18.4628 20.75 18.25 20.75C18.0372 20.75 17.859 20.6782 17.7155 20.5345C17.5718 20.391 17.5 20.2128 17.5 20Z';
+
   function setupProjectDropdown(pop) {
     if (!pop) return;
 
@@ -5441,11 +5444,26 @@ js_body = r'''(function() {
     pop.removeAttribute('title');
     pop.querySelectorAll('*').forEach(el => el.removeAttribute('title'));
 
-    // 3. Anexa tooltip padronizado do tema em cada uma das opções
+    // 3. Diferenciação dos ícones mantendo a mesma base de pasta com indicador único
     const buttons = pop.querySelectorAll('button');
     buttons.forEach(btn => {
       btn.removeAttribute('title');
       const text = btn.innerText.trim();
+
+      // Ajuste de ícones: 'Selecionar pasta' recebe seta de seleção (→); 'Criar projeto' recebe mais (+)
+      const svg = btn.querySelector('svg');
+      if (svg) {
+        const paths = svg.querySelectorAll('path');
+        if (paths.length >= 2) {
+          if (text.includes('Selecionar pasta')) {
+            paths[1].setAttribute('d', ARROW_INDICATOR_PATH);
+          } else if (text.includes('Criar projeto')) {
+            paths[1].setAttribute('d', PLUS_INDICATOR_PATH);
+          }
+        }
+      }
+
+      // Anexa tooltip padronizado do tema em cada uma das opções
       const matchKey = Object.keys(TOOLTIPS_PROJECTS).find(k => text.includes(k));
       if (matchKey && !btn.__cambrith_tip_attached) {
         btn.__cambrith_tip_attached = true;
@@ -5455,6 +5473,7 @@ js_body = r'''(function() {
       }
     });
   }
+  window.__CAMBRITH_SETUP_PROJECT_DROPDOWN__ = setupProjectDropdown;
 
   function openCambrithProjectModal() {
     if (typeof window.__CAMBRITH_HOOK_GUB__ === 'function') {
@@ -5776,7 +5795,12 @@ js_body = r'''(function() {
           }
         }
       }
-      if (mutations.some(m => m.type === 'childList')) scheduleSettingsAccess();
+      const pop = document.querySelector('[role="dialog"], [class*="!w-[210px]"]');
+      if (pop) setupProjectDropdown(pop);
+      if (mutations.some(m => m.type === 'childList')) {
+        scheduleSettingsAccess();
+        ensureProjectsCustomizations();
+      }
       if (shouldScanThoughts) {
         scheduleThoughtScan(40);
       }
