@@ -4765,11 +4765,13 @@ js_body = r'''(function() {
           border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
         }
         [data-testid="settings-button"] {
-          min-height: 36px; flex-shrink: 0; font-weight: 500; color: inherit;
-          background: color-mix(in srgb, currentColor 7%, transparent);
+          background: transparent !important;
+          font-weight: 400 !important;
+          color: var(--secondary-foreground) !important;
         }
         [data-testid="settings-button"]:hover {
-          background: color-mix(in srgb, currentColor 12%, transparent);
+          background: var(--sidebar-muted, rgba(128, 128, 128, 0.1)) !important;
+          color: var(--foreground) !important;
         }
         [data-testid="settings-button"]:focus-visible {
           outline: 2px solid var(--ring, currentColor); outline-offset: -2px;
