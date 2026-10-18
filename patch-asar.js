@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v11';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v12';
 
 // 1. Resolução Multiplataforma de Caminhos
 function detectAsarPath() {
@@ -142,9 +142,34 @@ function patchPreload(code) {
             'Delete': 'Excluir',
             'Rename': 'Renomear',
             'Archive': 'Arquivar',
+            'Unarchive': 'Desarquivar',
             'Pin': 'Fixar',
             'Unpin': 'Desafixar',
             'Open': 'Abrir',
+            'Duplicate': 'Duplicar',
+            'Mark Unread': 'Marcar como não lida',
+            'Mark unread': 'Marcar como não lida',
+            'Mark as Unread': 'Marcar como não lida',
+            'Mark as unread': 'Marcar como não lida',
+            'Mark Read': 'Marcar como lida',
+            'Mark read': 'Marcar como lida',
+            'Mark as Read': 'Marcar como lida',
+            'Mark as read': 'Marcar como lida',
+            'Split': 'Dividir',
+            'Split Right': 'Dividir à direita',
+            'Split Down': 'Dividir abaixo',
+            'Split Left': 'Dividir à esquerda',
+            'Split Up': 'Dividir acima',
+            'Right': 'À direita',
+            'Down': 'Abaixo',
+            'Left': 'À esquerda',
+            'Up': 'Acima',
+            'Conversation ID': 'ID da conversa',
+            'Project Name': 'Nome do projeto',
+            'Conversation Name': 'Nome da conversa',
+            'Copy Conversation ID': 'Copiar ID da conversa',
+            'Copy Project Name': 'Copiar nome do projeto',
+            'Copy Conversation Name': 'Copiar nome da conversa',
             'Copy Image': 'Copiar imagem',
             'Save Image': 'Salvar imagem',
             'Save Image As...': 'Salvar imagem como...',
@@ -177,14 +202,29 @@ function patchPreload(code) {
         };
         function resolveLabel(lbl) {
             if (!lbl || typeof lbl !== 'string') return lbl;
-            if (trMap[lbl]) return trMap[lbl];
+            const trimmed = lbl.trim();
+            if (trMap[trimmed]) return trMap[trimmed];
+            const lower = trimmed.toLowerCase();
+            for (const [k, v] of Object.entries(trMap)) {
+                if (k.toLowerCase() === lower) return v;
+            }
+            if (/^Copy\\s+(.+)$/i.test(trimmed)) {
+                const sub = trimmed.replace(/^Copy\\s+/i, '');
+                const subTr = resolveLabel(sub);
+                if (subTr !== sub) return \`Copiar \${subTr.toLowerCase().startsWith('id') ? subTr : subTr.charAt(0).toLowerCase() + subTr.slice(1)}\`;
+            }
+            if (/^Split\\s+(.+)$/i.test(trimmed)) {
+                const sub = trimmed.replace(/^Split\\s+/i, '');
+                const subTr = resolveLabel(sub);
+                if (subTr !== sub) return \`Dividir \${subTr.charAt(0).toLowerCase() + subTr.slice(1)}\`;
+            }
             try {
                 if (typeof window !== 'undefined' && window.__CAMBRITH_TRANSLATE_STR__) {
-                    const dyn = window.__CAMBRITH_TRANSLATE_STR__(lbl);
+                    const dyn = window.__CAMBRITH_TRANSLATE_STR__(trimmed);
                     if (dyn) return dyn;
                 }
             } catch (_) {}
-            if (/^Version\\s+(.+)$/i.test(lbl)) return lbl.replace(/^Version\\s+(.+)$/i, 'Versão $1');
+            if (/^Version\\s+(.+)$/i.test(trimmed)) return trimmed.replace(/^Version\\s+(.+)$/i, 'Versão $1');
             return lbl;
         }
         const trItems = (arr) => Array.isArray(arr) ? arr.map(it => ({
@@ -275,6 +315,10 @@ try {
 
 function patchUtils(code) {
   let out = code;
+  // Cambrith: Garante tema escuro nativo no Electron para menus de contexto e controles
+  if (!out.includes('electron_1.nativeTheme.themeSource =')) {
+    out = out.replace("const win = new electron_1.BrowserWindow({", "try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}\n    const win = new electron_1.BrowserWindow({");
+  }
   // Ajusta a janela inicial à área útil: painéis do desktop não podem cortar o rodapé.
   out = out.replace(/width: 1400,\s*height: 900,/, `...(() => {
             const area = electron_1.screen.getPrimaryDisplay().workArea;
@@ -404,6 +448,18 @@ function patchUpdater(code) {
     .replace("message: 'No updates available'", "message: 'Nenhuma atualização disponível'");
 }
 
+function patchIpcHandlers(code) {
+  let out = code;
+  // Cambrith: Garante tema escuro do GTK/Electron antes de abrir o menu de contexto nativo
+  if (!out.includes("electron_1.nativeTheme.themeSource = 'dark'")) {
+    out = out.replace(
+      "electron_1.ipcMain.handle('window:show-context-menu', async (_event, items) => {",
+      "electron_1.ipcMain.handle('window:show-context-menu', async (_event, items) => {\n        try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}"
+    );
+  }
+  return out;
+}
+
 function run() {
   if (!fs.existsSync(ASAR_PATH)) {
     log(`Arquivo ASAR não encontrado: ${ASAR_PATH}`);
@@ -463,6 +519,7 @@ function run() {
   const patchers = {
     'dist/preload.js': patchPreload,
     'dist/utils.js': patchUtils,
+    'dist/ipcHandlers.js': patchIpcHandlers,
     'dist/main.js': patchMain,
     'dist/menu.js': patchMenu,
     'dist/tray.js': patchTray,

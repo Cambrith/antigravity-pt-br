@@ -841,6 +841,12 @@ EXACT_MAP = {
     "Enter authorization code...": "Digite o código de autorização...",
     "Conversation Name": "Nome da conversa",
     "Conversation name": "Nome da conversa",
+    "Conversation ID": "ID da conversa",
+    "Conversation id": "ID da conversa",
+    "conversation id": "ID da conversa",
+    "Project Name": "Nome do projeto",
+    "Project name": "Nome do projeto",
+    "project name": "Nome do projeto",
     "Conversation unavailable": "Conversa indisponível",
     "Failed to delete conversation": "Falha ao excluir conversa",
     "Failed to fork conversation": "Falha ao bifurcar conversa",
@@ -2079,6 +2085,12 @@ EXACT_MAP = {
     "Split": "Dividir",
     "Split Right": "Dividir à direita",
     "Split Down": "Dividir abaixo",
+    "Split Left": "Dividir à esquerda",
+    "Split Up": "Dividir acima",
+    "Split Horizontally": "Dividir horizontalmente",
+    "Split Vertically": "Dividir verticalmente",
+    "Split >": "Dividir >",
+    "Copy >": "Copiar >",
     "Split Conversation Horizontally": "Dividir conversa horizontalmente",
     "Split Conversation Vertically": "Dividir conversa verticalmente",
     "Equalize Split Panes": "Igualar painéis divididos",
@@ -3162,6 +3174,16 @@ js_body = r'''(function() {
     }
     if ((m = /^Deleted\s+([A-Za-z0-9_.\-\/\\]+\.[a-zA-Z0-9_-]+)$/.exec(s))) {
       return `Excluiu ${m[1]}`;
+    }
+
+    // Ações de menus de contexto e submenus
+    if (/^Copy\s*([>›\u203a\u2192])$/i.test(s)) return `Copiar ${s.slice(-1)}`;
+    if (/^Split\s*([>›\u203a\u2192])$/i.test(s)) return `Dividir ${s.slice(-1)}`;
+    if ((m = /^Copy\s+(.+)$/i.exec(s))) {
+      const target = m[1].trim();
+      if (/^Conversation ID$/i.test(target)) return "Copiar ID da conversa";
+      if (/^Project Name$/i.test(target)) return "Copiar nome do projeto";
+      if (/^Conversation Name$/i.test(target)) return "Copiar nome da conversa";
     }
 
     // Ações de execução de comandos e ferramentas em tempo real (Tool Group Collapsible)

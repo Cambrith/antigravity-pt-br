@@ -17,6 +17,40 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.
 - Atalho Ctrl+, / ⌘+, fecha apenas o modal de configurações, sem acionar o botão de fechar a janela.
 
+## [1.6.2] - 2026-10-18
+
+### Adicionado
+- **Tradução Completa de Menus de Contexto, Submenus e Correção do Tema Escuro Nativo (GTK/Electron)**:
+  - **Localização de Menus Dropdown e Submenus de Conversas**:
+    - `Conversation ID` $\rightarrow$ `ID da conversa`
+    - `Project Name` $\rightarrow$ `Nome do projeto`
+    - `Conversation Name` $\rightarrow$ `Nome da conversa`
+    - `Copy Conversation ID` $\rightarrow$ `Copiar ID da conversa`
+    - `Copy Project Name` $\rightarrow$ `Copiar nome do projeto`
+    - `Copy Conversation Name` $\rightarrow$ `Copiar nome da conversa`
+  - **Localização do Menu de Contexto Nativo (`showContextMenu` / Botão Direito)**:
+    - `Mark Unread` / `Mark as unread` $\rightarrow$ `Marcar como não lida`
+    - `Mark Read` / `Mark as read` $\rightarrow$ `Marcar como lida`
+    - `Split` $\rightarrow$ `Dividir`
+    - `Split Right` $\rightarrow$ `Dividir à direita`
+    - `Split Down` $\rightarrow$ `Dividir abaixo`
+    - `Split Left` $\rightarrow$ `Dividir à esquerda`
+    - `Split Up` $\rightarrow$ `Dividir acima`
+    - `Right` $\rightarrow$ `À direita`
+    - `Down` $\rightarrow$ `Abaixo`
+    - `Left` $\rightarrow$ `À esquerda`
+    - `Up` $\rightarrow$ `Acima`
+    - `Archive` $\rightarrow$ `Arquivar`
+    - `Unarchive` $\rightarrow$ `Desarquivar`
+    - `Duplicate` $\rightarrow$ `Duplicar`
+    - Resolução recursiva de submenus e normalização insensível a maiúsculas/minúsculas no preload.
+  - **Eliminação do Menu Branco via Tema Escuro Nativo (Linux/GTK/Electron)**:
+    - Injetada ativação forçada de `nativeTheme.themeSource = 'dark'` no processo principal do Electron (`dist/utils.js` e `dist/ipcHandlers.js`).
+    - Configurado o inicializador do Linux (`antigravity-launcher.sh` e `~/.local/bin/antigravity`) com auto-detecção de `GTK_THEME="adw-gtk3-dark"` / `"Breeze-Dark"` e flags `--enable-features=WebUIDarkMode --force-dark-mode`.
+    - Os menus de contexto abertos com o botão direito agora utilizam a paleta escura nativa integrada, sem contraste com a IDE.
+  - **Dicionário Expandido**: Total de 3.041 entradas exatas mapeadas.
+  - **Suíte de Testes Automatizados**: Adicionado novo teste unitário (`51 pass, 0 fail`).
+
 ## [1.6.1] - 2026-10-18
 
 ### Adicionado

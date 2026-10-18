@@ -20,12 +20,20 @@ fi
 launch_antigravity() {
     local binary="$1"
     shift
+    # Cambrith: Garante tema escuro nativo para menus de contexto no Linux (GTK 3 / Wayland / KDE / GNOME)
+    if [[ -z "${GTK_THEME:-}" ]]; then
+        if [[ -d "/usr/share/themes/adw-gtk3-dark" ]]; then
+            export GTK_THEME="adw-gtk3-dark"
+        elif [[ -d "/usr/share/themes/Breeze-Dark" ]]; then
+            export GTK_THEME="Breeze-Dark"
+        fi
+    fi
     for argument in "$@"; do
         if [[ "$argument" == --lang=* ]]; then
-            exec "$binary" "$@"
+            exec "$binary" --enable-features=WebUIDarkMode --force-dark-mode "$@"
         fi
     done
-    exec "$binary" --lang=pt-BR "$@"
+    exec "$binary" --enable-features=WebUIDarkMode --force-dark-mode --lang=pt-BR "$@"
 }
 
 if [[ -x "$APP_DIR/antigravity" ]]; then

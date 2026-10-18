@@ -1172,3 +1172,33 @@ test('Tradução de Atualização de Horário e Timestamps (Updated / Created / 
   assert.equal(tr('Edited package.json'), 'Editou package.json');
   assert.equal(tr('Deleted old_file.ts'), 'Excluiu old_file.ts');
 });
+
+test('Tradução de Menus de Contexto, Submenus de Conversas e Ações de Divisão (v1.6.2)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Submenu Copiar
+  assert.equal(tr('Conversation Name'), 'Nome da conversa');
+  assert.equal(tr('Conversation ID'), 'ID da conversa');
+  assert.equal(tr('Project Name'), 'Nome do projeto');
+  assert.equal(tr('Copy Conversation ID'), 'Copiar ID da conversa');
+  assert.equal(tr('Copy Project Name'), 'Copiar nome do projeto');
+  assert.equal(tr('Copy Conversation Name'), 'Copiar nome da conversa');
+  assert.equal(tr('Copy >'), 'Copiar >');
+
+  // Menus de contexto de conversas
+  assert.equal(tr('Mark Unread'), 'Marcar como não lida');
+  assert.equal(tr('Mark Read'), 'Marcar como lida');
+  assert.equal(tr('Mark as Unread'), 'Marcar como não lida');
+  assert.equal(tr('Mark as Read'), 'Marcar como lida');
+  assert.equal(tr('Split'), 'Dividir');
+  assert.equal(tr('Split >'), 'Dividir >');
+  assert.equal(tr('Split Right'), 'Dividir à direita');
+  assert.equal(tr('Split Down'), 'Dividir abaixo');
+  assert.equal(tr('Split Left'), 'Dividir à esquerda');
+  assert.equal(tr('Split Up'), 'Dividir acima');
+  assert.equal(tr('Archive'), 'Arquivar');
+  assert.equal(tr('Unarchive'), 'Desarquivar');
+  assert.equal(tr('Duplicate'), 'Duplicar');
+});
+
