@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v12';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v13';
 
 // 1. Resolução Multiplataforma de Caminhos
 function getExecutableConfigFile() {
@@ -526,11 +526,19 @@ function patchMain(code) {
 }
 
 function patchMenu(code) {
-  return code
+  let out = code
     .replace("label: 'New Window'", "label: 'Nova janela'")
     .replace("label: 'Docs'", "label: 'Documentação'")
     .replace("label: 'Connect to WSL'", "label: 'Conectar ao WSL'")
     .replace("label: 'Reopen Locally'", "label: 'Reabrir localmente'");
+
+  if (!out.includes("id: 'check-for-updates'")) {
+    out = out.replace(
+      "addItemToSubmenu(menu, 'Help', 0, new electron_1.MenuItem({",
+      "addItemToSubmenu(menu, 'Help', 1, new electron_1.MenuItem({\n        id: 'check-for-updates',\n        label: updater_1.MenuUpdateStep.CheckForUpdates,\n        click: (menuItem) => {\n            const action = updater_1.updateActions[menuItem.label];\n            action?.();\n        },\n    }));\n    addItemToSubmenu(menu, 'Help', 0, new electron_1.MenuItem({"
+    );
+  }
+  return out;
 }
 
 function patchTray(code) {
@@ -541,13 +549,293 @@ function patchTray(code) {
 }
 
 function patchUpdater(code) {
-  return code
+  let out = code
     .replace('MenuUpdateStep["CheckForUpdates"] = "Check for Updates";', 'MenuUpdateStep["CheckForUpdates"] = "Verificar atualizações";')
     .replace('MenuUpdateStep["CheckingForUpdates"] = "Checking for Updates...";', 'MenuUpdateStep["CheckingForUpdates"] = "Verificando atualizações...";')
     .replace('MenuUpdateStep["DownloadingUpdate"] = "Downloading Update...";', 'MenuUpdateStep["DownloadingUpdate"] = "Baixando atualização...";')
     .replace('MenuUpdateStep["RestartToUpdate"] = "Restart to Update";', 'MenuUpdateStep["RestartToUpdate"] = "Reiniciar para atualizar";')
     .replace("title: 'Check for Updates'", "title: 'Verificar atualizações'")
     .replace("message: 'No updates available'", "message: 'Nenhuma atualização disponível'");
+
+  if (!out.includes('// Cambrith: Linux Standalone Auto-Updater')) {
+    const linuxUpdaterBlock = `
+// Cambrith: Linux Standalone Auto-Updater
+let downloadedUpdatePath = null;
+let downloadedUpdateVersion = null;
+let isUpdateDownloading = false;
+
+function compareVersions(v1, v2) {
+    const p1 = (v1 || '').replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+    const p2 = (v2 || '').replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+    for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+        const num1 = p1[i] || 0;
+        const num2 = p2[i] || 0;
+        if (num1 > num2) return 1;
+        if (num1 < num2) return -1;
+    }
+    return 0;
+}
+
+function fetchUrl(url, headers = {}) {
+    return new Promise((resolve, reject) => {
+        const https = require('https');
+        const req = https.get(url, { headers }, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                return fetchUrl(res.headers.location, headers).then(resolve, reject);
+            }
+            if (res.statusCode !== 200) {
+                return reject(new Error('HTTP ' + res.statusCode + ': ' + res.statusMessage));
+            }
+            const chunks = [];
+            res.on('data', chunk => chunks.push(chunk));
+            res.on('end', () => resolve(Buffer.concat(chunks)));
+        });
+        req.on('error', reject);
+        req.setTimeout(25000, () => {
+            req.destroy(new Error('Tempo limite esgotado ao contatar o servidor de atualização'));
+        });
+    });
+}
+
+function downloadFile(url, destPath, onProgress) {
+    return new Promise((resolve, reject) => {
+        const https = require('https');
+        const fs = require('fs');
+        const file = fs.createWriteStream(destPath);
+        const req = https.get(url, (res) => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                file.close();
+                try { fs.unlinkSync(destPath); } catch (_) {}
+                return downloadFile(res.headers.location, destPath, onProgress).then(resolve, reject);
+            }
+            if (res.statusCode !== 200) {
+                file.close();
+                try { fs.unlinkSync(destPath); } catch (_) {}
+                return reject(new Error('HTTP ' + res.statusCode + ': ' + res.statusMessage));
+            }
+            const totalBytes = parseInt(res.headers['content-length'] || '0', 10);
+            let receivedBytes = 0;
+            res.on('data', (chunk) => {
+                receivedBytes += chunk.length;
+                if (onProgress && totalBytes > 0) {
+                    onProgress(receivedBytes, totalBytes);
+                }
+            });
+            res.pipe(file);
+            file.on('finish', () => {
+                file.close(() => resolve(destPath));
+            });
+        });
+        req.on('error', (err) => {
+            file.close();
+            try { fs.unlinkSync(destPath); } catch (_) {}
+            reject(err);
+        });
+        req.setTimeout(900000, () => {
+            req.destroy(new Error('Tempo limite esgotado durante o download'));
+        });
+    });
+}
+
+function parseManifest(text) {
+    let version = null;
+    let url = null;
+    const vMatch = text.match(/^\\s*version:\\s*([0-9a-zA-Z.-]+)/m);
+    if (vMatch) version = vMatch[1].trim();
+    const uMatch = text.match(/^\\s*-\\s*url:\\s*(https?:\\/\\/[^\\s]+)/m);
+    if (uMatch) url = uMatch[1].trim();
+    return { version, url };
+}
+
+function getManifestUrl() {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        const updateYmlPath = path.join(process.resourcesPath, 'app-update.yml');
+        if (fs.existsSync(updateYmlPath)) {
+            const raw = fs.readFileSync(updateYmlPath, 'utf8');
+            const m = raw.match(/^\\s*url:\\s*([^\\s]+)/m);
+            if (m) {
+                let base = m[1].trim();
+                if (!base.endsWith('/')) base += '/';
+                return base + 'latest-x64-linux.yml';
+            }
+        }
+    } catch (_) {}
+    return 'https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/manifest/latest-x64-linux.yml';
+}
+
+async function linuxCheckForUpdates(isManual = false) {
+    if (isUpdateDownloading) return;
+    isManualCheck = isManual;
+    console.log('[AutoUpdater-Linux] Verificando atualizações no canal oficial...');
+    broadcastState({ type: types_1.UpdateState.CheckingForUpdates });
+    updateMenuState(MenuUpdateStep.CheckingForUpdates);
+
+    try {
+        const manifestUrl = getManifestUrl();
+        const currentVersion = electron_1.app.getVersion();
+        const rawBuf = await fetchUrl(manifestUrl, { 'x-app-version': currentVersion });
+        const manifest = parseManifest(rawBuf.toString('utf8'));
+
+        if (!manifest || !manifest.version) {
+            throw new Error('Resposta do manifesto de atualização inválida');
+        }
+
+        const remoteVersion = manifest.version;
+        const hasNewer = compareVersions(remoteVersion, currentVersion) > 0;
+
+        if (hasNewer && manifest.url) {
+            console.log(\`[AutoUpdater-Linux] Nova versão detectada: \${remoteVersion} (instalada: \${currentVersion})\`);
+            broadcastState({
+                type: types_1.UpdateState.AvailableForDownload,
+                update: { version: remoteVersion }
+            });
+            updateMenuState(MenuUpdateStep.DownloadingUpdate);
+            isUpdateDownloading = true;
+
+            const sampleUrl = manifest.url;
+            const downloadUrl = sampleUrl.replace(/\\/Antigravity\\.(AppImage|deb)$/, '/Antigravity.tar.gz');
+
+            const cacheDir = path.join(electron_1.app.getPath('userData'), 'updater-cache');
+            const fs = require('fs');
+            if (!fs.existsSync(cacheDir)) {
+                fs.mkdirSync(cacheDir, { recursive: true });
+            }
+            const destTar = path.join(cacheDir, \`Antigravity-\${remoteVersion}.tar.gz\`);
+
+            console.log(\`[AutoUpdater-Linux] Baixando pacote oficial \${downloadUrl}...\`);
+            await downloadFile(downloadUrl, destTar, (rec, total) => {
+                broadcastState({ type: types_1.UpdateState.Downloading });
+            });
+
+            isUpdateDownloading = false;
+            downloadedUpdatePath = destTar;
+            downloadedUpdateVersion = remoteVersion;
+
+            console.log(\`[AutoUpdater-Linux] Atualização \${remoteVersion} pronta em \${destTar}\`);
+            broadcastState({
+                type: types_1.UpdateState.Ready,
+                update: { version: remoteVersion }
+            });
+            updateMenuState(MenuUpdateStep.RestartToUpdate);
+
+            if (isManual && !isHeadless) {
+                const win = electron_1.BrowserWindow.getFocusedWindow();
+                const options = {
+                    type: 'info',
+                    title: 'Atualização Pronta',
+                    message: \`O Google Antigravity \${remoteVersion} foi baixado com sucesso!\\n\\nDeseja reiniciar agora para concluir a instalação?\`,
+                    buttons: ['Reiniciar agora', 'Mais tarde'],
+                    defaultId: 0,
+                    cancelId: 1
+                };
+                const onBtn = (res) => {
+                    if (res && res.response === 0) {
+                        quitAndInstall();
+                    }
+                };
+                if (win) {
+                    electron_1.dialog.showMessageBox(win, options).then(onBtn);
+                } else {
+                    electron_1.dialog.showMessageBox(options).then(onBtn);
+                }
+            }
+        } else {
+            console.log(\`[AutoUpdater-Linux] O aplicativo já está atualizado (\${currentVersion})\`);
+            broadcastState({ type: types_1.UpdateState.Idle });
+            updateMenuState(MenuUpdateStep.CheckForUpdates);
+
+            if (isManual && !isHeadless) {
+                const win = electron_1.BrowserWindow.getFocusedWindow();
+                const options = {
+                    type: 'info',
+                    title: 'Verificar atualizações',
+                    message: \`O Google Antigravity já está na versão mais recente (\${currentVersion}).\`,
+                    buttons: ['OK'],
+                };
+                if (win) {
+                    electron_1.dialog.showMessageBox(win, options);
+                } else {
+                    electron_1.dialog.showMessageBox(options);
+                }
+            }
+        }
+    } catch (err) {
+        isUpdateDownloading = false;
+        console.error('[AutoUpdater-Linux] Falha:', err.message);
+        broadcastState({ type: types_1.UpdateState.Idle });
+        updateMenuState(MenuUpdateStep.CheckForUpdates);
+        if (isManual && !isHeadless) {
+            const win = electron_1.BrowserWindow.getFocusedWindow();
+            const options = {
+                type: 'error',
+                title: 'Verificar atualizações',
+                message: \`Não foi possível verificar atualizações no momento.\\nMotivo: \${err.message}\`,
+                buttons: ['OK'],
+            };
+            if (win) {
+                electron_1.dialog.showMessageBox(win, options);
+            } else {
+                electron_1.dialog.showMessageBox(options);
+            }
+        }
+    }
+}
+
+function linuxQuitAndInstall() {
+    const fs = require('fs');
+    const os = require('os');
+    const path = require('path');
+    if (!downloadedUpdatePath || !fs.existsSync(downloadedUpdatePath)) {
+        electron_updater_1.autoUpdater.quitAndInstall();
+        return;
+    }
+
+    console.log('[AutoUpdater-Linux] Aplicando atualização e agendando reinício...');
+    const currentPid = process.pid;
+    const appDir = path.dirname(process.execPath);
+    const tarFile = downloadedUpdatePath;
+    const patcherScript = path.join(os.homedir(), '.config', 'Antigravity', 'i18n', 'patch-asar.js');
+    const launcher = path.join(os.homedir(), '.local', 'bin', 'antigravity');
+
+    const script = \`
+        while kill -0 \${currentPid} 2>/dev/null; do sleep 0.4; done
+        sleep 0.5
+        tar -xzf "\${tarFile}" -C "\${appDir}" --strip-components=1
+        chmod +x "\${appDir}/antigravity" 2>/dev/null || true
+        if [ -f "\${patcherScript}" ]; then
+            node "\${patcherScript}" "--asar=\${appDir}/resources/app.asar" 2>/dev/null || true
+        fi
+        if [ -x "\${launcher}" ]; then
+            "\${launcher}" &
+        else
+            "\${appDir}/antigravity" &
+        fi
+    \`;
+
+    try {
+        const child = child_process_1.spawn('sh', ['-c', script], {
+            detached: true,
+            stdio: 'ignore'
+        });
+        child.unref();
+    } catch (e) {
+        console.error('[AutoUpdater-Linux] Falha ao agendar reinício:', e);
+    }
+    electron_1.app.quit();
+}
+`;
+    out = out.replace(
+      "function checkForUpdates(isManual = false) {",
+      `${linuxUpdaterBlock}\nfunction checkForUpdates(isManual = false) {\n    if (process.platform === 'linux' && !process.env.APPIMAGE) {\n        return linuxCheckForUpdates(isManual);\n    }`
+    );
+    out = out.replace(
+      "function quitAndInstall() {",
+      "function quitAndInstall() {\n    if (process.platform === 'linux' && !process.env.APPIMAGE) {\n        return linuxQuitAndInstall();\n    }"
+    );
+  }
+  return out;
 }
 
 function patchIpcHandlers(code) {
@@ -559,6 +847,7 @@ function patchIpcHandlers(code) {
       "electron_1.ipcMain.handle('window:show-context-menu', async (_event, items) => {\n        try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}"
     );
   }
+  out = out.replace("electron_updater_1.autoUpdater.quitAndInstall();", "(0, updater_1.quitAndInstall)();");
   return out;
 }
 
