@@ -2502,14 +2502,8 @@
         }
       }
 
-      // Anexa tooltip padronizado do tema em cada uma das opções
-      const matchKey = Object.keys(TOOLTIPS_PROJECTS).find(k => text.includes(k));
-      if (matchKey && !btn.__cambrith_tip_attached) {
-        btn.__cambrith_tip_attached = true;
-        const tipText = TOOLTIPS_PROJECTS[matchKey];
-        btn.addEventListener('mouseenter', () => showProjectTooltip(btn, tipText));
-        btn.addEventListener('mouseleave', hideProjectTooltip);
-      }
+      // O Antigravity já exibe o tooltip nativo oficial via tooltipText do React,
+      // eliminando qualquer segundo painel sobreposto.
     });
   }
   window.__CAMBRITH_SETUP_PROJECT_DROPDOWN__ = setupProjectDropdown;
