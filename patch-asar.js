@@ -18,18 +18,119 @@ const os = require('os');
 const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v12';
 
 // 1. Resolução Multiplataforma de Caminhos
+function getExecutableConfigFile() {
+  const home = os.homedir();
+  return path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'executable.conf');
+}
+
+function resolveAsarFromTarget(target) {
+  if (!target || typeof target !== 'string') return null;
+  const clean = target.trim();
+  if (!clean) return null;
+
+  try {
+    if (fs.existsSync(clean)) {
+      const stat = fs.statSync(clean);
+      if (stat.isFile()) {
+        if (clean.endsWith('.asar')) return clean;
+        const candidate1 = path.join(path.dirname(clean), 'resources', 'app.asar');
+        if (fs.existsSync(candidate1)) return candidate1;
+        const candidate2 = path.join(path.dirname(clean), 'app.asar');
+        if (fs.existsSync(candidate2)) return candidate2;
+      } else if (stat.isDirectory()) {
+        const candidate1 = path.join(clean, 'resources', 'app.asar');
+        if (fs.existsSync(candidate1)) return candidate1;
+        const candidate2 = path.join(clean, 'app.asar');
+        if (fs.existsSync(candidate2)) return candidate2;
+      }
+    }
+  } catch (_) {}
+
+  if (clean.endsWith('.asar')) return clean;
+  return null;
+}
+
 function detectAsarPath() {
-  // Se passado por argumento
+  // 1. Se passado por argumento (--asar=, --target=, ou caminho posicional)
+  let saveToConfig = false;
+  let targetArg = null;
+
   for (let i = 2; i < process.argv.length; i++) {
     const arg = process.argv[i];
-    if (arg.startsWith('--asar=')) {
-      return arg.split('=')[1];
+    if (arg === '--save' || arg === '-s') {
+      saveToConfig = true;
+      continue;
     }
-    if (!arg.startsWith('-') && fs.existsSync(arg) && arg.endsWith('.asar')) {
-      return arg;
+    if (arg.startsWith('--save=')) {
+      saveToConfig = true;
+      targetArg = arg.split('=')[1];
+      continue;
+    }
+    if (arg.startsWith('--set-executable=')) {
+      saveToConfig = true;
+      targetArg = arg.split('=')[1];
+      continue;
+    }
+    if (arg.startsWith('--asar=')) {
+      targetArg = arg.split('=')[1];
+      continue;
+    }
+    if (arg.startsWith('--target=') || arg.startsWith('--app=')) {
+      targetArg = arg.split('=')[1];
+      continue;
+    }
+    if (!arg.startsWith('-')) {
+      targetArg = arg;
     }
   }
 
+  if (targetArg) {
+    const resolved = resolveAsarFromTarget(targetArg);
+    if (resolved) {
+      if (saveToConfig) {
+        try {
+          const conf = getExecutableConfigFile();
+          fs.mkdirSync(path.dirname(conf), { recursive: true });
+          fs.writeFileSync(conf, targetArg.trim() + '\n', 'utf8');
+        } catch (_) {}
+      }
+      return resolved;
+    }
+    if (targetArg.endsWith('.asar')) return targetArg;
+  }
+
+  // 2. Variáveis de ambiente
+  if (process.env.ANTIGRAVITY_ASAR) {
+    const envResolved = resolveAsarFromTarget(process.env.ANTIGRAVITY_ASAR);
+    if (envResolved) return envResolved;
+  }
+  if (process.env.ANTIGRAVITY_APP_DIR) {
+    const envResolved = resolveAsarFromTarget(process.env.ANTIGRAVITY_APP_DIR);
+    if (envResolved) return envResolved;
+  }
+  if (process.env.ANTIGRAVITY_BIN) {
+    const envResolved = resolveAsarFromTarget(process.env.ANTIGRAVITY_BIN);
+    if (envResolved) return envResolved;
+  }
+
+  // 3. Arquivo de configuração persistente (~/.config/Antigravity/executable.conf)
+  try {
+    const conf = getExecutableConfigFile();
+    if (fs.existsSync(conf)) {
+      const lines = fs.readFileSync(conf, 'utf8').split('\n');
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (line && !line.startsWith('#')) {
+          const confResolved = resolveAsarFromTarget(line);
+          if (confResolved && fs.existsSync(confResolved)) {
+            return confResolved;
+          }
+        }
+      }
+    }
+  } catch (_) {}
+
+  // 4. Fallback para diretórios conhecidos por plataforma
   const home = os.homedir();
   const platform = process.platform;
 
@@ -85,6 +186,7 @@ const RESOURCES_DIR = path.dirname(ASAR_PATH);
 const SCRIPT_DIR = __dirname;
 const GOLDEN_DIR = getGoldenConfigDir();
 const GOLDEN_I18N = path.join(GOLDEN_DIR, 'i18n-pt-br.js');
+const GOLDEN_CONTROLS = path.join(GOLDEN_DIR, 'cambrith-window-controls.js');
 const SOURCE_I18N = path.join(SCRIPT_DIR, 'i18n-pt-br.js');
 const TARGET_I18N = path.join(RESOURCES_DIR, 'i18n-pt-br.js');
 const SOURCE_CONTROLS = path.join(SCRIPT_DIR, 'cambrith-window-controls.js');
@@ -484,8 +586,15 @@ function run() {
     log(`Aviso ao sincronizar i18n-pt-br.js: ${err.message}`);
   }
   try {
-    if (fs.existsSync(SOURCE_CONTROLS) && fs.existsSync(RESOURCES_DIR)) {
-      fs.copyFileSync(SOURCE_CONTROLS, TARGET_CONTROLS);
+    const srcControls = fs.existsSync(SOURCE_CONTROLS) ? SOURCE_CONTROLS : (fs.existsSync(GOLDEN_CONTROLS) ? GOLDEN_CONTROLS : null);
+    if (srcControls) {
+      if (!fs.existsSync(GOLDEN_DIR)) {
+        fs.mkdirSync(GOLDEN_DIR, { recursive: true });
+      }
+      fs.copyFileSync(srcControls, GOLDEN_CONTROLS);
+      if (fs.existsSync(RESOURCES_DIR)) {
+        fs.copyFileSync(srcControls, TARGET_CONTROLS);
+      }
     }
   } catch (err) {
     log(`Aviso ao sincronizar controles da janela: ${err.message}`);

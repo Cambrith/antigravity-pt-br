@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+# Launcher inteligente do Google Antigravity com personalizações Cambrith persistentes.
+set -u
+
+CONFIG_FILE="$HOME/.config/Antigravity/executable.conf"
+PATCHER="${ANTIGRAVITY_PATCHER:-$HOME/.config/Antigravity/i18n/patch-asar.js}"
+LOG_DIR="$HOME/.local/state/antigravity-cambrith"
+LOG_FILE="$LOG_DIR/update-guard.log"
+
+mkdir -p "$LOG_DIR"
+
+# 1. Comandos administrativos rápidos
+if [[ $# -gt 0 ]]; then
+    case "$1" in
+        --patch)
+            shift
+            exec "$HOME/.local/bin/antigravity-patch" "$@"
+            ;;
+        --set-executable=*|--set-app-dir=*)
+            raw_target="${1#*=}"
+            shift
+            "$HOME/.local/bin/antigravity-patch" --save "$raw_target"
+            ;;
+        --status)
+            printf "=== Status do Google Antigravity (Cambrith) ===\n"
+            printf "Arquivo de configuração: %s\n" "$CONFIG_FILE"
+            if [[ -f "$CONFIG_FILE" ]]; then
+                printf "Conteúdo configurado:\n"
+                grep -v '^[[:space:]]*#' "$CONFIG_FILE" || true
+            else
+                printf "Nenhum arquivo de configuração encontrado (usando auto-detecção).\n"
+            fi
+            printf "Patcher: %s (%s)\n" "$PATCHER" "$([[ -f "$PATCHER" ]] && echo 'presente' || echo 'ausente')"
+            exit 0
+            ;;
+    esac
+fi
+
+# 2. Resolução do Executável Ativo
+resolve_executable() {
+    # A. Variáveis de ambiente
+    if [[ -n "${ANTIGRAVITY_BIN:-}" && -x "$ANTIGRAVITY_BIN" ]]; then
+        echo "$ANTIGRAVITY_BIN"
+        return 0
+    fi
+    if [[ -n "${ANTIGRAVITY_APP_DIR:-}" && -x "$ANTIGRAVITY_APP_DIR/antigravity" ]]; then
+        echo "$ANTIGRAVITY_APP_DIR/antigravity"
+        return 0
+    fi
+
+    # B. Arquivo de configuração persistente
+    if [[ -f "$CONFIG_FILE" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            line="$(echo "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            [[ -z "$line" || "$line" =~ ^# ]] && continue
+            if [[ -x "$line" && ! -d "$line" ]]; then
+                echo "$line"
+                return 0
+            fi
+            if [[ -d "$line" && -x "$line/antigravity" ]]; then
+                echo "$line/antigravity"
+                return 0
+            fi
+        done < "$CONFIG_FILE"
+    fi
+
+    # C. Caminhos padrão do sistema e usuário
+    local candidates=(
+        "$HOME/.local/opt/antigravity/antigravity"
+        "/opt/antigravity/antigravity"
+        "/usr/lib/antigravity/antigravity"
+        "/usr/share/antigravity/antigravity"
+        "$HOME/.var/app/com.google.Antigravity/data/antigravity/antigravity"
+    )
+    for c in "${candidates[@]}"; do
+        if [[ -x "$c" ]]; then
+            echo "$c"
+            return 0
+        fi
+    done
+
+    # D. Qualquer outro binário antigravity no PATH (que não seja este próprio script)
+    local this_script
+    this_script="$(readlink -f "$0" 2>/dev/null || echo "$0")"
+    while IFS= read -r b; do
+        if [[ -n "$b" && -x "$b" ]]; then
+            local resolved_b
+            resolved_b="$(readlink -f "$b" 2>/dev/null || echo "$b")"
+            if [[ "$resolved_b" != "$this_script" && "$b" != "$HOME/.local/bin/antigravity" ]]; then
+                echo "$b"
+                return 0
+            fi
+        fi
+    done < <(which -a antigravity 2>/dev/null || true)
+
+    return 1
+}
+
+TARGET_BIN="$(resolve_executable || true)"
+
+if [[ -z "$TARGET_BIN" || ! -x "$TARGET_BIN" ]]; then
+    printf 'Erro: Executável do Google Antigravity não encontrado.\n' >&2
+    printf 'Dica: Use "antigravity --set-executable=/caminho/do/antigravity" para definir o executável.\n' >&2
+    exit 127
+fi
+
+# 3. Identificação e Auto-Patch do resources/app.asar antes de iniciar
+APP_DIR="$(dirname "$TARGET_BIN")"
+ASAR="$APP_DIR/resources/app.asar"
+if [[ ! -f "$ASAR" && -f "$APP_DIR/app.asar" ]]; then
+    ASAR="$APP_DIR/app.asar"
+fi
+
+if [[ -f "$ASAR" && -f "$PATCHER" ]]; then
+    # Executa o patcher: ele só regrava se a assinatura estiver ausente
+    if ! node "$PATCHER" "--asar=$ASAR" >>"$LOG_FILE" 2>&1; then
+        printf '[%s] Falha ao verificar ou reaplicar as personalizações em %s.\n' "$(date -Is)" "$ASAR" >>"$LOG_FILE"
+    fi
+fi
+
+# 4. Tema escuro nativo para GTK/Wayland/KDE/GNOME
+if [[ -z "${GTK_THEME:-}" ]]; then
+    if [[ -d "/usr/share/themes/adw-gtk3-dark" ]]; then
+        export GTK_THEME="adw-gtk3-dark"
+    elif [[ -d "/usr/share/themes/Breeze-Dark" ]]; then
+        export GTK_THEME="Breeze-Dark"
+    fi
+fi
+
+# 5. Inicialização da aplicação
+for argument in "$@"; do
+    if [[ "$argument" == --lang=* ]]; then
+        exec "$TARGET_BIN" --enable-features=WebUIDarkMode --force-dark-mode "$@"
+    fi
+done
+
+exec "$TARGET_BIN" --enable-features=WebUIDarkMode --force-dark-mode --lang=pt-BR "$@"
