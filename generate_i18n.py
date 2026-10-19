@@ -5732,7 +5732,6 @@ js_body = r'''(function() {
               return true;
             }
           }
-        }
         curr = curr.return;
       }
     } catch (_) {}

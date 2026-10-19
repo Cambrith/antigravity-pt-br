@@ -2769,7 +2769,6 @@
               return true;
             }
           }
-        }
         curr = curr.return;
       }
     } catch (_) {}
