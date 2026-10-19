@@ -5376,62 +5376,11 @@ js_body = r'''(function() {
     (document.head || document.documentElement).appendChild(style);
   }
 
-  function showProjectTooltip(target, text) {
-    hideProjectTooltip();
-    if (!target || !text) return;
-
-    const rect = target.getBoundingClientRect();
-    const tip = document.createElement('div');
-    tip.id = 'cambrith-floating-tooltip';
-    tip.className = 'cambrith-floating-tooltip fixed pointer-events-none select-none z-[999999]';
-    tip.setAttribute('role', 'tooltip');
-    
-    tip.style.cssText = [
-      'position: fixed',
-      'left: ' + Math.round(rect.right + 8) + 'px',
-      'top: ' + Math.round(rect.top + (rect.height / 2)) + 'px',
-      'transform: translateY(-50%)',
-      'background-color: var(--card, #18181b)',
-      'color: var(--secondary-foreground, #e4e4e7)',
-      'border: 1px solid var(--border, #27272a)',
-      'border-radius: 6px',
-      'padding: 6px 10px',
-      'font-size: 12px',
-      'line-height: 1.4',
-      'max-width: 240px',
-      'box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35)',
-      'z-index: 999999',
-      'pointer-events: none',
-      'user-select: none',
-      'white-space: normal',
-      'word-break: break-word'
-    ].join('; ');
-
-    tip.textContent = text;
-    document.body.appendChild(tip);
-
-    const tipRect = tip.getBoundingClientRect();
-    if (tipRect.bottom > window.innerHeight - 10) {
-      tip.style.top = (window.innerHeight - tipRect.height - 10) + 'px';
-      tip.style.transform = 'none';
-    }
-    if (tipRect.top < 10) {
-      tip.style.top = '10px';
-      tip.style.transform = 'none';
-    }
-  }
-
   function hideProjectTooltip() {
     const tip = document.getElementById('cambrith-floating-tooltip');
     if (tip) tip.remove();
   }
   window.__CAMBRITH_HIDE_PROJECT_TOOLTIP__ = hideProjectTooltip;
-
-  const TOOLTIPS_PROJECTS = {
-    'Selecionar pasta': 'Selecione uma pasta existente no computador para abrir como projeto.',
-    'Início rápido': 'Crie instantaneamente um novo projeto com pasta dedicada para começar a desenvolver.',
-    'Criar projeto': 'Crie um novo projeto escolhendo o nome na hora.'
-  };
 
   const ARROW_INDICATOR_PATH = 'M14.5 17.75C14.0858 17.75 13.75 17.4142 13.75 17C13.75 16.5858 14.0858 16.25 14.5 16.25H19.4393L17.7197 14.5303C17.4268 14.2374 17.4268 13.7626 17.7197 13.4697C18.0126 13.1768 18.4874 13.1768 18.7803 13.4697L21.7803 16.4697C22.0732 16.7626 22.0732 17.2374 21.7803 17.5303L18.7803 20.5303C18.4874 20.8232 18.0126 20.8232 17.7197 20.5303C17.4268 20.2374 17.4268 19.7626 17.7197 19.4697L19.4393 17.75H14.5Z';
   const PLUS_INDICATOR_PATH = 'M17.5 20V17.75H15.25C15.0372 17.75 14.859 17.6782 14.7155 17.5345C14.5718 17.391 14.5 17.2128 14.5 17C14.5 16.7872 14.5718 16.609 14.7155 16.4655C14.859 16.3218 15.0372 16.25 15.25 16.25H17.5V14C17.5 13.7872 17.5718 13.609 17.7155 13.4655C17.859 13.3218 18.0372 13.25 18.25 13.25C18.4628 13.25 18.641 13.3218 18.7845 13.4655C18.9282 13.609 19 13.7872 19 14V16.25H21.25C21.4628 16.25 21.641 16.3218 21.7845 16.4655C21.9282 16.609 22 16.7872 22 17C22 17.2128 21.9282 17.391 21.7845 17.5345C21.641 17.6782 21.4628 17.75 21.25 17.75H19V20C19 20.2128 18.9282 20.391 18.7845 20.5345C18.641 20.6782 18.4628 20.75 18.25 20.75C18.0372 20.75 17.859 20.6782 17.7155 20.5345C17.5718 20.391 17.5 20.2128 17.5 20Z';
@@ -5442,14 +5391,22 @@ js_body = r'''(function() {
     // 1. Remove qualquer botão manual duplicado caso exista
     pop.querySelectorAll('.cambrith-create-project-btn').forEach(el => el.remove());
 
-    // 2. Sanitização estrita: NUNCA ter o atributo title (elimina o aviso preto nativo)
+    // 2. Sanitização estrita: NUNCA ter o atributo title, data-tooltip-id ou aria-describedby
     pop.removeAttribute('title');
-    pop.querySelectorAll('*').forEach(el => el.removeAttribute('title'));
+    pop.removeAttribute('data-tooltip-id');
+    pop.removeAttribute('aria-describedby');
+    pop.querySelectorAll('*').forEach(el => {
+      el.removeAttribute('title');
+      el.removeAttribute('data-tooltip-id');
+      el.removeAttribute('aria-describedby');
+    });
 
     // 3. Diferenciação dos ícones mantendo a mesma base de pasta com indicador único
     const buttons = pop.querySelectorAll('button');
     buttons.forEach(btn => {
       btn.removeAttribute('title');
+      btn.removeAttribute('data-tooltip-id');
+      btn.removeAttribute('aria-describedby');
       const text = btn.innerText.trim();
 
       // Ajuste de ícones: 'Selecionar pasta' recebe seta de seleção (→); 'Criar projeto' recebe mais (+)
@@ -5464,9 +5421,6 @@ js_body = r'''(function() {
           }
         }
       }
-
-      // O Antigravity já exibe o tooltip nativo oficial via tooltipText do React,
-      // eliminando qualquer segundo painel sobreposto.
     });
   }
   window.__CAMBRITH_SETUP_PROJECT_DROPDOWN__ = setupProjectDropdown;
@@ -5704,15 +5658,16 @@ js_body = r'''(function() {
                 const items = orig ? orig.call(this, args) : [];
                 if (items.length >= 2) {
                   items[0].label = 'Selecionar pasta';
-                  items[0].tooltipText = 'Selecione uma pasta existente no computador para abrir como projeto.';
+                  delete items[0].tooltipText;
+                  items[0].tooltipText = undefined;
                   
                   items[1].label = 'Início rápido';
-                  items[1].tooltipText = 'Crie instantaneamente um novo projeto com pasta dedicada para começar a desenvolver.';
+                  delete items[1].tooltipText;
+                  items[1].tooltipText = undefined;
 
                   if (items.length === 2) {
                     items.push({
                       label: 'Criar projeto',
-                      tooltipText: 'Crie um novo projeto escolhendo o nome na hora.',
                       disabled: false,
                       icon: items[0].icon,
                       onClick: () => {
