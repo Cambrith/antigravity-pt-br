@@ -5696,14 +5696,14 @@ js_body = r'''(function() {
       if (!fiberKey) return false;
       let curr = btn[fiberKey];
       while (curr) {
-        if (curr.type === window.oka?.Provider || curr.type?._context === window.oka) {
-          const q = curr.memoizedProps?.value;
-          if (q && typeof q.get === 'function') {
-            const cust = q.get('projectsCustomizations');
-            if (cust && !cust.__cambrith_entrypoints_hooked) {
-              cust.__cambrith_entrypoints_hooked = true;
-              const orig = cust.sidebarDropdownEntrypoints;
-              cust.sidebarDropdownEntrypoints = function(args) {
+        const q = curr.memoizedProps?.value;
+        if (q && typeof q.get === 'function') {
+          let cust = null;
+          try { cust = q.get('projectsCustomizations'); } catch (_) {}
+          if (cust && typeof cust.sidebarDropdownEntrypoints === 'function' && !cust.__cambrith_entrypoints_hooked) {
+            cust.__cambrith_entrypoints_hooked = true;
+            const orig = cust.sidebarDropdownEntrypoints;
+            cust.sidebarDropdownEntrypoints = function(args) {
                 if (args && args.handleStartScratchFlow) {
                   window.__cambrith_handleStartScratchFlow = args.handleStartScratchFlow;
                 }
