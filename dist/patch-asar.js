@@ -566,7 +566,11 @@ exports.showOrCreateWindow = showOrCreateWindow;`;
         }
     });
     try {
-        const customWinIcon = electron_1.nativeImage.createFromPath(path_1.default.join(__dirname, '..', 'icon.png'));
+        const linuxIconCandidate = '/home/cambrith/.local/share/icons/hicolor/512x512/apps/antigravity-cambrith.png';
+        const finalIconPath = (process.platform === 'linux' && require('fs').existsSync(linuxIconCandidate))
+            ? linuxIconCandidate
+            : path_1.default.join(__dirname, '..', 'icon.png');
+        const customWinIcon = electron_1.nativeImage.createFromPath(finalIconPath);
         if (!customWinIcon.isEmpty()) {
             win.setIcon(customWinIcon);
         }
@@ -577,7 +581,11 @@ exports.showOrCreateWindow = showOrCreateWindow;`;
     out = out.replace(
       "void win.loadURL(url);",
       `try {
-        const customWinIcon = electron_1.nativeImage.createFromPath(path_1.default.join(__dirname, '..', 'icon.png'));
+        const linuxIconCandidate = '/home/cambrith/.local/share/icons/hicolor/512x512/apps/antigravity-cambrith.png';
+        const finalIconPath = (process.platform === 'linux' && require('fs').existsSync(linuxIconCandidate))
+            ? linuxIconCandidate
+            : path_1.default.join(__dirname, '..', 'icon.png');
+        const customWinIcon = electron_1.nativeImage.createFromPath(finalIconPath);
         if (!customWinIcon.isEmpty()) {
             win.setIcon(customWinIcon);
         }
@@ -600,17 +608,17 @@ function patchMain(code) {
     .replace("detail: 'There may be agents or background tasks running.'", "detail: 'Pode haver agentes ou tarefas em segundo plano em execução.'");
 
   // Cambrith: Conecta a janela ao .desktop do KDE Plasma para exibir o mesmo ícone na visão de tarefas (Alt+Tab / Task Switcher)
-  if (!out.includes("electron_1.app.setDesktopFileName('antigravity.desktop')")) {
+  if (!out.includes("electron_1.app.setDesktopFileName('google-antigravity')")) {
     out = out.replace(
       'const electron_1 = require("electron");',
       `const electron_1 = require("electron");
 if (process.platform === 'linux') {
     try {
         if (typeof electron_1.app.setDesktopFileName === 'function') {
-            electron_1.app.setDesktopFileName('antigravity.desktop');
+            electron_1.app.setDesktopFileName('google-antigravity');
         }
         if (typeof electron_1.app.setAppUserModelId === 'function') {
-            electron_1.app.setAppUserModelId('antigravity.desktop');
+            electron_1.app.setAppUserModelId('google-antigravity');
         }
     } catch (_) {}
 }`
@@ -1218,10 +1226,12 @@ function run() {
     } catch (_) {}
   }
 
-  const headerSize = buf.readUInt32LE(4);
-  const jsonSize = buf.readUInt32LE(12);
+  // Sempre que houver backup original limpo e for force rebuild, usar a base original para evitar deriva de offsets
+  const srcBuf = (fs.existsSync(backupPath) && !backupPath.includes('.tmp')) ? fs.readFileSync(backupPath) : buf;
+  const headerSize = srcBuf.readUInt32LE(4);
+  const jsonSize = srcBuf.readUInt32LE(12);
   const dataOffset = 8 + headerSize;
-  const header = JSON.parse(buf.toString('utf8', 16, 16 + jsonSize));
+  const header = JSON.parse(srcBuf.toString('utf8', 16, 16 + jsonSize));
 
   const patchers = {
     'dist/preload.js': patchPreload,
@@ -1249,7 +1259,7 @@ function run() {
     }
     if (node.offset !== undefined && node.size !== undefined) {
       const oldOffset = Number(node.offset);
-      let fileBuf = buf.subarray(dataOffset + oldOffset, dataOffset + oldOffset + node.size);
+      let fileBuf = srcBuf.subarray(dataOffset + oldOffset, dataOffset + oldOffset + node.size);
 
       if (relPath === 'icon.png') {
         const customIconPath = path.join(GOLDEN_DIR, 'icon.png');
