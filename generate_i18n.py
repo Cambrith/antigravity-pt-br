@@ -1,6 +1,296 @@
 import os, json
 
 EXACT_MAP = {
+
+    # --- Personalizações & Marketplace (Auditoria Completa) ---
+    " Copy the folder elsewhere first if you might want it back.": " Copie a pasta para outro lugar primeiro se quiser recuperá-la depois.",
+    "? This action cannot be undone.": "? Esta ação não pode ser desfeita.",
+    "? This removes it from your config directory.": "? Isso o removerá do seu diretório de configuração.",
+    "Account connected.": "Conta conectada.",
+    "Accounts": "Contas",
+    "Add All": "Adicionar todos",
+    "Add Firebase Authentication with Google sign-in to my app": "Adicione Firebase Authentication com login do Google ao meu aplicativo",
+    "Add MCP Server": "Adicionar servidor MCP",
+    "Add a Gemini-powered feature to my app with Firebase AI Logic": "Adicione um recurso baseado no Gemini ao meu aplicativo com Firebase AI Logic",
+    "Add a summary slide and speaker notes to my review deck": "Adicione um slide de resumo e notas do orador à minha apresentação de revisão",
+    "Adding...": "Adicionando...",
+    "All": "Todos",
+    "Android CLI": "Android CLI",
+    "Antigravity plugins marketplace catalog": "Catálogo do marketplace de plugins do Antigravity",
+    "Antigravity plugins marketplace catalog.": "Catálogo do marketplace de plugins do Antigravity.",
+    "App update required": "Atualização do aplicativo necessária",
+    "Ask the agent to diagnose and fix this server": "Peça ao agente para diagnosticar e corrigir este servidor",
+    "Audit my app for accessibility": "Audite meu aplicativo quanto à acessibilidade",
+    "Audit this project for modern web best practices and modernization opportunities": "Audite este projeto quanto às práticas recomendadas da web moderna e oportunidades de modernização",
+    "Authenticate": "Autenticar",
+    "Automations": "Automações",
+    "Block focus time before Friday's launch review": "Bloqueie tempo de foco antes da revisão de lançamento na sexta-feira",
+    "Blocked": "Bloqueado",
+    "Blocked by organization policy": "Bloqueado pela política da organização",
+    "Book 30 minutes with Priya and Sam next week": "Reserve 30 minutos com Priya e Sam na próxima semana",
+    "Browse the Marketplace": "Explorar o Marketplace",
+    "Build a Chrome Extension with a side panel using Manifest V3 best practices": "Crie uma Extensão do Chrome com painel lateral usando as práticas recomendadas do Manifest V3",
+    "Build a monthly budget tracker with formulas and a chart": "Crie um controle de orçamento mensal com fórmulas e gráfico",
+    "Build a responsive Flutter layout that adapts across mobile, tablet, and desktop form factors": "Crie um layout Flutter responsivo adaptável para celular, tablet e desktop",
+    "Build a stateful multi-turn chat script using the Interactions API and the latest models": "Crie um script de chat multi-turn com estado usando a API de Interações e os modelos mais recentes",
+    "Build applications with the Gemini Interactions API and Live API, including text, image, video, and speech generation, managed agents, and real-time multimodal streaming.": "Crie aplicativos com a API de Interações e API Live do Gemini, incluindo geração de texto, imagem, vídeo e fala, agentes gerenciados e streaming multimodal em tempo real.",
+    "Build on Google's developer platforms": "Desenvolva nas plataformas para desenvolvedores do Google",
+    "Build on Google's developer platforms, including Android, Chrome, Gemini, and Google Cloud.": "Desenvolva nas plataformas para desenvolvedores do Google, incluindo Android, Chrome, Gemini e Google Cloud.",
+    "Built In": "Integrado",
+    "Bundled With the App": "Integrado ao aplicativo",
+    "Bundles": "Pacotes",
+    "Check availability, schedule events, and RSVP": "Verifique disponibilidade, agende eventos e responda a convites",
+    "Check availability, schedule events, and RSVP.": "Verifique disponibilidade, agende eventos e responda a convites.",
+    "Chrome DevTools": "Chrome DevTools",
+    "Clear search": "Limpar pesquisa",
+    "Click to disable tool": "Clique para desativar a ferramenta",
+    "Click to enable tool": "Clique para ativar a ferramenta",
+    "Cloud plugins error:": "Erro dos plugins na nuvem:",
+    "Command": "Comando",
+    "Command:": "Comando:",
+    "Commands": "Comandos",
+    "Compare Cloud Run, GKE Autopilot, and App Engine based on official Google Cloud architecture guides": "Compare Cloud Run, GKE Autopilot e App Engine com base nos guias oficiais de arquitetura do Google Cloud",
+    "Configure Application Default Credentials (ADC) and IAM permissions for my local development environment.": "Configure o Application Default Credentials (ADC) e permissões IAM para meu ambiente de desenvolvimento local.",
+    "Configured servers": "Servidores configurados",
+    "Context Providers": "Provedores de contexto",
+    "Context usage": "Uso de contexto",
+    "Copied to clipboard": "Copiado para a área de transferência",
+    "Copy Config File Path": "Copiar caminho do arquivo de configuração",
+    "Copy Path": "Copiar caminho",
+    "Copy command": "Copiar comando",
+    "Core tools and knowledge required to develop for Android": "Ferramentas essenciais e conhecimentos necessários para desenvolver para Android",
+    "Core tools and knowledge required to develop for Android.": "Ferramentas essenciais e conhecimentos necessários para desenvolver para Android.",
+    "Could not determine MCP config file path": "Não foi possível determinar o caminho do arquivo de configuração MCP",
+    "Could not determine MCP config file path. Please check your home directory settings.": "Não foi possível determinar o caminho do arquivo de configuração MCP. Verifique as configurações do seu diretório inicial.",
+    "Could not read MCP config file": "Não foi possível ler o arquivo de configuração MCP",
+    "Create": "Criar",
+    "Create a Plugin with the Agent": "Criar um plugin com o agente",
+    "Create a PySpark notebook to train a distributed Random Forest model on the BigQuery table my_transactions": "Crie um notebook PySpark para treinar um modelo Random Forest distribuído na tabela my_transactions do BigQuery",
+    "Create a new Android project called MyFirstApp using the empty-activity template": "Crie um novo projeto Android chamado MyFirstApp usando o modelo empty-activity",
+    "Create a real-time voice agent using the Gemini Live API and non-blocking function calling": "Crie um agente de voz em tempo real usando a API Gemini Live e chamadas de função não bloqueantes",
+    "Create plugin": "Criar plugin",
+    "Credentials expired. This automation will not run until credentials are refreshed": "Credenciais expiradas. Esta automação não será executada até que as credenciais sejam atualizadas",
+    "Credentials expiring soon. Refresh credentials to keep this automation running": "Credenciais expirando em breve. Atualize as credenciais para manter esta automação em execução",
+    "Curated collection of agent skills for science tasks.": "Coleção selecionada de habilidades de agente para tarefas científicas.",
+    "Curated sets of plugins for common workflows and roles.": "Conjuntos selecionados de plugins para fluxos de trabalho e funções comuns.",
+    "Custom Agent Error:": "Erro no agente personalizado:",
+    "Custom Agents": "Agentes personalizados",
+    "Customizations": "Personalizações",
+    "Customizations source": "Origem das personalizações",
+    "Customizations views": "Visualizações de personalizações",
+    "Dart and Flutter": "Dart e Flutter",
+    "Data Agent Kit": "Data Agent Kit",
+    "Definition:": "Definição:",
+    "Deleting...": "Excluindo...",
+    "Deploy my web app with Firebase App Hosting": "Faça o deploy do meu aplicativo web com o Firebase App Hosting",
+    "Diagnose and fix layout overflows or constraint issues in this Flutter widget": "Diagnostique e corrija estouros de layout ou restrições neste widget Flutter",
+    "Domains:": "Domínios:",
+    "Download the Q3 report as a PDF": "Baixe o relatório do 3º trimestre como PDF",
+    "Draft a launch announcement in a new doc from my notes": "Redija um anúncio de lançamento em um novo documento a partir das minhas notas",
+    "Each plugin can be managed on its own.": "Cada plugin pode ser gerenciado individualmente.",
+    "Enable Recommended Skills": "Ativar habilidades recomendadas",
+    "Enable recommended skills": "Ativar habilidades recomendadas",
+    "Enable this plugin to use this prompt": "Ative este plugin para usar este prompt",
+    "Enter authorization code...": "Digite o código de autorização...",
+    "Event:": "Evento:",
+    "Events and stdout streams will appear here as they occur.": "Eventos e fluxos do stdout aparecerão aqui conforme ocorrerem.",
+    "Explore the plugin marketplace": "Explorar a loja de plugins",
+    "Export the final deck as a PDF": "Exporte a apresentação final como PDF",
+    "Failed to fetch available MCP servers:": "Falha ao buscar servidores MCP disponíveis:",
+    "Failed to list logs in modal": "Falha ao listar logs no modal",
+    "Failed to load more plugins. Please try again.": "Falha ao carregar mais plugins. Tente novamente.",
+    "Failed to load plugin. Please try again.": "Falha ao carregar plugin. Tente novamente.",
+    "Failed to load plugins. Please try again.": "Falha ao carregar plugins. Tente novamente.",
+    "Failed to load your customizations. Please try again.": "Falha ao carregar suas personalizações. Tente novamente.",
+    "Failed to open MCP config file": "Falha ao abrir o arquivo de configuração MCP",
+    "Find datasets about customer orders in Knowledge Catalog and show their lineage": "Encontre conjuntos de dados sobre pedidos de clientes no Knowledge Catalog e mostre sua linhagem",
+    "Find last quarter's budget and share it with Alex": "Encontre o orçamento do último trimestre e compartilhe-o com Alex",
+    "Find skills, agents, and more in the Marketplace.": "Encontre habilidades, agentes e muito mais no Marketplace.",
+    "Find the trends and outliers in this sales sheet": "Encontre tendências e pontos fora da curva nesta planilha de vendas",
+    "Firebase": "Firebase",
+    "Fix with Agent": "Corrigir com o agente",
+    "Found in This Workspace": "Encontrado neste espaço de trabalho",
+    "Full Logs": "Logs completos",
+    "Gemini API": "Gemini API",
+    "Global": "Global",
+    "Go to Accounts": "Ir para Contas",
+    "Google Antigravity SDK": "Google Antigravity SDK",
+    "Google Calendar": "Google Calendar",
+    "Google Cloud Developer": "Google Cloud Developer",
+    "Google Cloud guidance for coding agents: first-project onboarding, authentication and credential selection, and safety-critical validation for gcloud CLI commands. Includes the Google Developer Knowledge MCP server for grounded, up-to-date Google Cloud documentation.": "Orientações do Google Cloud para agentes de programação: integração inicial de projetos, seleção de credenciais e autenticação, e validação de segurança para comandos da CLI gcloud. Inclui o servidor MCP do Google Developer Knowledge para documentação atualizada e fundamentada.",
+    "Google Developer Knowledge": "Google Developer Knowledge",
+    "Google Docs": "Google Docs",
+    "Google Drive": "Google Drive",
+    "Google Maps Platform": "Google Maps Platform",
+    "Google Sheets": "Google Sheets",
+    "Google Slides": "Google Slides",
+    "Google Workspace": "Google Workspace",
+    "Google3": "Google3",
+    "Help me set up a new Google Cloud project, link billing, and configure local authentication.": "Ajude-me a configurar um novo projeto do Google Cloud, vincular faturamento e configurar autenticação local.",
+    "Host Endpoint": "Endpoint do host",
+    "Import this CSV and turn it into a pivot table by region": "Importe este CSV e transforme-o em uma tabela dinâmica por região",
+    "Included in:": "Incluído em:",
+    "Install this plugin to see the commands it adds, along with its skills, agents and MCP servers.": "Instale este plugin para ver os comandos adicionados por ele, além de suas habilidades, agentes e servidores MCP.",
+    "Install this plugin to use this prompt": "Instale este plugin para usar este prompt",
+    "Installed": "Instalado",
+    "Installing...": "Instalando...",
+    "Integration skill and tools for Google Maps Platform APIs": "Habilidade e ferramentas de integração para as APIs da Google Maps Platform",
+    "Keep your coding agent up to date with the latest web best practices": "Mantenha seu agente de código atualizado com as práticas recomendadas da web moderna",
+    "Keep your coding agent up to date with the latest web best practices.": "Mantenha seu agente de código atualizado com as práticas recomendadas da web moderna.",
+    "Listed in Your Config": "Listado na sua configuração",
+    "Loading available plugins...": "Carregando plugins disponíveis...",
+    "Loading bundle...": "Carregando pacote...",
+    "Loading cloud plugins...": "Carregando plugins na nuvem...",
+    "Loading customizations...": "Carregando personalizações...",
+    "Loading events...": "Carregando eventos...",
+    "Loading installed plugins...": "Carregando plugins instalados...",
+    "Loading logs...": "Carregando logs...",
+    "Loading plugin...": "Carregando plugin...",
+    "Local": "Local",
+    "Look up the exact gcloud CLI command and IAM roles needed to deploy a Cloud Run service with Secret Manager": "Consulte o comando exato da CLI gcloud e os papéis IAM necessários para implantar um serviço do Cloud Run com o Secret Manager",
+    "MCP Authentication Error:": "Erro de autenticação MCP:",
+    "MCP Configuration Error:": "Erro de configuração MCP:",
+    "MCP Restart Error:": "Erro ao reiniciar MCP:",
+    "MCP Servers": "Servidores MCP",
+    "MCP servers": "Servidores MCP",
+    "Manager Error": "Erro do gerenciador",
+    "Marketplace": "Marketplace",
+    "Migrate my project from client.models.generate_content to the Interactions API": "Migre meu projeto de client.models.generate_content para a API de Interações",
+    "Modern Web Guidance": "Modern Web Guidance",
+    "Move this week's design exports into the Launch folder": "Mova as exportações de design desta semana para a pasta Launch",
+    "My last Dataflow job failed. Find the root cause in the logs and propose a fix": "Meu último job do Dataflow falhou. Encontre a causa raiz nos logs e proponha uma correção",
+    "Needs re-auth": "Reautenticação necessária",
+    "Needs reconnect": "Reconexão necessária",
+    "New Conversation": "Nova conversa",
+    "No MCP servers yet. Use Add to browse the store.": "Nenhum servidor MCP ainda. Use Adicionar para explorar a loja.",
+    "No cloud plugins available.": "Nenhum plugin na nuvem disponível.",
+    "No cloud plugins connected.": "Nenhum plugin na nuvem conectado.",
+    "No custom agents yet.": "Nenhum agente personalizado ainda.",
+    "No customizations match your search.": "Nenhuma personalização corresponde à sua pesquisa.",
+    "No description available.": "Nenhuma descrição disponível.",
+    "No events recorded": "Nenhum evento registrado",
+    "No logs available.": "Nenhum log disponível.",
+    "No matching plugins found.": "Nenhum plugin correspondente encontrado.",
+    "No method available to open MCP config file": "Nenhum método disponível para abrir o arquivo de configuração MCP",
+    "No plugins available in the marketplace.": "Nenhum plugin disponível no marketplace.",
+    "No plugins available.": "Nenhum plugin disponível.",
+    "No plugins match your search.": "Nenhum plugin corresponde à sua pesquisa.",
+    "No skills or rules match this filter.": "Nenhuma habilidade ou regra corresponde a este filtro.",
+    "No skills or rules yet.": "Nenhuma habilidade ou regra ainda.",
+    "Not scheduled": "Não agendado",
+    "Official plugin for Dart and Flutter that installs Flutter/Dart Skills, Rules, Custom Agents, and Dart MCP server for building natively compiled, visually stunning applications for mobile, web, desktop, and embedded devices from a single codebase": "Plugin oficial para Dart e Flutter que instala habilidades, regras, agentes personalizados e servidor MCP Dart para criar aplicativos compilados nativamente a partir de uma única base de código.",
+    "Open in Side Pane": "Abrir no painel lateral",
+    "Overview": "Visão geral",
+    "Paste code": "Colar código",
+    "Paste key": "Colar chave",
+    "Paste the code shown after you sign in.": "Cole o código mostrado após fazer login.",
+    "Payload: ": "Carga útil: ",
+    "Pending": "Pendente",
+    "Plugin details": "Detalhes do plugin",
+    "Plugin metadata": "Metadados do plugin",
+    "Plugin update required": "Atualização do plugin necessária",
+    "Process Error": "Erro do processo",
+    "Process exited with an error": "O processo foi encerrado com um erro",
+    "Prototype, build & run modern apps that users love with Firebase's backend, AI, and operational infrastructure.": "Crie protótipos, desenvolva e execute aplicativos modernos com o backend, IA e infraestrutura operacional do Firebase.",
+    "Read, draft, and edit docs": "Leia, redija e edite documentos",
+    "Read, draft, and edit docs.": "Leia, redija e edite documentos.",
+    "Read, edit, and export presentations": "Leia, edite e exporte apresentações",
+    "Read, edit, and export presentations.": "Leia, edite e exporte apresentações.",
+    "Read, write, and format spreadsheets": "Leia, escreva e formate planilhas",
+    "Read, write, and format spreadsheets.": "Leia, escreva e formate planilhas.",
+    "Readme": "Leia-me",
+    "Ready": "Pronto",
+    "Recent Events": "Eventos recentes",
+    "Reliable automation, in-depth debugging, and performance analysis in Chrome using Chrome DevTools and Puppeteer": "Automação confiável, depuração aprofundada e análise de desempenho no Chrome usando Chrome DevTools e Puppeteer",
+    "Remote": "Remoto",
+    "Remove All": "Remover todos",
+    "Removing the bundle removes all of its plugins.": "A remoção do pacote remove todos os seus plugins.",
+    "Removing...": "Removendo...",
+    "Reopen sign-in page": "Reabrir página de login",
+    "Reply to the open comments on my doc and resolve them": "Responda aos comentários abertos no meu documento e resolva-os",
+    "Restart": "Reiniciar",
+    "Restart sign-in": "Reiniciar login",
+    "Run my app on a Samsung Galaxy Ultra device.": "Execute meu aplicativo em um dispositivo Samsung Galaxy Ultra.",
+    "Runs in the cloud": "Executa na nuvem",
+    "Runs on this computer": "Executa neste computador",
+    "Scheduled Task": "Tarefa agendada",
+    "Scheduled task": "Tarefa agendada",
+    "Scheduled tasks": "Tarefas agendadas",
+    "Science": "Science",
+    "Scopes:": "Escopos:",
+    "Search MCP servers by name": "Pesquisar servidores MCP por nome",
+    "Search and retrieve official documentation across Google Cloud, Gemini, Android, Firebase, Flutter, and Web. Requires Google Cloud credentials (ADC) or an API key.": "Pesquise e recupere documentação oficial no Google Cloud, Gemini, Android, Firebase, Flutter e Web. Requer credenciais do Google Cloud (ADC) ou uma chave de API.",
+    "Search customizations...": "Buscar personalizações...",
+    "Search official Google Cloud documentation using Developer Knowledge and validate my gcloud CLI commands.": "Pesquise na documentação oficial do Google Cloud usando o Developer Knowledge e valide meus comandos da CLI gcloud.",
+    "Search official Google documentation for how to implement structured outputs with the Gemini API": "Pesquise na documentação oficial do Google como implementar saídas estruturadas com a API Gemini",
+    "Search, upload, download, and share files": "Pesquise, envie, baixe e compartilhe arquivos",
+    "Search, upload, download, and share files.": "Pesquise, envie, baixe e compartilhe arquivos.",
+    "See less": "Ver menos",
+    "See less in Bundles": "Ver menos em Pacotes",
+    "See less in Plugins": "Ver menos em Plugins",
+    "See more": "Ver mais",
+    "See more in Bundles": "Ver mais em Pacotes",
+    "See more in Plugins": "Ver mais em Plugins",
+    "See more results": "Ver mais resultados",
+    "Sent Message": "Mensagem enviada",
+    "Services this plugin connects to on your behalf. Credentials stay on this machine and are only sent to the domains listed.": "Serviços aos quais este plugin se conecta em seu nome. As credenciais permanecem nesta máquina e só são enviadas para os domínios listados.",
+    "Set up Firebase in my app and connect it to a Firebase project": "Configure o Firebase no meu aplicativo e conecte-o a um projeto do Firebase",
+    "Set up authentication": "Configurar autenticação",
+    "Setup required": "Configuração necessária",
+    "Side Pane UI Available": "Interface no painel lateral disponível",
+    "Sign in required": "Login necessário",
+    "Sign in required.": "Login necessário.",
+    "Sign out": "Sair",
+    "Sign out of this server?": "Deseja sair deste servidor?",
+    "Sign-in required": "Login necessário",
+    "Signed-in accounts": "Contas conectadas",
+    "Skills & Rules": "Habilidades e regras",
+    "Skills and Rules Settings": "Configurações de habilidades e regras",
+    "Start": "Iniciar",
+    "Start Automation": "Iniciar automação",
+    "Start Extension": "Iniciar extensão",
+    "Starting...": "Iniciando...",
+    "Status": "Status",
+    "Stopping...": "Parando...",
+    "Summarize this design doc and list the open questions": "Resuma este documento de design e liste as perguntas em aberto",
+    "Target Tools:": "Ferramentas alvo:",
+    "Test my app and make sure that it's ready to publish to Google Play.": "Teste meu aplicativo e certifique-se de que ele esteja pronto para ser publicado no Google Play.",
+    "These servers need you to sign in before the agent can use their tools.": "Estes servidores requerem que você faça login antes que o agente possa usar suas ferramentas.",
+    "This automation is currently stopped. Events and stdout streams will appear here once started.": "Esta automação está parada no momento. Eventos e fluxos do stdout aparecerão aqui assim que for iniciada.",
+    "This bundle has no plugins yet.": "Este pacote ainda não tem plugins.",
+    "This cannot be undone": "Isso não pode ser desfeito",
+    "This cannot be undone.": "Isso não pode ser desfeito.",
+    "This extension is currently stopped. Events and stdout streams will appear here once started.": "Esta extensão está parada no momento. Eventos e fluxos do stdout aparecerão aqui assim que for iniciada.",
+    "This is a preview of the plugin's source. Nothing below is active until you install it.": "Esta é uma prévia do código-fonte do plugin. Nada abaixo estará ativo até você instalá-lo.",
+    "This plugin is disabled, so nothing shown below is active. Enable it above to use it.": "Este plugin está desativado, então nada mostrado abaixo está ativo. Ative-o acima para usá-lo.",
+    "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.": "Este plugin oferece um conjunto especializado de habilidades para engenheiros de dados e profissionais de bancos de dados no Google Cloud. Ele atua como um assistente especialista para criar pipelines de dados complexos, transformar dados com dbt, escrever notebooks SQL do Spark e BigQuery e orquestrar fluxos de ponta a ponta no GCP.",
+    "This plugin requires authentication before the agent can use its tools.": "Este plugin requer autenticação antes que o agente possa usar suas ferramentas.",
+    "This plugin was force disabled.": "Este plugin foi desativado forçadamente.",
+    "This server needs you to sign in before the agent can use their tools.": "Este servidor requer que você faça login antes que o agente possa usar suas ferramentas.",
+    "This sidecar runs from a path that is not officially supported. Make sure your code is in a trusted location in google3.": "Este sidecar é executado a partir de um caminho não suportado oficialmente. Certifique-se de que seu código esteja em um local confiável no google3.",
+    "This skill came from the marketplace, so you can add it again whenever you need it.": "Esta habilidade veio do marketplace, então você pode adicioná-la novamente sempre que precisar.",
+    "Timeout:": "Tempo limite:",
+    "Turn my project notes into a 10-slide pitch deck": "Transforme as notas do meu projeto em uma apresentação pitch de 10 slides",
+    "Type": "Tipo",
+    "UI Extension (AuxPane)": "Extensão de interface (painel lateral)",
+    "UI Extensions": "Extensões de interface",
+    "UI extensions": "Extensões de interface",
+    "Unauthenticated": "Não autenticado",
+    "Uninstalling...": "Desinstalando...",
+    "Uptime": "Tempo de atividade",
+    "Using the Google Antigravity Python SDK to build AI agents": "Usando o SDK Python do Antigravity para criar agentes de IA",
+    "Version": "Versão",
+    "View Logs": "Ver logs",
+    "Waiting for you to finish signing in…": "Aguardando você concluir o login…",
+    "What is the recommended modern way to implement responsive dialogs and popovers?": "Qual é a maneira moderna recomendada para implementar diálogos responsivos e popovers?",
+    "What's in this bundle": "O que há neste pacote",
+    "What's on my calendar today? Flag any conflicts": "O que há na minha agenda hoje? Sinalize eventuais conflitos",
+    "Write a widget test using WidgetTester to verify UI rendering and user interactions": "Escreva um teste de widget usando WidgetTester para verificar renderização e interações do usuário",
+    "Write and audit Firestore security rules for my data model": "Escreva e audite as regras de segurança do Firestore para meu modelo de dados",
+    "You can also add or remove each plugin below.": "Você também pode adicionar ou remover cada plugin abaixo.",
+    "Your administrator has disabled MCP servers for this workspace.": "Seu administrador desativou os servidores MCP para este espaço de trabalho.",
+    "custom agents": "agentes personalizados",
+    "skills and rules": "habilidades e regras",
     # Appearance & Contrast
     "Strong": "Alto",
     "strong": "alto",
@@ -4478,6 +4768,169 @@ js_body = r'''(function() {
       return `Conecta o Antigravity com ${m[1]}${suffix}`;
     }
 
+
+    // Expansões de lista, paginação e contadores no Marketplace e Personalizações (+ See X more / See less)
+    if ((m = /^\+?\s*See\s+(\d+)\s+more$/i.exec(s))) {
+      return `+ Ver mais ${m[1]}`;
+    }
+    if ((m = /^See\s+(\d+)\s+more$/i.exec(s))) {
+      return `Ver mais ${m[1]}`;
+    }
+    if ((m = /^See\s+(\d+)\s+more\s+(.+)$/i.exec(s))) {
+      const noun = m[2].trim();
+      let nounPt = noun;
+      if (/^plugins?$/i.test(noun)) nounPt = m[1] === '1' ? 'plugin' : 'plugins';
+      else if (/^bundles?$/i.test(noun)) nounPt = m[1] === '1' ? 'pacote' : 'pacotes';
+      else if (/^skills?$/i.test(noun)) nounPt = m[1] === '1' ? 'habilidade' : 'habilidades';
+      else if (/^rules?$/i.test(noun)) nounPt = m[1] === '1' ? 'regra' : 'regras';
+      else if (/^commands?$/i.test(noun)) nounPt = m[1] === '1' ? 'comando' : 'comandos';
+      else if (/^agents?$/i.test(noun)) nounPt = m[1] === '1' ? 'agente' : 'agentes';
+      else if (/^results?$/i.test(noun)) nounPt = m[1] === '1' ? 'resultado' : 'resultados';
+      return `Ver mais ${m[1]} ${nounPt}`;
+    }
+    if ((m = /^See\s+more\s+in\s+(.+)$/i.exec(s))) {
+      const shelf = m[1].trim();
+      let shelfPt = shelf;
+      if (/^bundles$/i.test(shelf)) shelfPt = 'Pacotes';
+      else if (/^plugins$/i.test(shelf)) shelfPt = 'Plugins';
+      else if (/^skills$/i.test(shelf)) shelfPt = 'Habilidades';
+      return `Ver mais em ${shelfPt}`;
+    }
+    if ((m = /^See\s+less\s+in\s+(.+)$/i.exec(s))) {
+      const shelf = m[1].trim();
+      let shelfPt = shelf;
+      if (/^bundles$/i.test(shelf)) shelfPt = 'Pacotes';
+      else if (/^plugins$/i.test(shelf)) shelfPt = 'Plugins';
+      else if (/^skills$/i.test(shelf)) shelfPt = 'Habilidades';
+      return `Ver menos em ${shelfPt}`;
+    }
+    if ((m = /^See\s+more\s+(.+)$/i.exec(s))) {
+      const noun = m[1].trim();
+      let nounPt = noun;
+      if (/^plugins?$/i.test(noun)) nounPt = 'plugins';
+      else if (/^bundles?$/i.test(noun)) nounPt = 'pacotes';
+      else if (/^skills?$/i.test(noun)) nounPt = 'habilidades';
+      else if (/^results?$/i.test(noun)) nounPt = 'resultados';
+      return `Ver mais ${nounPt}`;
+    }
+    if ((m = /^(\d+)\s+matching\s+(bundles?|plugins?|skills?)$/i.exec(s))) {
+      const count = m[1];
+      const type = m[2].toLowerCase();
+      if (type.startsWith('bundle')) {
+        return `${count} ${count === '1' ? 'pacote correspondente' : 'pacotes correspondentes'}`;
+      }
+      if (type.startsWith('plugin')) {
+        return `${count} ${count === '1' ? 'plugin correspondente' : 'plugins correspondentes'}`;
+      }
+      if (type.startsWith('skill')) {
+        return `${count} ${count === '1' ? 'habilidade correspondente' : 'habilidades correspondentes'}`;
+      }
+    }
+    if ((m = /^Add\s+(\d+)\s+(plugins?|skills?)\s+from\s+(.+)$/i.exec(s))) {
+      const count = m[1];
+      const type = m[2].toLowerCase().startsWith('plugin') ? (count === '1' ? 'plugin' : 'plugins') : (count === '1' ? 'habilidade' : 'habilidades');
+      return `Adicionar ${count} ${type} de ${m[3]}`;
+    }
+    if ((m = /^No\s+plugins?\s+found\s+for\s+"([^"]+)"\.?$/i.exec(s))) {
+      return `Nenhum plugin encontrado para "${m[1]}".`;
+    }
+    if ((m = /^No\s+cloud\s+plugins?\s+found\s+for\s+"([^"]+)"\.?$/i.exec(s))) {
+      return `Nenhum plugin na nuvem encontrado para "${m[1]}".`;
+    }
+    if ((m = /^Search\s+for\s+"([^"]+)"\s+in\s+the\s+Marketplace$/i.exec(s))) {
+      return `Pesquisar "${m[1]}" no Marketplace`;
+    }
+    if ((m = /^No\s+plugin\s+found\s+for\s+(.+?)\.?$/i.exec(s))) {
+      return `Nenhum plugin encontrado para ${m[1]}.`;
+    }
+    if ((m = /^No\s+bundle\s+found\s+for\s+(.+?)\.?$/i.exec(s))) {
+      return `Nenhum pacote encontrado para ${m[1]}.`;
+    }
+    if ((m = /^Are\s+you\s+sure\s+you\s+want\s+to\s+delete\s+(.+?)\?\s*This\s+will\s+remove\s+it\s+from\s+your\s+MCP\s+configuration\.?$/i.exec(s))) {
+      return `Tem certeza de que deseja excluir ${m[1]}? Isso o removerá da sua configuração MCP.`;
+    }
+    if ((m = /^Delete\s+(.+?)\?\s*This\s+removes\s+it\s+from\s+your\s+config\s+directory\.?$/i.exec(s))) {
+      return `Excluir ${m[1]}? Isso o removerá do seu diretório de configuração.`;
+    }
+    if ((m = /^Stream\s+and\s+control\s+(.+?)\s+directly\s+in\s+the\s+side\s+pane\.?$/i.exec(s))) {
+      return `Transmita e controle ${m[1]} diretamente no painel lateral.`;
+    }
+    if ((m = /^Fix\s+with\s+Agent:\s+(.+)$/i.exec(s))) {
+      return `Corrigir com o agente: ${m[1]}`;
+    }
+    if ((m = /^Auth\s+code\s+for\s+(.+)$/i.exec(s))) {
+      return `Código de autorização para ${m[1]}`;
+    }
+    if ((m = /^More\s+actions\s+for\s+(.+)$/i.exec(s))) {
+      return `Mais ações para ${m[1]}`;
+    }
+    if ((m = /^Install\s+(.+)$/i.exec(s))) {
+      return `Instalar ${m[1]}`;
+    }
+    if ((m = /^Open\s+(.+)$/i.exec(s))) {
+      return `Abrir ${m[1]}`;
+    }
+    if ((m = /^Error\s+restarting\s+(.+?):\s*(.*)$/i.exec(s))) {
+      return `Erro ao reiniciar ${m[1]}: ${m[2]}`;
+    }
+    if ((m = /^Error\s+submitting\s+auth\s+code:\s*(.*)$/i.exec(s))) {
+      return `Erro ao enviar código de autorização: ${m[1]}`;
+    }
+    if ((m = /^Error\s+disconnecting\s+MCP\s+server:\s*(.*)$/i.exec(s))) {
+      return `Erro ao desconectar servidor MCP: ${m[1]}`;
+    }
+    if ((m = /^Couldn['’]t\s+load\s+cloud\s+plugins:\s*(.*)$/i.exec(s))) {
+      return `Não foi possível carregar plugins na nuvem: ${m[1]}`;
+    }
+    if ((m = /^Couldn['’]t\s+disconnect\s+(.+?):\s*(.*)$/i.exec(s))) {
+      return `Não foi possível desconectar ${m[1]}: ${m[2]}`;
+    }
+    if ((m = /^(\d+)\s+tools?\s+enabled$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'ferramenta ativada' : 'ferramentas ativadas'}`;
+    }
+    if ((m = /^(\d+)\s+tools?\s+disabled$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'ferramenta desativada' : 'ferramentas desativadas'}`;
+    }
+    if ((m = /^(\d+)\s+plugins?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'plugin' : 'plugins'}`;
+    }
+    if ((m = /^(\d+)\s+skills?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'habilidade' : 'habilidades'}`;
+    }
+    if ((m = /^(\d+)\s+rules?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'regra' : 'regras'}`;
+    }
+    if ((m = /^(\d+)\s+agents?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'agente' : 'agentes'}`;
+    }
+    if ((m = /^(\d+)\s+hooks?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'gancho' : 'ganchos'}`;
+    }
+    if ((m = /^(\d+)\s+automations?$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'automação' : 'automações'}`;
+    }
+    if ((m = /^UI Extension\s+(\d+)$/i.exec(s))) {
+      return `Extensão de interface ${m[1]}`;
+    }
+    if ((m = /^Automation\s+(\d+)$/i.exec(s))) {
+      return `Automação ${m[1]}`;
+    }
+    if ((m = /^Rule\s+(\d+)$/i.exec(s))) {
+      return `Regra ${m[1]}`;
+    }
+    if ((m = /^Unnamed Skill\s+(\d+)$/i.exec(s))) {
+      return `Habilidade sem nome ${m[1]}`;
+    }
+    if ((m = /^Unnamed Agent\s+(\d+)$/i.exec(s))) {
+      return `Agente sem nome ${m[1]}`;
+    }
+    if ((m = /^(?:Disable|Enable)\s+(.+?)\s+tool\s+for\s+(.+)$/i.exec(s))) {
+      const isDisable = /^Disable/i.test(s);
+      return `${isDisable ? 'Desativar' : 'Ativar'} ferramenta ${m[1]} para ${m[2]}`;
+    }
+    if ((m = /^Managed by plugin\s+(.+)$/i.exec(s))) {
+      return `Gerenciado pelo plugin ${m[1]}`;
+    }
     return null;
   }
 
@@ -4508,7 +4961,7 @@ js_body = r'''(function() {
       if (el.closest('pre, .monaco-editor, .xterm, [data-testid="user-input-step"]')) return false;
       return true;
     }
-    if (el.closest && el.closest('[data-testid*="plugin"], [class*="plugin-card"], [class*="pluginCard"], [class*="plugin_card"]')) {
+    if (el.closest && el.closest('[data-testid*="plugin"], [data-testid*="customization"], [class*="plugin-card"], [class*="pluginCard"], [class*="plugin_card"]')) {
       if (el.closest('pre, .monaco-editor, .xterm, [data-testid="user-input-step"]')) return false;
       return true;
     }

@@ -36,7 +36,7 @@ test('Controles personalizados são preservados junto da janela do Antigravity',
 
 test('Patcher sincroniza o arquivo externo dos controles após atualizações', () => {
   assert.match(source, /const SOURCE_CONTROLS = path\.join\(SCRIPT_DIR, 'cambrith-window-controls\.js'\)/);
-  assert.match(source, /fs\.copyFileSync\(SOURCE_CONTROLS, TARGET_CONTROLS\)/);
+  assert.match(source, /fs\.copyFileSync\((?:srcControls|SOURCE_CONTROLS), TARGET_CONTROLS\)/);
   assert.match(source, /Localization Injection v\d+/);
 });
 

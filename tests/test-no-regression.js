@@ -17,6 +17,7 @@ test('Regressão: A palavra \"No\" não deve ser traduzida como \"Não\" em cont
       head: { appendChild: () => {} },
       createTreeWalker: () => ({ nextNode: () => null }),
       querySelectorAll: () => [],
+      querySelector: () => null,
       addEventListener: () => {},
       getElementById: () => null,
       createElement: () => ({ setAttribute: () => {}, style: {}, addEventListener: () => {} })

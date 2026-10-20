@@ -9,13 +9,16 @@
  * - Auto-detecção de diretórios em Linux, macOS e Windows
  */
 
+// Lê/grava o app.asar como arquivo bruto mesmo dentro do Electron (ELECTRON_RUN_AS_NODE).
+process.noAsar = true;
+
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v13';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v19';
 
 // 1. Resolução Multiplataforma de Caminhos
 function getExecutableConfigFile() {
@@ -512,17 +515,128 @@ function patchUtils(code) {
     }
     out = out.replace(titleBarOverlayPattern, customControlsOverlay);
   }
+
+  // Cambrith: Ativação infalível da janela no Linux/KDE Wayland/X11 e outras plataformas
+  const origShowOrCreate = /const showOrCreateWindow = \(port\) => \{[\s\S]*?exports\.showOrCreateWindow = showOrCreateWindow;/;
+  const robustShowOrCreate = `const showOrCreateWindow = (port) => {
+    const wins = electron_1.BrowserWindow.getAllWindows();
+    if (wins.length > 0) {
+        const win = wins[0];
+        try {
+            if (win.isMinimized()) {
+                win.restore();
+            }
+            win.show();
+            win.setSkipTaskbar(false);
+            win.focus();
+            if (process.platform === 'linux') {
+                try {
+                    win.setAlwaysOnTop(true);
+                    win.focus();
+                    win.setAlwaysOnTop(false);
+                } catch (_) {}
+                try {
+                    const { execFile } = require('child_process');
+                    execFile('kdotool', ['search', '--class', 'antigravity', 'windowactivate'], () => {});
+                } catch (_) {}
+                try {
+                    const { execFile } = require('child_process');
+                    execFile('wmctrl', ['-x', '-R', 'antigravity'], () => {});
+                } catch (_) {}
+            }
+        } catch (_) {}
+    }
+    else {
+        createWindow(\`\${constants_1.WINDOW_ORIGIN}:\${port}/\`);
+    }
+};
+exports.showOrCreateWindow = showOrCreateWindow;`;
+  if (origShowOrCreate.test(out)) {
+    out = out.replace(origShowOrCreate, robustShowOrCreate);
+  }
+
+  // Cambrith: Oculta a janela ao fechar para preservar estado e histórico ao reabrir pelo tray
+  if (!out.includes("win.on('close'")) {
+    out = out.replace(
+      "void win.loadURL(url);",
+      `win.on('close', (event) => {
+        if (!electron_1.app.isQuitting) {
+            event.preventDefault();
+            win.hide();
+        }
+    });
+    try {
+        const customWinIcon = electron_1.nativeImage.createFromPath(path_1.default.join(__dirname, '..', 'icon.png'));
+        if (!customWinIcon.isEmpty()) {
+            win.setIcon(customWinIcon);
+        }
+    } catch (_) {}
+    void win.loadURL(url);`
+    );
+  } else if (!out.includes("win.setIcon(customWinIcon)")) {
+    out = out.replace(
+      "void win.loadURL(url);",
+      `try {
+        const customWinIcon = electron_1.nativeImage.createFromPath(path_1.default.join(__dirname, '..', 'icon.png'));
+        if (!customWinIcon.isEmpty()) {
+            win.setIcon(customWinIcon);
+        }
+    } catch (_) {}
+    void win.loadURL(url);`
+    );
+  }
+
   return out;
 }
 
 function patchMain(code) {
-  return code
+  let out = code
     .replace("label: 'No agents running'", "label: 'Nenhum agente em execução'")
     .replace("label: 'Quit'", "label: 'Sair'")
+    .replace("label: `Open ${electron_1.app.getName()}`", "label: `Abrir ${electron_1.app.getName()}`")
     .replace("buttons: ['Cancel', 'Quit']", "buttons: ['Cancelar', 'Sair']")
     .replace("title: 'Confirm Quit'", "title: 'Confirmar saída'")
     .replace("message: 'Are you sure you want to quit?'", "message: 'Tem certeza de que deseja sair?'")
     .replace("detail: 'There may be agents or background tasks running.'", "detail: 'Pode haver agentes ou tarefas em segundo plano em execução.'");
+
+  // Cambrith: Conecta a janela ao .desktop do KDE Plasma para exibir o mesmo ícone na visão de tarefas (Alt+Tab / Task Switcher)
+  if (!out.includes("electron_1.app.setDesktopFileName('antigravity.desktop')")) {
+    out = out.replace(
+      'const electron_1 = require("electron");',
+      `const electron_1 = require("electron");
+if (process.platform === 'linux') {
+    try {
+        if (typeof electron_1.app.setDesktopFileName === 'function') {
+            electron_1.app.setDesktopFileName('antigravity.desktop');
+        }
+        if (typeof electron_1.app.setAppUserModelId === 'function') {
+            electron_1.app.setAppUserModelId('antigravity.desktop');
+        }
+    } catch (_) {}
+}`
+    );
+  }
+
+  if (!out.includes("electron_1.app.isQuitting = true;")) {
+    out = out.replace(
+      "electron_1.app.on('before-quit', async (event) => {",
+      "electron_1.app.on('before-quit', async (event) => {\n    electron_1.app.isQuitting = true;"
+    );
+  }
+
+  // Cambrith: Garante que o app não encerre ao fechar as janelas, mantendo o ícone na bandeja ativo
+  const winAllClosedPattern = /electron_1\.app\.on\('window-all-closed',\s*async\s*\(\)\s*=>\s*\{[\s\S]*?\}\);\s*(?=\/\*\*\s*Shuts down the host bridge server)/;
+  const keepAliveWinAllClosed = `electron_1.app.on('window-all-closed', async () => {
+    if (isQuitting || electron_1.app.isQuitting) {
+        return;
+    }
+    electron_1.app.dock?.hide?.();
+});\n`;
+  if (winAllClosedPattern.test(out)) {
+    out = out.replace(winAllClosedPattern, keepAliveWinAllClosed);
+  }
+
+  return out;
 }
 
 function patchMenu(code) {
@@ -542,10 +656,110 @@ function patchMenu(code) {
 }
 
 function patchTray(code) {
-  return code.replace(
+  let out = code.replace(
     /\(count > 0 \? `\$\{count\}` : 'No'\) \+\s*' agent' \+\s*\(count === 1 \? '' : 's'\) \+\s*' running'/,
     "count > 0 ? `${count} ${count === 1 ? 'agente em execução' : 'agentes em execução'}` : 'Nenhum agente em execução'"
   );
+
+  const trayBlockPattern = /let contextMenu = null;[\s\S]*?(?=\/\*\*\s*\*\s*Inserts an item into the existing tray context menu)/;
+  const newTrayBlock = `let contextMenu = null;
+
+function activateAppWindow() {
+    try {
+        const wins = electron_1.BrowserWindow.getAllWindows();
+        if (wins.length > 0) {
+            const win = wins[0];
+            if (win.isMinimized()) {
+                win.restore();
+            }
+            win.show();
+            win.setSkipTaskbar(false);
+            win.focus();
+            if (process.platform === 'linux') {
+                try {
+                    win.setAlwaysOnTop(true);
+                    win.focus();
+                    win.setAlwaysOnTop(false);
+                } catch (_) {}
+                try {
+                    const { execFile } = require('child_process');
+                    execFile('kdotool', ['search', '--class', 'antigravity', 'windowactivate'], () => {});
+                } catch (_) {}
+                try {
+                    const { execFile } = require('child_process');
+                    execFile('wmctrl', ['-x', '-R', 'antigravity'], () => {});
+                } catch (_) {}
+            }
+        } else {
+            (0, utils_1.showOrCreateWindow)();
+        }
+    } catch (_) {
+        try {
+            (0, utils_1.showOrCreateWindow)();
+        } catch (_) {}
+    }
+}
+
+function getTrayIconPath() {
+    if ((0, utils_1.isMacOS)()) {
+        return path.join(__dirname, '..', 'trayTemplate.png');
+    }
+    const isDark = electron_1.nativeTheme ? electron_1.nativeTheme.shouldUseDarkColors : true;
+    const fileName = isDark ? 'trayIconLinux-Dark.png' : 'trayIconLinux.png';
+    const candidate = path.join(__dirname, '..', fileName);
+    if (require('fs').existsSync(candidate)) {
+        return candidate;
+    }
+    return path.join(__dirname, '..', 'icon.png');
+}
+
+/**
+ * Creates a system tray icon with a context menu to focus a window or quit the app.
+ *
+ * For macOS it uses a template image to automatically handle light/dark mode.
+ * On Linux and Windows it uses a theme-aware monochrome icon with no background (matching Claude style).
+ */
+function createTray(actions, onClick) {
+    const iconPath = getTrayIconPath();
+    const icon = electron_1.nativeImage.createFromPath(iconPath);
+    if ((0, utils_1.isMacOS)()) {
+        icon.setTemplateImage(true);
+    }
+    tray = new electron_1.Tray(icon);
+    tray.setToolTip(electron_1.app.getName());
+    contextMenu = electron_1.Menu.buildFromTemplate(actions);
+    tray.setContextMenu(contextMenu);
+
+    const handleTrayClick = (event) => {
+        if (typeof onClick === 'function') {
+            try { onClick(event); } catch (_) {}
+        }
+        activateAppWindow();
+    };
+
+    if (!(0, utils_1.isMacOS)()) {
+        tray.on('click', handleTrayClick);
+        tray.on('double-click', handleTrayClick);
+    }
+
+    if (electron_1.nativeTheme && !(0, utils_1.isMacOS)()) {
+        electron_1.nativeTheme.on('updated', () => {
+            if (tray && !tray.isDestroyed()) {
+                try {
+                    const newPath = getTrayIconPath();
+                    const newIcon = electron_1.nativeImage.createFromPath(newPath);
+                    tray.setImage(newIcon);
+                } catch (e) {}
+            }
+        });
+    }
+}
+`;
+
+  if (trayBlockPattern.test(out)) {
+    out = out.replace(trayBlockPattern, newTrayBlock);
+  }
+  return out;
 }
 
 function patchUpdater(code) {
@@ -597,38 +811,61 @@ function fetchUrl(url, headers = {}) {
     });
 }
 
-function downloadFile(url, destPath, onProgress) {
+function downloadFile(url, destPath, onProgress, redirects = 0) {
     return new Promise((resolve, reject) => {
         const https = require('https');
         const fs = require('fs');
-        const file = fs.createWriteStream(destPath);
+        // Baixa para um arquivo temporário e só renomeia quando o tamanho confere,
+        // para que uma falha ou outra instância nunca deixe um .tar.gz truncado.
+        const partPath = destPath + '.part-' + process.pid;
+        const cleanup = () => { try { fs.unlinkSync(partPath); } catch (_) {} };
         const req = https.get(url, (res) => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-                file.close();
-                try { fs.unlinkSync(destPath); } catch (_) {}
-                return downloadFile(res.headers.location, destPath, onProgress).then(resolve, reject);
+                res.resume();
+                if (redirects >= 5) return reject(new Error('Redirecionamentos demais'));
+                return downloadFile(new URL(res.headers.location, url).toString(), destPath, onProgress, redirects + 1).then(resolve, reject);
             }
             if (res.statusCode !== 200) {
-                file.close();
-                try { fs.unlinkSync(destPath); } catch (_) {}
+                res.resume();
                 return reject(new Error('HTTP ' + res.statusCode + ': ' + res.statusMessage));
             }
             const totalBytes = parseInt(res.headers['content-length'] || '0', 10);
             let receivedBytes = 0;
+            const file = fs.createWriteStream(partPath);
             res.on('data', (chunk) => {
                 receivedBytes += chunk.length;
                 if (onProgress && totalBytes > 0) {
                     onProgress(receivedBytes, totalBytes);
                 }
             });
+            res.on('error', (err) => { file.destroy(); cleanup(); reject(err); });
+            res.on('close', () => {
+                if (!res.complete) {
+                    file.destroy();
+                    cleanup();
+                    reject(new Error('Conexão interrompida durante o download'));
+                }
+            });
+            file.on('error', (err) => { cleanup(); reject(err); });
             res.pipe(file);
             file.on('finish', () => {
-                file.close(() => resolve(destPath));
+                file.close(() => {
+                    if (!res.complete || (totalBytes > 0 && receivedBytes !== totalBytes)) {
+                        cleanup();
+                        return reject(new Error('Download incompleto (' + receivedBytes + ' de ' + totalBytes + ' bytes)'));
+                    }
+                    try {
+                        fs.renameSync(partPath, destPath);
+                    } catch (e) {
+                        cleanup();
+                        return reject(e);
+                    }
+                    resolve(destPath);
+                });
             });
         });
         req.on('error', (err) => {
-            file.close();
-            try { fs.unlinkSync(destPath); } catch (_) {}
+            cleanup();
             reject(err);
         });
         req.setTimeout(900000, () => {
@@ -704,10 +941,15 @@ async function linuxCheckForUpdates(isManual = false) {
             }
             const destTar = path.join(cacheDir, \`Antigravity-\${remoteVersion}.tar.gz\`);
 
-            console.log(\`[AutoUpdater-Linux] Baixando pacote oficial \${downloadUrl}...\`);
-            await downloadFile(downloadUrl, destTar, (rec, total) => {
-                broadcastState({ type: types_1.UpdateState.Downloading });
-            });
+            // destTar só existe se um download anterior terminou completo (rename atômico).
+            if (fs.existsSync(destTar)) {
+                console.log(\`[AutoUpdater-Linux] Pacote \${remoteVersion} já baixado, reutilizando.\`);
+            } else {
+                console.log(\`[AutoUpdater-Linux] Baixando pacote oficial \${downloadUrl}...\`);
+                await downloadFile(downloadUrl, destTar, (rec, total) => {
+                    broadcastState({ type: types_1.UpdateState.Downloading });
+                });
+            }
 
             isUpdateDownloading = false;
             downloadedUpdatePath = destTar;
@@ -720,7 +962,7 @@ async function linuxCheckForUpdates(isManual = false) {
             });
             updateMenuState(MenuUpdateStep.RestartToUpdate);
 
-            if (isManual && !isHeadless) {
+            if (isManual) {
                 const win = electron_1.BrowserWindow.getFocusedWindow();
                 const options = {
                     type: 'info',
@@ -746,7 +988,7 @@ async function linuxCheckForUpdates(isManual = false) {
             broadcastState({ type: types_1.UpdateState.Idle });
             updateMenuState(MenuUpdateStep.CheckForUpdates);
 
-            if (isManual && !isHeadless) {
+            if (isManual) {
                 const win = electron_1.BrowserWindow.getFocusedWindow();
                 const options = {
                     type: 'info',
@@ -766,7 +1008,7 @@ async function linuxCheckForUpdates(isManual = false) {
         console.error('[AutoUpdater-Linux] Falha:', err.message);
         broadcastState({ type: types_1.UpdateState.Idle });
         updateMenuState(MenuUpdateStep.CheckForUpdates);
-        if (isManual && !isHeadless) {
+        if (isManual) {
             const win = electron_1.BrowserWindow.getFocusedWindow();
             const options = {
                 type: 'error',
@@ -796,21 +1038,51 @@ function linuxQuitAndInstall() {
     const currentPid = process.pid;
     const appDir = path.dirname(process.execPath);
     const tarFile = downloadedUpdatePath;
+    const version = downloadedUpdateVersion || '?';
     const patcherScript = path.join(os.homedir(), '.config', 'Antigravity', 'i18n', 'patch-asar.js');
     const launcher = path.join(os.homedir(), '.local', 'bin', 'antigravity');
+    const logFile = path.join(os.homedir(), '.local', 'state', 'antigravity-cambrith', 'update-guard.log');
 
+    // Extrai e personaliza em um diretório temporário ao lado do app e só então troca
+    // os diretórios: se algo falhar, a versão atual continua intacta. A versão antiga
+    // fica em <app>.anterior para rollback.
     const script = \`
+        APPDIR="\${appDir}"
+        TAR="\${tarFile}"
+        PATCHER="\${patcherScript}"
+        LAUNCHER="\${launcher}"
+        LOG="\${logFile}"
+        mkdir -p "$(dirname "$LOG")"
+        exec >>"$LOG" 2>&1
+        echo "[$(date -Is)] Atualizando para \${version}: aguardando o app fechar"
         while kill -0 \${currentPid} 2>/dev/null; do sleep 0.4; done
-        sleep 0.5
-        tar -xzf "\${tarFile}" -C "\${appDir}" --strip-components=1
-        chmod +x "\${appDir}/antigravity" 2>/dev/null || true
-        if [ -f "\${patcherScript}" ]; then
-            node "\${patcherScript}" "--asar=\${appDir}/resources/app.asar" 2>/dev/null || true
-        fi
-        if [ -x "\${launcher}" ]; then
-            "\${launcher}" &
+        sleep 1
+        STAGE="$APPDIR.novo"
+        OLD="$APPDIR.anterior"
+        rm -rf "$STAGE"
+        mkdir -p "$STAGE"
+        if tar -xzf "$TAR" -C "$STAGE" --strip-components=1 && [ -x "$STAGE/antigravity" ] && [ -f "$STAGE/resources/app.asar" ]; then
+            chmod +x "$STAGE/antigravity" 2>/dev/null || true
+            if [ -f "$PATCHER" ]; then
+                ELECTRON_RUN_AS_NODE=1 ELECTRON_NO_ASAR=1 "$STAGE/antigravity" "$PATCHER" "--asar=$STAGE/resources/app.asar" \\\\
+                    || echo "[$(date -Is)] Aviso: falha ao reaplicar as personalizações; app atualizado sem elas"
+            fi
+            rm -rf "$OLD"
+            if mv "$APPDIR" "$OLD" && mv "$STAGE" "$APPDIR"; then
+                echo "[$(date -Is)] Atualização para \${version} concluída"
+                rm -f "$TAR"
+            else
+                echo "[$(date -Is)] Erro ao trocar os diretórios; restaurando versão anterior"
+                [ -d "$APPDIR" ] || mv "$OLD" "$APPDIR"
+            fi
         else
-            "\${appDir}/antigravity" &
+            echo "[$(date -Is)] Erro ao extrair o pacote; mantendo a versão atual"
+            rm -rf "$STAGE"
+        fi
+        if [ -x "$LAUNCHER" ]; then
+            setsid "$LAUNCHER" >/dev/null 2>&1 &
+        else
+            setsid "$APPDIR/antigravity" >/dev/null 2>&1 &
         fi
     \`;
 
@@ -834,6 +1106,9 @@ function linuxQuitAndInstall() {
       "function quitAndInstall() {",
       "function quitAndInstall() {\n    if (process.platform === 'linux' && !process.env.APPIMAGE) {\n        return linuxQuitAndInstall();\n    }"
     );
+    if (!out.includes('return linuxCheckForUpdates(isManual)') || !out.includes('return linuxQuitAndInstall()')) {
+      log('AVISO: não foi possível injetar o atualizador Linux em dist/updater.js (código do app mudou?).');
+    }
   }
   return out;
 }
@@ -847,8 +1122,20 @@ function patchIpcHandlers(code) {
       "electron_1.ipcMain.handle('window:show-context-menu', async (_event, items) => {\n        try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}"
     );
   }
+  // Cambrith: Ao fechar pela interface (botão X), oculta a janela preservando o processo e ícone na bandeja
+  out = out.replace(
+    "electron_1.ipcMain.handle('window:close', async () => {\n        const win = electron_1.BrowserWindow.getFocusedWindow() || electron_1.BrowserWindow.getAllWindows()[0];\n        if (win) {\n            win.close();\n        }\n    });",
+    "electron_1.ipcMain.handle('window:close', async () => {\n        const win = electron_1.BrowserWindow.getFocusedWindow() || electron_1.BrowserWindow.getAllWindows()[0];\n        if (win) {\n            win.hide();\n        }\n    });"
+  );
   out = out.replace("electron_updater_1.autoUpdater.quitAndInstall();", "(0, updater_1.quitAndInstall)();");
   return out;
+}
+
+function patchSettingsService(code) {
+  return code.replace(
+    "[SettingKey.RUN_IN_BACKGROUND, process.platform === 'darwin'],",
+    "[SettingKey.RUN_IN_BACKGROUND, true],"
+  );
 }
 
 function run() {
@@ -888,6 +1175,28 @@ function run() {
   } catch (err) {
     log(`Aviso ao sincronizar controles da janela: ${err.message}`);
   }
+  try {
+    const iconNames = [
+      'icon.png',
+      'trayIconLinux-Dark.png',
+      'trayIconLinux.png',
+      'trayIconLinux-Dark@2x.png',
+      'trayIconLinux@2x.png',
+      'trayIcon-Dark.png',
+      'trayIcon.png'
+    ];
+    for (const name of iconNames) {
+      const gPath = path.join(GOLDEN_DIR, name);
+      const rPath = path.join(RESOURCES_DIR, name);
+      if (fs.existsSync(gPath) && !fs.existsSync(rPath)) {
+        fs.copyFileSync(gPath, rPath);
+      } else if (fs.existsSync(rPath) && !fs.existsSync(gPath)) {
+        fs.copyFileSync(rPath, gPath);
+      }
+    }
+  } catch (err) {
+    log(`Aviso ao sincronizar ícones de bandeja: ${err.message}`);
+  }
 
   // 2. Ler ASAR e verificar assinatura
   const buf = fs.readFileSync(ASAR_PATH);
@@ -902,7 +1211,7 @@ function run() {
 
   // Backup do original
   const backupPath = `${ASAR_PATH}.bak-original`;
-  if (!fs.existsSync(backupPath) && !buf.includes(Buffer.from('Cambrith pt-BR Localization Injection'))) {
+  if (!buf.includes(Buffer.from('Cambrith pt-BR Localization Injection'))) {
     try {
       fs.copyFileSync(ASAR_PATH, backupPath);
       log(`Backup do arquivo original salvo em: ${backupPath}`);
@@ -922,6 +1231,7 @@ function run() {
     'dist/menu.js': patchMenu,
     'dist/tray.js': patchTray,
     'dist/updater.js': patchUpdater,
+    'dist/services/settingsService.js': patchSettingsService,
   };
 
   const chunks = [];
@@ -941,7 +1251,15 @@ function run() {
       const oldOffset = Number(node.offset);
       let fileBuf = buf.subarray(dataOffset + oldOffset, dataOffset + oldOffset + node.size);
 
-      if (patchers[relPath]) {
+      if (relPath === 'icon.png') {
+        const customIconPath = path.join(GOLDEN_DIR, 'icon.png');
+        if (fs.existsSync(customIconPath)) {
+          fileBuf = fs.readFileSync(customIconPath);
+          node.size = fileBuf.length;
+          node.integrity = calcIntegrity(fileBuf);
+          log(`Substituído ícone do app: ${relPath} (${fileBuf.length} bytes)`);
+        }
+      } else if (patchers[relPath]) {
         const origStr = fileBuf.toString('utf8');
         const patchedStr = patchers[relPath](origStr);
         new vm.Script(patchedStr, { filename: relPath });

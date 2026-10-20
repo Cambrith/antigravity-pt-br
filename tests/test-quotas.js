@@ -15,6 +15,7 @@ function setupSandbox() {
       head: { appendChild: () => {} },
       createTreeWalker: () => ({ nextNode: () => null }),
       querySelectorAll: () => [],
+      querySelector: () => null,
       addEventListener: () => {},
       getElementById: () => null,
       createElement: () => ({ setAttribute: () => {}, style: {}, addEventListener: () => {} })

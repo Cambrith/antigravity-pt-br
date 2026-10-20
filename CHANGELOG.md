@@ -17,6 +17,21 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.
 - Atalho Ctrl+, / ⌘+, fecha apenas o modal de configurações, sem acionar o botão de fechar a janela.
 
+## [1.7.0] - 2026-10-20
+
+### Adicionado
+- **Auditoria Profunda e Tradução Completa da Página de Personalizações e Marketplace**:
+  - Localização integral das seções do Google Workspace (`Google Slides`, `Google Drive`, `Google Calendar`, `Google Docs`, `Google Sheets`) com descrições e ações em pt-BR.
+  - Subtítulo oficial da prateleira *Criado com o Google*: `"Desenvolva nas plataformas para desenvolvedores do Google, incluindo Android, Chrome, Gemini e Google Cloud."`.
+  - Tradução dos 17 plugins do catálogo oficial e de todos os *prompts* sugeridos.
+  - Suporte a botões de expansão dinâmicos com contadores via regex (`+ Ver mais [N]`, `Ver menos`, `Ver mais em [Categoria]`).
+  - Localização completa de estados e esferas de status (Integrado, Bloqueado, Desativado, Configuração necessária, Login necessário, Reconexão necessária, Tarefa agendada, Extensão de interface).
+  - Tradução completa dos modais de gerenciamento, permissões, autenticação, detalhes de hooks, automações e servidores MCP.
+- **Unificação de Ícones e Correção de Bandeja do Sistema (KDE Plasma Wayland / Linux)**:
+  - Ícone unificado e consistente entre o seletor de tarefas (Alt+Tab / Task Switcher) e a barra de tarefas (Taskbar) via injeção de `app.setDesktopFileName('antigravity.desktop')` e empacotamento de assets de ícone no ASAR.
+  - Comportamento de fechar para a bandeja (*Close to Tray*) com preservação de estado, ativando `RUN_IN_BACKGROUND` e reabrindo a janela exatamente no ponto de trabalho anterior.
+  - Correção do clique no ícone monocromático da bandeja no KDE Wayland via ativação direta de janela (`kdotool` e `setAlwaysOnTop`).
+
 ## [1.6.2] - 2026-10-18
 
 ### Adicionado
