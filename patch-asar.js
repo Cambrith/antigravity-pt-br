@@ -714,9 +714,20 @@ function getTrayIconPath() {
     }
     const isDark = electron_1.nativeTheme ? electron_1.nativeTheme.shouldUseDarkColors : true;
     const fileName = isDark ? 'trayIconLinux-Dark.png' : 'trayIconLinux.png';
-    const candidate = path.join(__dirname, '..', fileName);
-    if (require('fs').existsSync(candidate)) {
-        return candidate;
+    const candidatePaths = [
+        path.join(process.resourcesPath || '', fileName),
+        path.join(require('os').homedir(), '.config', 'Antigravity', 'i18n', fileName),
+        path.join(__dirname, '..', fileName),
+        path.join(process.resourcesPath || '', 'trayIcon-Dark.png'),
+        path.join(require('os').homedir(), '.config', 'Antigravity', 'i18n', 'trayIcon-Dark.png'),
+        path.join(__dirname, '..', 'trayIcon-Dark.png')
+    ];
+    for (const c of candidatePaths) {
+        try {
+            if (require('fs').existsSync(c)) {
+                return c;
+            }
+        } catch (_) {}
     }
     return path.join(__dirname, '..', 'icon.png');
 }
