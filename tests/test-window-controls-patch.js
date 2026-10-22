@@ -53,3 +53,13 @@ test('Instalador ativa a verificação após alterações da pasta resources', (
   assert.match(guard, /stable >= 4/);
   assert.match(guard, /node \"\$PATCHER\" \"--asar=\$ASAR\"/);
 });
+
+test('Bandeja: foca na janela aberta atual e restaura a janela mais recente quando fechado', () => {
+  const sampleWithLoad = original.replace('  return win;\n}', `  void win.loadURL(url);\n  return win;\n}\nconst showOrCreateWindow = (port) => {\n  createWindow(port);\n};\nexports.showOrCreateWindow = showOrCreateWindow;`);
+  const patched = context.patchUtils(sampleWithLoad);
+  new vm.Script(patched);
+  assert.match(patched, /const visibleWins = allWins\.filter\(\(w\) => w\.isVisible\(\)\)/);
+  assert.match(patched, /__cambrithLastClosedWindow/);
+  assert.match(patched, /last-window-state\.json/);
+  assert.equal(context.patchUtils(patched), patched);
+});
