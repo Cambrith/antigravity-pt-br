@@ -517,11 +517,78 @@ function patchUtils(code) {
   }
 
   // Cambrith: Ativação infalível da janela no Linux/KDE Wayland/X11 e outras plataformas
+  // - Se houver janela aberta (visível), foca/ativa exatamente a janela atual onde ela está.
+  // - Se o app estiver fechado (oculto na bandeja ou sem janelas), restaura a janela mais recente que estava aberta antes.
   const origShowOrCreate = /const showOrCreateWindow = \(port\) => \{[\s\S]*?exports\.showOrCreateWindow = showOrCreateWindow;/;
   const robustShowOrCreate = `const showOrCreateWindow = (port) => {
-    const wins = electron_1.BrowserWindow.getAllWindows();
-    if (wins.length > 0) {
-        const win = wins[0];
+    if (port) global.__cambrithLastPort = port;
+    function activateLinuxKWin(winTitle) {
+        if (process.platform !== 'linux') return;
+        try {
+            const fsMod = require('fs');
+            const osMod = require('os');
+            const pathMod = require('path');
+            const { execFile } = require('child_process');
+            const scriptPath = pathMod.join(osMod.tmpdir(), 'antigravity-kwin-activate-' + process.pid + '.js');
+            const safeTitle = JSON.stringify(winTitle || '');
+            const scriptContent = [
+                'const targetTitle = ' + safeTitle + ';',
+                'const clients = workspace.windowList ? workspace.windowList() : (workspace.clientList ? workspace.clientList() : []);',
+                'let target = null;',
+                'for (let i = 0; i < clients.length; i++) {',
+                '    const w = clients[i];',
+                '    const cap = String(w.caption || "");',
+                '    const cls = String(w.resourceClass || "").toLowerCase();',
+                '    const name = String(w.resourceName || "").toLowerCase();',
+                '    const desk = String(w.desktopFileName || "").toLowerCase();',
+                '    if (cls.includes("antigravity") || name.includes("antigravity") || desk.includes("antigravity") || cap.toLowerCase().includes("antigravity")) {',
+                '        if (targetTitle && cap.includes(targetTitle)) { target = w; break; }',
+                '        if (!target) target = w;',
+                '    }',
+                '}',
+                'if (target) {',
+                '    if (target.minimized) target.minimized = false;',
+                '    if (target.desktops && target.desktops.length > 0 && !target.onAllDesktops && workspace.currentDesktop !== undefined) {',
+                '        workspace.currentDesktop = target.desktops[0];',
+                '    }',
+                '    workspace.activeWindow = target;',
+                '}'
+            ].join('\\n');
+            fsMod.writeFileSync(scriptPath, scriptContent, 'utf8');
+            const qdbusBins = ['qdbus6', 'qdbus', 'qdbus-qt6', 'qdbus-qt5'];
+            const tryBin = (idx) => {
+                if (idx >= qdbusBins.length) {
+                    try { execFile('kdotool', ['search', '--class', 'antigravity', 'windowactivate'], () => {}); } catch (_) {}
+                    try { execFile('wmctrl', ['-x', '-R', 'antigravity'], () => {}); } catch (_) {}
+                    return;
+                }
+                const bin = qdbusBins[idx];
+                execFile(bin, ['org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting.unloadScript', 'antigravity_activate'], () => {
+                    execFile(bin, ['org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting.loadScript', scriptPath, 'antigravity_activate'], (err, stdout) => {
+                        if (err) return tryBin(idx + 1);
+                        const id = String(stdout || '').trim();
+                        if (id !== '') {
+                            execFile(bin, ['org.kde.KWin', '/Scripting/Script' + id, 'org.kde.kwin.Script.run'], () => {
+                                execFile(bin, ['org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting.unloadScript', 'antigravity_activate'], () => {});
+                            });
+                        }
+                    });
+                });
+            };
+            tryBin(0);
+        } catch (_) {}
+    }
+    const allWins = electron_1.BrowserWindow.getAllWindows().filter((w) => w && !w.isDestroyed());
+    const visibleWins = allWins.filter((w) => w.isVisible());
+    if (visibleWins.length > 0) {
+        const focused = electron_1.BrowserWindow.getFocusedWindow();
+        let win = (focused && visibleWins.includes(focused)) ? focused : null;
+        if (!win && global.__cambrithLastFocusedWindow && visibleWins.includes(global.__cambrithLastFocusedWindow)) {
+            win = global.__cambrithLastFocusedWindow;
+        }
+        if (!win) {
+            win = visibleWins.slice().sort((a, b) => (b.__lastActiveTime || 0) - (a.__lastActiveTime || 0))[0];
+        }
         try {
             if (win.isMinimized()) {
                 win.restore();
@@ -529,25 +596,48 @@ function patchUtils(code) {
             win.show();
             win.setSkipTaskbar(false);
             win.focus();
-            if (process.platform === 'linux') {
-                try {
-                    win.setAlwaysOnTop(true);
-                    win.focus();
-                    win.setAlwaysOnTop(false);
-                } catch (_) {}
-                try {
-                    const { execFile } = require('child_process');
-                    execFile('kdotool', ['search', '--class', 'antigravity', 'windowactivate'], () => {});
-                } catch (_) {}
-                try {
-                    const { execFile } = require('child_process');
-                    execFile('wmctrl', ['-x', '-R', 'antigravity'], () => {});
-                } catch (_) {}
-            }
+            try { electron_1.app.focus({ steal: true }); } catch (_) {}
+            win.__lastActiveTime = Date.now();
+            global.__cambrithLastFocusedWindow = win;
+            activateLinuxKWin(typeof win.getTitle === 'function' ? win.getTitle() : '');
         } catch (_) {}
-    }
-    else {
-        createWindow(\`\${constants_1.WINDOW_ORIGIN}:\${port}/\`);
+    } else if (allWins.length > 0) {
+        let win = (global.__cambrithLastClosedWindow && allWins.includes(global.__cambrithLastClosedWindow))
+            ? global.__cambrithLastClosedWindow
+            : null;
+        if (!win && global.__cambrithLastFocusedWindow && allWins.includes(global.__cambrithLastFocusedWindow)) {
+            win = global.__cambrithLastFocusedWindow;
+        }
+        if (!win) {
+            win = allWins.slice().sort((a, b) => Math.max(b.__lastClosedTime || 0, b.__lastActiveTime || 0) - Math.max(a.__lastClosedTime || 0, a.__lastActiveTime || 0))[0];
+        }
+        try {
+            if (win.isMinimized()) {
+                win.restore();
+            }
+            win.show();
+            win.setSkipTaskbar(false);
+            win.focus();
+            try { electron_1.app.focus({ steal: true }); } catch (_) {}
+            win.__lastActiveTime = Date.now();
+            global.__cambrithLastFocusedWindow = win;
+            const title = typeof win.getTitle === 'function' ? win.getTitle() : '';
+            activateLinuxKWin(title);
+            setTimeout(() => activateLinuxKWin(title), 70);
+        } catch (_) {}
+    } else {
+        const targetPort = port || global.__cambrithLastPort;
+        if (targetPort !== undefined && targetPort !== null) {
+            const win = createWindow(\`\${constants_1.WINDOW_ORIGIN}:\${targetPort}/\`, global.__cambrithLastStorage);
+            setTimeout(() => {
+                try {
+                    const title = win && !win.isDestroyed() && typeof win.getTitle === 'function' ? win.getTitle() : '';
+                    activateLinuxKWin(title);
+                } catch (_) {}
+            }, 120);
+        } else {
+            createWindow(\`\${constants_1.WINDOW_ORIGIN}:\${port}/\`);
+        }
     }
 };
 exports.showOrCreateWindow = showOrCreateWindow;`;
@@ -555,11 +645,115 @@ exports.showOrCreateWindow = showOrCreateWindow;`;
     out = out.replace(origShowOrCreate, robustShowOrCreate);
   }
 
-  // Cambrith: Oculta a janela ao fechar para preservar estado e histórico ao reabrir pelo tray
-  if (!out.includes("win.on('close'")) {
+  if (out.includes("createNewWindow: () => {\n            void createWindow(url, storageManager);\n        },")) {
     out = out.replace(
-      "void win.loadURL(url);",
-      `win.on('close', (event) => {
+      "createNewWindow: () => {\n            void createWindow(url, storageManager);\n        },",
+      "createNewWindow: () => {\n            global.__cambrithSkipRestoreNextWindow = true;\n            void createWindow(url, storageManager);\n        },"
+    );
+  }
+
+  // Cambrith: Oculta a janela ao fechar e persiste a janela/rota mais recente para reabrir exatamente onde estava
+  const winCloseAndLoadBlock = `if (storageManager) {
+        global.__cambrithLastStorage = storageManager;
+    }
+    try {
+        const mPort = String(url || '').match(/:(\\d+)\\//);
+        if (mPort) global.__cambrithLastPort = Number(mPort[1]);
+    } catch (_) {}
+    function getCambrithStateFile() {
+        try {
+            const os = require('os');
+            const p = require('path');
+            const cfg = process.env.XDG_CONFIG_HOME || p.join(os.homedir(), '.config');
+            return p.join(cfg, 'Antigravity', 'last-window-state.json');
+        } catch (_) {
+            return '';
+        }
+    }
+    function readCambrithWindowState() {
+        try {
+            const f = getCambrithStateFile();
+            if (f && require('fs').existsSync(f)) {
+                return JSON.parse(require('fs').readFileSync(f, 'utf8'));
+            }
+        } catch (_) {}
+        return null;
+    }
+    function saveCambrithWindowState(targetWin) {
+        try {
+            const w = targetWin || win;
+            if (!w || w.isDestroyed()) return;
+            const f = getCambrithStateFile();
+            if (!f) return;
+            const fsMod = require('fs');
+            const pathMod = require('path');
+            const prev = readCambrithWindowState() || {};
+            let route = prev.route || '/';
+            try {
+                const curUrl = w.webContents && typeof w.webContents.getURL === 'function' ? w.webContents.getURL() : '';
+                if (curUrl && /^https?:\\/\\/127\\.0\\.0\\.1:\\d+\\//.test(curUrl)) {
+                    const parsed = new URL(curUrl);
+                    const candidate = (parsed.pathname || '/') + (parsed.search || '') + (parsed.hash || '');
+                    if (candidate && (candidate !== '/' || w.__allowRootRouteSave)) {
+                        route = candidate;
+                    }
+                }
+            } catch (_) {}
+            const isMax = typeof w.isMaximized === 'function' ? w.isMaximized() : false;
+            const b = (!isMax && typeof w.getBounds === 'function') ? w.getBounds() : (w.__lastNormalBounds || prev.bounds || null);
+            const nextState = {
+                route,
+                isMaximized: isMax,
+                bounds: b,
+                updatedAt: Date.now()
+            };
+            fsMod.mkdirSync(pathMod.dirname(f), { recursive: true });
+            fsMod.writeFileSync(f, JSON.stringify(nextState), 'utf8');
+        } catch (_) {}
+    }
+    global.__cambrithSaveWindowState = saveCambrithWindowState;
+    win.__lastActiveTime = Date.now();
+    global.__cambrithLastFocusedWindow = win;
+    win.on('focus', () => {
+        win.__lastActiveTime = Date.now();
+        global.__cambrithLastFocusedWindow = win;
+        saveCambrithWindowState(win);
+    });
+    win.on('show', () => {
+        win.__lastActiveTime = Date.now();
+        global.__cambrithLastFocusedWindow = win;
+        saveCambrithWindowState(win);
+    });
+    win.on('move', () => {
+        try {
+            if (!win.isMaximized() && !win.isMinimized()) {
+                win.__lastNormalBounds = win.getBounds();
+            }
+            saveCambrithWindowState(win);
+        } catch (_) {}
+    });
+    win.on('resize', () => {
+        try {
+            if (!win.isMaximized() && !win.isMinimized()) {
+                win.__lastNormalBounds = win.getBounds();
+            }
+            saveCambrithWindowState(win);
+        } catch (_) {}
+    });
+    if (win.webContents && typeof win.webContents.on === 'function') {
+        win.webContents.on('did-navigate', () => saveCambrithWindowState(win));
+        win.webContents.on('did-navigate-in-page', (_ev, _navUrl, isMainFrame) => {
+            if (isMainFrame !== false) {
+                win.__allowRootRouteSave = true;
+                win.__lastActiveTime = Date.now();
+                saveCambrithWindowState(win);
+            }
+        });
+    }
+    win.on('close', (event) => {
+        win.__lastClosedTime = Date.now();
+        global.__cambrithLastClosedWindow = win;
+        saveCambrithWindowState(win);
         if (!electron_1.app.isQuitting) {
             event.preventDefault();
             win.hide();
@@ -575,23 +769,34 @@ exports.showOrCreateWindow = showOrCreateWindow;`;
             win.setIcon(customWinIcon);
         }
     } catch (_) {}
-    void win.loadURL(url);`
-    );
-  } else if (!out.includes("win.setIcon(customWinIcon)")) {
-    out = out.replace(
-      "void win.loadURL(url);",
-      `try {
-        const linuxIconCandidate = '/home/cambrith/.local/share/icons/hicolor/512x512/apps/antigravity-cambrith.png';
-        const finalIconPath = (process.platform === 'linux' && require('fs').existsSync(linuxIconCandidate))
-            ? linuxIconCandidate
-            : path_1.default.join(__dirname, '..', 'icon.png');
-        const customWinIcon = electron_1.nativeImage.createFromPath(finalIconPath);
-        if (!customWinIcon.isEmpty()) {
-            win.setIcon(customWinIcon);
+    let targetLoadUrl = url;
+    try {
+        if (!global.__cambrithSkipRestoreNextWindow && typeof url === 'string' && /^https?:\\/\\/127\\.0\\.0\\.1:\\d+\\/?$/.test(url)) {
+            const st = readCambrithWindowState();
+            if (st && typeof st.route === 'string' && st.route.startsWith('/') && st.route !== '/') {
+                targetLoadUrl = url.replace(/\\/$/, '') + st.route;
+            }
+            if (st && st.bounds && typeof st.bounds.width === 'number' && st.bounds.width >= 500 && st.bounds.height >= 400) {
+                win.__lastNormalBounds = st.bounds;
+                if (!st.isMaximized && typeof win.setBounds === 'function') {
+                    win.setBounds(st.bounds);
+                }
+            }
+            if (st && st.isMaximized && typeof win.maximize === 'function') {
+                win.maximize();
+            }
         }
     } catch (_) {}
-    void win.loadURL(url);`
-    );
+    global.__cambrithSkipRestoreNextWindow = false;
+    void win.loadURL(targetLoadUrl);`;
+
+  if (!out.includes('saveCambrithWindowState')) {
+    const prevInjectedPattern = /win\.on\('close',[\s\S]*?void win\.loadURL\(url\);/;
+    if (prevInjectedPattern.test(out)) {
+      out = out.replace(prevInjectedPattern, winCloseAndLoadBlock);
+    } else if (out.includes('void win.loadURL(url);')) {
+      out = out.replace('void win.loadURL(url);', winCloseAndLoadBlock);
+    }
   }
 
   return out;
@@ -628,7 +833,15 @@ if (process.platform === 'linux') {
   if (!out.includes("electron_1.app.isQuitting = true;")) {
     out = out.replace(
       "electron_1.app.on('before-quit', async (event) => {",
-      "electron_1.app.on('before-quit', async (event) => {\n    electron_1.app.isQuitting = true;"
+      `electron_1.app.on('before-quit', async (event) => {
+    electron_1.app.isQuitting = true;
+    try {
+        if (typeof global.__cambrithSaveWindowState === 'function') {
+            const wins = electron_1.BrowserWindow.getAllWindows().filter((w) => w && !w.isDestroyed());
+            const targetWin = electron_1.BrowserWindow.getFocusedWindow() || global.__cambrithLastFocusedWindow || global.__cambrithLastClosedWindow || wins[0];
+            if (targetWin) global.__cambrithSaveWindowState(targetWin);
+        }
+    } catch (_) {}`
     );
   }
 
@@ -671,41 +884,12 @@ function patchTray(code) {
 
   const trayBlockPattern = /let contextMenu = null;[\s\S]*?(?=\/\*\*\s*\*\s*Inserts an item into the existing tray context menu)/;
   const newTrayBlock = `let contextMenu = null;
+let lastTrayClickMs = 0;
 
 function activateAppWindow() {
     try {
-        const wins = electron_1.BrowserWindow.getAllWindows();
-        if (wins.length > 0) {
-            const win = wins[0];
-            if (win.isMinimized()) {
-                win.restore();
-            }
-            win.show();
-            win.setSkipTaskbar(false);
-            win.focus();
-            if (process.platform === 'linux') {
-                try {
-                    win.setAlwaysOnTop(true);
-                    win.focus();
-                    win.setAlwaysOnTop(false);
-                } catch (_) {}
-                try {
-                    const { execFile } = require('child_process');
-                    execFile('kdotool', ['search', '--class', 'antigravity', 'windowactivate'], () => {});
-                } catch (_) {}
-                try {
-                    const { execFile } = require('child_process');
-                    execFile('wmctrl', ['-x', '-R', 'antigravity'], () => {});
-                } catch (_) {}
-            }
-        } else {
-            (0, utils_1.showOrCreateWindow)();
-        }
-    } catch (_) {
-        try {
-            (0, utils_1.showOrCreateWindow)();
-        } catch (_) {}
-    }
+        (0, utils_1.showOrCreateWindow)(global.__cambrithLastPort);
+    } catch (_) {}
 }
 
 function getTrayIconPath() {
@@ -776,8 +960,14 @@ function createTray(actions, onClick) {
     tray.setContextMenu(contextMenu);
 
     const handleTrayClick = (event) => {
+        const now = Date.now();
+        if (now - lastTrayClickMs < 150) return;
+        lastTrayClickMs = now;
         if (typeof onClick === 'function') {
-            try { onClick(event); } catch (_) {}
+            try {
+                onClick(event);
+                return;
+            } catch (_) {}
         }
         activateAppWindow();
     };
@@ -1167,10 +1357,20 @@ function patchIpcHandlers(code) {
       "electron_1.ipcMain.handle('window:show-context-menu', async (_event, items) => {\n        try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}"
     );
   }
-  // Cambrith: Ao fechar pela interface (botão X), oculta a janela preservando o processo e ícone na bandeja
+  // Cambrith: Ao fechar pela interface (botão X), salva como a janela mais recente e oculta preservando o ícone na bandeja
   out = out.replace(
-    "electron_1.ipcMain.handle('window:close', async () => {\n        const win = electron_1.BrowserWindow.getFocusedWindow() || electron_1.BrowserWindow.getAllWindows()[0];\n        if (win) {\n            win.close();\n        }\n    });",
-    "electron_1.ipcMain.handle('window:close', async () => {\n        const win = electron_1.BrowserWindow.getFocusedWindow() || electron_1.BrowserWindow.getAllWindows()[0];\n        if (win) {\n            win.hide();\n        }\n    });"
+    /electron_1\.ipcMain\.handle\('window:close',\s*async\s*\([^)]*\)\s*=>\s*\{[\s\S]*?win\.(?:close|hide)\(\);\s*\}\s*\}\);/,
+    `electron_1.ipcMain.handle('window:close', async (_event) => {
+        const win = (_event && _event.sender ? electron_1.BrowserWindow.fromWebContents(_event.sender) : null) || electron_1.BrowserWindow.getFocusedWindow() || global.__cambrithLastFocusedWindow || electron_1.BrowserWindow.getAllWindows()[0];
+        if (win && !win.isDestroyed()) {
+            win.__lastClosedTime = Date.now();
+            global.__cambrithLastClosedWindow = win;
+            if (typeof global.__cambrithSaveWindowState === 'function') {
+                try { global.__cambrithSaveWindowState(win); } catch (_) {}
+            }
+            win.hide();
+        }
+    });`
   );
   // Cambrith: Tradução nativa de notificações no Electron (conclusão de tarefas e pedidos de ação)
   const notifPattern = /electron_1\.ipcMain\.handle\('notification:send',\s*\(_,\s*options\)\s*=>\s*\{[\s\S]*?const notification = new electron_1\.Notification\(\{[\s\S]*?title:\s*options\.title,[\s\S]*?body:\s*options\.body,[\s\S]*?silent:\s*options\.silent\s*\?\?\s*false,[\s\S]*?\}\);/;
