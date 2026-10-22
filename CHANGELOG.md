@@ -4,6 +4,18 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.2] - 2026-10-22
+
+### Adicionado
+- **Notificações do Agente em Português (pt-BR)**:
+  - Tradução completa das notificações de conclusão de tarefas (`"O agente concluiu a tarefa"`, `"O agente concluiu: <resumo>"`).
+  - Tradução de avisos de permissão e requisição de atenção (`"Uma ação requer sua atenção"`, `"O agente está aguardando sua resposta."`, `"Solicitando sua permissão no Terminal:"`, etc.).
+  - Interceptação dupla transparente: tanto via IPC nativo do Electron (`dist/ipcHandlers.js`) quanto via API Web Notifications (`window.Notification`).
+- **Ícone Monocromático de Bandeja (Tray) para o Painel Superior**:
+  - Geração de ícones monocromáticos 100% transparentes e sem fundo branco (`trayIconLinux-Dark.png` e `@2x`), integrados ao tema do sistema (KDE Plasma / FreeDesktop).
+  - Otimização do tamanho do glifo (22x22 nativo e 44x44 HiDPI) para alinhamento e proporção perfeitos com os ícones de status da barra superior.
+  - Detecção automática de temas escuros no KDE Plasma (`kdeglobals`).
+
 ## [1.7.1] - 2026-10-22
 
 ### Adicionado

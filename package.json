@@ -1,11 +1,11 @@
 {
   "name": "antigravity-pt-br",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Tradução completa da interface do Google Antigravity para Português do Brasil com suporte a Desktop e Mobile PWA (Linux, Windows, macOS, Android, iOS)",
   "main": "dist/patch-asar.js",
   "scripts": {
     "test": "node --test",
-    "build": "python3 generate_i18n.py && cp i18n-pt-br.js dist/ && cp patch-asar.js dist/ && cp cambrith-window-controls.js dist/ && cp icon.png dist/ && cp mobile-bridge.js dist/ && cp qr-engine.js dist/ && cp mobile.sh dist/",
+    "build": "python3 generate_i18n.py && cp i18n-pt-br.js dist/ && cp patch-asar.js dist/ && cp cambrith-window-controls.js dist/ && cp icon.png dist/ && cp trayIcon*.png dist/ && cp mobile-bridge.js dist/ && cp qr-engine.js dist/ && cp mobile.sh dist/",
     "lint": "node -c patch-asar.js dist/patch-asar.js i18n-pt-br.js dist/i18n-pt-br.js mobile-bridge.js qr-engine.js tests/*.js",
     "mobile": "node mobile-bridge.js"
   },

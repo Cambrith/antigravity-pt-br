@@ -3326,6 +3326,59 @@ js_body = r'''(function() {
     console.warn("[i18n-pt-br] Erro ao registrar gerador de nomes scratch em pt-BR:", e);
   }
 
+  // --- Hook no Notification nativo do navegador / webview ---
+  try {
+    if (typeof window !== 'undefined' && window.Notification) {
+      const OrigNotification = window.Notification;
+      const PatchedNotification = function(title, options) {
+        let trTitle = title;
+        let trBody = options?.body;
+        if (typeof trBody === 'string') {
+          if (trBody.startsWith('Agent finished: ')) {
+            trBody = 'O agente concluiu: ' + trBody.slice('Agent finished: '.length);
+          } else if (trBody === 'Agent finished') {
+            trBody = 'O agente concluiu a tarefa';
+          } else if (trBody === 'The agent is waiting for your input.') {
+            trBody = 'O agente está aguardando sua resposta.';
+          } else if (trBody === 'Click to respond to the question.') {
+            trBody = 'Clique para responder à pergunta.';
+          } else if (trBody === 'Click to respond to the questions.') {
+            trBody = 'Clique para responder às perguntas.';
+          } else if (trBody.startsWith('Command: ')) {
+            trBody = 'Comando: ' + trBody.slice('Command: '.length);
+          } else if (trBody.startsWith('Code: ')) {
+            trBody = 'Código: ' + trBody.slice('Code: '.length);
+          } else if (trBody.startsWith('URL: ')) {
+            trBody = 'URL: ' + trBody.slice('URL: '.length);
+          }
+        }
+        if (typeof trTitle === 'string') {
+          if (trTitle === 'Action requires your attention') {
+            trTitle = 'Uma ação requer sua atenção';
+          } else if (trTitle === 'The agent has a question for you:') {
+            trTitle = 'O agente tem uma pergunta para você:';
+          } else if (trTitle === 'The agent has questions for you:') {
+            trTitle = 'O agente tem perguntas para você:';
+          } else if (trTitle === 'Requesting your permission in Terminal:') {
+            trTitle = 'Solicitando sua permissão no Terminal:';
+          } else if (trTitle === 'Requesting your permission to execute JavaScript:') {
+            trTitle = 'Solicitando sua permissão para executar JavaScript:';
+          } else if (trTitle === 'Requesting your permission to open URL:') {
+            trTitle = 'Solicitando sua permissão para abrir URL:';
+          } else if (trTitle === 'Requesting your permission:') {
+            trTitle = 'Solicitando sua permissão:';
+          }
+        }
+        const opts = options ? { ...options, body: trBody } : options;
+        return new OrigNotification(trTitle, opts);
+      };
+      PatchedNotification.prototype = OrigNotification.prototype;
+      PatchedNotification.permission = OrigNotification.permission;
+      PatchedNotification.requestPermission = OrigNotification.requestPermission ? OrigNotification.requestPermission.bind(OrigNotification) : undefined;
+      window.Notification = PatchedNotification;
+    }
+  } catch (_) {}
+
   const EXACT_MAP = ''' + map_str + r''';
 
   const SHORT_MONTHS_MAP = {
@@ -3931,6 +3984,12 @@ js_body = r'''(function() {
     if (/^Tasks running$/i.test(s)) return "Tarefas em execução";
 
     // Status de tarefas e ferramentas em colapsáveis e cabeçalhos
+    if (/^Agent finished$/i.test(s)) {
+      return "O agente concluiu a tarefa";
+    }
+    if ((m = /^Agent finished:\s*(.*)$/i.exec(s))) {
+      return `O agente concluiu: ${m[1]}`;
+    }
     if ((m = /^(.+?)\s+finished$/i.exec(s))) {
       return `${m[1]} concluído`;
     }
@@ -6254,3 +6313,16 @@ for out_path in out_paths:
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(js_body)
     print("Generated:", out_path, "with", len(EXACT_MAP), "exact entries!")
+
+import glob, shutil
+script_dir = os.path.dirname(os.path.abspath(__file__))
+tray_icons = glob.glob(os.path.join(script_dir, "trayIcon*.png"))
+for out_path in out_paths:
+    dest_dir = os.path.dirname(out_path)
+    if os.path.isdir(dest_dir):
+        for tray_icon in tray_icons:
+            dest_file = os.path.join(dest_dir, os.path.basename(tray_icon))
+            try:
+                shutil.copy2(tray_icon, dest_file)
+            except Exception:
+                pass

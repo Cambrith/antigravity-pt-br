@@ -712,15 +712,41 @@ function getTrayIconPath() {
     if ((0, utils_1.isMacOS)()) {
         return path.join(__dirname, '..', 'trayTemplate.png');
     }
-    const isDark = electron_1.nativeTheme ? electron_1.nativeTheme.shouldUseDarkColors : true;
+    let isDark = true;
+    try {
+        if (electron_1.nativeTheme && typeof electron_1.nativeTheme.shouldUseDarkColors === 'boolean') {
+            isDark = electron_1.nativeTheme.shouldUseDarkColors;
+        }
+        if (process.platform === 'linux') {
+            const fs = require('fs');
+            const os = require('os');
+            const kdeglobals = path.join(os.homedir(), '.config', 'kdeglobals');
+            if (fs.existsSync(kdeglobals)) {
+                const content = fs.readFileSync(kdeglobals, 'utf8');
+                const m = content.match(/ColorScheme=([^\\r\\n]+)/);
+                if (m && /dark|macos|black/i.test(m[1])) isDark = true;
+                const bg = content.match(/BackgroundNormal=([^\\r\\n]+)/);
+                if (bg) {
+                    const parts = bg[1].split(',').map(Number);
+                    if (parts.length >= 3) {
+                        isDark = (parts[0]*0.299 + parts[1]*0.587 + parts[2]*0.114) < 128;
+                    }
+                }
+            }
+        }
+    } catch (_) {}
     const fileName = isDark ? 'trayIconLinux-Dark.png' : 'trayIconLinux.png';
     const candidatePaths = [
         path.join(process.resourcesPath || '', fileName),
         path.join(require('os').homedir(), '.config', 'Antigravity', 'i18n', fileName),
         path.join(__dirname, '..', fileName),
+        path.join(process.resourcesPath || '', 'trayIconLinux-Dark.png'),
+        path.join(require('os').homedir(), '.config', 'Antigravity', 'i18n', 'trayIconLinux-Dark.png'),
         path.join(process.resourcesPath || '', 'trayIcon-Dark.png'),
         path.join(require('os').homedir(), '.config', 'Antigravity', 'i18n', 'trayIcon-Dark.png'),
-        path.join(__dirname, '..', 'trayIcon-Dark.png')
+        path.join(__dirname, '..', 'trayIcon-Dark.png'),
+        path.join(process.resourcesPath || '', 'trayTemplate.png'),
+        path.join(__dirname, '..', 'trayTemplate.png')
     ];
     for (const c of candidatePaths) {
         try {
@@ -1146,6 +1172,54 @@ function patchIpcHandlers(code) {
     "electron_1.ipcMain.handle('window:close', async () => {\n        const win = electron_1.BrowserWindow.getFocusedWindow() || electron_1.BrowserWindow.getAllWindows()[0];\n        if (win) {\n            win.close();\n        }\n    });",
     "electron_1.ipcMain.handle('window:close', async () => {\n        const win = electron_1.BrowserWindow.getFocusedWindow() || electron_1.BrowserWindow.getAllWindows()[0];\n        if (win) {\n            win.hide();\n        }\n    });"
   );
+  // Cambrith: Tradução nativa de notificações no Electron (conclusão de tarefas e pedidos de ação)
+  const notifPattern = /electron_1\.ipcMain\.handle\('notification:send',\s*\(_,\s*options\)\s*=>\s*\{[\s\S]*?const notification = new electron_1\.Notification\(\{[\s\S]*?title:\s*options\.title,[\s\S]*?body:\s*options\.body,[\s\S]*?silent:\s*options\.silent\s*\?\?\s*false,[\s\S]*?\}\);/;
+  if (notifPattern.test(out)) {
+    out = out.replace(notifPattern, `electron_1.ipcMain.handle('notification:send', (_, options) => {
+        let title = options?.title;
+        let body = options?.body;
+        if (typeof body === 'string') {
+            if (body.startsWith('Agent finished: ')) {
+                body = 'O agente concluiu: ' + body.slice('Agent finished: '.length);
+            } else if (body === 'Agent finished') {
+                body = 'O agente concluiu a tarefa';
+            } else if (body === 'The agent is waiting for your input.') {
+                body = 'O agente está aguardando sua resposta.';
+            } else if (body === 'Click to respond to the question.') {
+                body = 'Clique para responder à pergunta.';
+            } else if (body === 'Click to respond to the questions.') {
+                body = 'Clique para responder às perguntas.';
+            } else if (body.startsWith('Command: ')) {
+                body = 'Comando: ' + body.slice('Command: '.length);
+            } else if (body.startsWith('Code: ')) {
+                body = 'Código: ' + body.slice('Code: '.length);
+            } else if (body.startsWith('URL: ')) {
+                body = 'URL: ' + body.slice('URL: '.length);
+            }
+        }
+        if (typeof title === 'string') {
+            if (title === 'Action requires your attention') {
+                title = 'Uma ação requer sua atenção';
+            } else if (title === 'The agent has a question for you:') {
+                title = 'O agente tem uma pergunta para você:';
+            } else if (title === 'The agent has questions for you:') {
+                title = 'O agente tem perguntas para você:';
+            } else if (title === 'Requesting your permission in Terminal:') {
+                title = 'Solicitando sua permissão no Terminal:';
+            } else if (title === 'Requesting your permission to execute JavaScript:') {
+                title = 'Solicitando sua permissão para executar JavaScript:';
+            } else if (title === 'Requesting your permission to open URL:') {
+                title = 'Solicitando sua permissão para abrir URL:';
+            } else if (title === 'Requesting your permission:') {
+                title = 'Solicitando sua permissão:';
+            }
+        }
+        const notification = new electron_1.Notification({
+            title: title,
+            body: body,
+            silent: options?.silent ?? false,
+        });`);
+  }
   out = out.replace("electron_updater_1.autoUpdater.quitAndInstall();", "(0, updater_1.quitAndInstall)();");
   return out;
 }

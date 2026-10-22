@@ -1228,6 +1228,19 @@ test('Tradução de Histórico de Conversas e Dashboard de Automações (v1.7.1)
   assert.equal(tr('Delete Task'), 'Excluir tarefa');
   assert.equal(tr('Runs on'), 'Executa em');
   assert.equal(tr('Enter a prompt for the agent to run...'), 'Digite uma instrução para o agente executar...');
+
+  // Notificações do sistema e término de tarefas do agente
+  assert.equal(tr('Agent finished'), 'O agente concluiu a tarefa');
+  assert.equal(tr('Action requires your attention'), 'Uma ação requer sua atenção');
+  assert.equal(tr('The agent is waiting for your input.'), 'O agente está aguardando sua resposta.');
+  assert.equal(tr('The agent has a question for you:'), 'O agente tem uma pergunta para você:');
+  assert.equal(tr('The agent has questions for you:'), 'O agente tem perguntas para você:');
+  assert.equal(tr('Click to respond to the question.'), 'Clique para responder à pergunta.');
+  assert.equal(tr('Click to respond to the questions.'), 'Clique para responder às perguntas.');
+  assert.equal(tr('Requesting your permission in Terminal:'), 'Solicitando sua permissão no Terminal:');
+  assert.equal(tr('Requesting your permission to execute JavaScript:'), 'Solicitando sua permissão para executar JavaScript:');
+  assert.equal(tr('Requesting your permission to open URL:'), 'Solicitando sua permissão para abrir URL:');
+  assert.equal(tr('Requesting your permission:'), 'Solicitando sua permissão:');
 });
 
 

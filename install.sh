@@ -68,6 +68,15 @@ fi
 if [ -f "$SCRIPT_DIR/generate_i18n.py" ]; then
     cp "$SCRIPT_DIR/generate_i18n.py" "$CONFIG_I18N_DIR/generate_i18n.py"
 fi
+for f in "$SCRIPT_DIR"/trayIcon*.png; do
+    if [ -f "$f" ]; then
+        cp "$f" "$CONFIG_I18N_DIR/"
+        RESOURCES_DIR="$(dirname "$ASAR_PATH")"
+        if [ -d "$RESOURCES_DIR" ]; then
+            cp "$f" "$RESOURCES_DIR/" 2>/dev/null || true
+        fi
+    fi
+done
 
 # 4. Executar patch no app.asar
 echo "🔧 Aplicando tradução no app.asar..."
