@@ -1276,14 +1276,20 @@ function run() {
       'trayIconLinux-Dark@2x.png',
       'trayIconLinux@2x.png',
       'trayIcon-Dark.png',
-      'trayIcon.png'
+      'trayIcon-Dark@2x.png',
+      'trayIcon.png',
+      'trayIcon@2x.png'
     ];
     for (const name of iconNames) {
+      const sPath = path.join(__dirname, name);
       const gPath = path.join(GOLDEN_DIR, name);
       const rPath = path.join(RESOURCES_DIR, name);
-      if (fs.existsSync(gPath) && !fs.existsSync(rPath)) {
+      if (fs.existsSync(sPath) && path.resolve(sPath) !== path.resolve(gPath)) {
+        fs.copyFileSync(sPath, gPath);
+      }
+      if (fs.existsSync(gPath)) {
         fs.copyFileSync(gPath, rPath);
-      } else if (fs.existsSync(rPath) && !fs.existsSync(gPath)) {
+      } else if (fs.existsSync(rPath)) {
         fs.copyFileSync(rPath, gPath);
       }
     }
@@ -1353,6 +1359,15 @@ function run() {
           node.size = fileBuf.length;
           node.integrity = calcIntegrity(fileBuf);
           log(`Substituído ícone do app: ${relPath} (${fileBuf.length} bytes)`);
+        }
+      } else if (relPath === 'trayTemplate.png' || relPath === 'trayTemplate@2x.png') {
+        const trayReplacement = relPath.includes('@2x') ? 'trayIconLinux-Dark@2x.png' : 'trayIconLinux-Dark.png';
+        const customTrayPath = path.join(GOLDEN_DIR, trayReplacement);
+        if (fs.existsSync(customTrayPath)) {
+          fileBuf = fs.readFileSync(customTrayPath);
+          node.size = fileBuf.length;
+          node.integrity = calcIntegrity(fileBuf);
+          log(`Substituído ícone de bandeja: ${relPath} (${fileBuf.length} bytes)`);
         }
       } else if (patchers[relPath]) {
         const origStr = fileBuf.toString('utf8');
