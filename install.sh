@@ -27,6 +27,8 @@ LOCAL_BIN="$HOME/.local/bin"
 # 2. Localizar app.asar
 ASAR_PATH=""
 CANDIDATES=(
+    "$HOME/.local/opt/Antigravity-x64/resources/app.asar"
+    "$HOME/.local/opt/Antigravity/resources/app.asar"
     "$HOME/.local/opt/antigravity/resources/app.asar"
     "/opt/antigravity/resources/app.asar"
     "/usr/lib/antigravity/resources/app.asar"

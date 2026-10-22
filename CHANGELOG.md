@@ -4,18 +4,15 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Não lançado]
+## [1.7.1] - 2026-10-22
 
 ### Adicionado
-- Controles personalizados da janela versionados fora do pacote do Antigravity e sincronizados novamente pelo patcher.
-- Monitor `systemd --user` na instalação padrão do Linux; aguarda atualizações do `app.asar` terminarem e reaplica as personalizações.
-
-### Corrigido
-- O inicializador verifica a assinatura do patch e sincroniza os arquivos mestres antes de cada abertura, recuperando personalizações após atualizações.
-- Janela inicial limitada à área útil do monitor, evitando cortar o rodapé atrás dos painéis do desktop; botão Configurações com contraste e área clicável maiores.
-- Acesso às configurações pelo botão original no rodapé da barra lateral em janela normal e tela cheia, com rodapé protegido contra compressão e foco visível para navegação por teclado.
-- Remoção da engrenagem flutuante que podia sobrepor os controles da janela e aparecer indevidamente pela comparação entre altura da janela e da tela.
-- Atalho Ctrl+, / ⌘+, fecha apenas o modal de configurações, sem acionar o botão de fechar a janela.
+- **Auditoria Profunda de UI, Histórico de Conversas e Dashboard de Automações**:
+  - Tradução integral do banner de aviso do histórico de conversas: *"Esta página será descontinuada em breve"*, instruções de atalhos e filtro de conversas arquivadas.
+  - Tradução de timestamps relativos (`"now"` -> `"agora"`) e opções de agrupamento, ordenação e exibição de conversas.
+  - Tradução completa da seção de Automações e Tarefas Agendadas: botões `Criar com prompt`, `+ Novo`, campo de busca `Pesquisar automações...`, estado vazio `Nenhuma automação configurada.` e formulário de criação de sidecars.
+  - Criação do catálogo modular `src/maps/ui.json` com mais de 580 strings de interface cobrindo modais, permissões, ferramentas, terminal, sidecars e notificações.
+  - Suporte ao caminho de instalação `$HOME/.local/opt/Antigravity-x64` nos scripts de instalação e geração de arquivos i18n.
 
 ## [1.7.0] - 2026-10-20
 

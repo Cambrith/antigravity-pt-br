@@ -1203,3 +1203,31 @@ test('Tradução de Menus de Contexto, Submenus de Conversas e Ações de Divis�
   assert.equal(tr('Duplicate'), 'Duplicar');
 });
 
+test('Tradução de Histórico de Conversas e Dashboard de Automações (v1.7.1)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Banner e avisos do Histórico de Conversas
+  assert.equal(tr('This page is going away soon'), 'Esta página será descontinuada em breve');
+  assert.equal(tr('Search conversations with'), 'Pesquise conversas com');
+  assert.equal(tr('in the top left.'), 'no canto superior esquerdo.');
+  assert.equal(tr('View archived in the sidebar'), 'Veja as arquivadas na barra lateral');
+  assert.equal(tr('now'), 'agora');
+  assert.equal(tr('Display Options'), 'Opções de exibição');
+  assert.equal(tr('No conversations found'), 'Nenhuma conversa encontrada');
+
+  // Dashboard de Automações e Sidecars
+  assert.equal(tr('Create with Prompt'), 'Criar com prompt');
+  assert.equal(tr('+ New'), '+ Novo');
+  assert.equal(tr('New'), 'Novo');
+  assert.equal(tr('Search automations...'), 'Pesquisar automações...');
+  assert.equal(tr('No automations configured.'), 'Nenhuma automação configurada.');
+  assert.equal(tr('No scheduled tasks configured.'), 'Nenhuma tarefa agendada configurada.');
+  assert.equal(tr('Scheduled Tasks'), 'Tarefas agendadas');
+  assert.equal(tr('Refresh all credentials'), 'Atualizar todas as credenciais');
+  assert.equal(tr('Delete Task'), 'Excluir tarefa');
+  assert.equal(tr('Runs on'), 'Executa em');
+  assert.equal(tr('Enter a prompt for the agent to run...'), 'Digite uma instrução para o agente executar...');
+});
+
+

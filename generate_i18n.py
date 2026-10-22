@@ -3249,6 +3249,13 @@ if os.path.exists(plugins_map_file):
         _plugins = json.load(_f)
         EXACT_MAP.update(_plugins)
 
+# Carregar catálogo de UI traduzidas
+ui_map_file = os.path.join(os.path.dirname(__file__), "src", "maps", "ui.json")
+if os.path.exists(ui_map_file):
+    with open(ui_map_file, "r", encoding="utf-8") as _f:
+        _ui = json.load(_f)
+        EXACT_MAP.update(_ui)
+
 map_str = json.dumps(EXACT_MAP, ensure_ascii=False)
 
 js_body = r'''(function() {
@@ -6237,8 +6244,10 @@ js_body = r'''(function() {
 out_paths = [
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "i18n-pt-br.js"),
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist", "i18n-pt-br.js"),
-    "/home/cambrith/.local/opt/antigravity/resources/i18n-pt-br.js",
-    "/home/cambrith/.config/Antigravity/i18n/i18n-pt-br.js",
+    os.path.expanduser("~/.local/opt/antigravity/resources/i18n-pt-br.js"),
+    os.path.expanduser("~/.local/opt/Antigravity-x64/resources/i18n-pt-br.js"),
+    os.path.expanduser("~/.local/opt/Antigravity/resources/i18n-pt-br.js"),
+    os.path.expanduser("~/.config/Antigravity/i18n/i18n-pt-br.js"),
 ]
 for out_path in out_paths:
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
