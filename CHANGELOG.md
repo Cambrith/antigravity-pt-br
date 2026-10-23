@@ -4,6 +4,16 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.3] - 2026-10-23
+
+### Adicionado
+- **Tradução Completa de Cotas e Limites de Modelos (Gemini 4 Argon e Derivados)**:
+  - Tradução dos rótulos de cota de modelos específicos no menu popover de limites (`"Gemini 4 Argon Weekly Limit"` $\rightarrow$ `"Limite semanal do Gemini 4 Argon"`).
+  - Suporte a limites adicionais e períodos variantes: `"Gemini 4 Argon Weekly Limit Remaining"`, `"Gemini 4 Argon 5-Hour Limit"`, `"Gemini 4 Argon Daily Limit"`, `"Gemini 4 Argon Monthly Limit"`.
+  - Mecanismo regex dinâmico em `translateDynamic` para capturar automaticamente limites em qualquer modelo presente e futuro (`<Modelo> (Weekly|5-Hour|Five Hour|Daily|Monthly) Limit (Remaining)?`).
+  - Suporte aprimorado para contadores de reinício de cotas (`"Resets in 6d"`, `"Resets in 16h 29min"` $\rightarrow$ `"Reinicia em 6d"`, `"Reinicia em 16h 29min"`).
+  - Adição de testes automatizados na suíte de testes de cotas (`tests/test-quotas.js`).
+
 ## [1.7.2] - 2026-10-22
 
 ### Adicionado

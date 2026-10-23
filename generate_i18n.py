@@ -2604,6 +2604,47 @@ EXACT_MAP = {
     "Five Hour Limit Remaining": "Limite de 5 horas restante",
     "Claude and GPT models": "Modelos Claude e GPT",
     "Gemini Models": "Modelos Gemini",
+    "Gemini 4 Argon Weekly Limit": "Limite semanal do Gemini 4 Argon",
+    "Gemini 4 Argon Weekly Limit Remaining": "Limite semanal restante do Gemini 4 Argon",
+    "Gemini 4 Argon 5-Hour Limit": "Limite de 5 horas do Gemini 4 Argon",
+    "Gemini 4 Argon 5-Hour Limit Remaining": "Limite de 5 horas restante do Gemini 4 Argon",
+    "Gemini 4 Argon Five Hour Limit": "Limite de 5 horas do Gemini 4 Argon",
+    "Gemini 4 Argon Five Hour Limit Remaining": "Limite de 5 horas restante do Gemini 4 Argon",
+    "Gemini 4 Argon Daily Limit": "Limite diário do Gemini 4 Argon",
+    "Gemini 4 Argon Daily Limit Remaining": "Limite diário restante do Gemini 4 Argon",
+    "Gemini 4 Argon Monthly Limit": "Limite mensal do Gemini 4 Argon",
+    "Gemini 4 Argon Monthly Limit Remaining": "Limite mensal restante do Gemini 4 Argon",
+    "Gemini 4 Argon Rate Limit": "Limite de uso do Gemini 4 Argon",
+    "Gemini 4 Argon Quota": "Cota do Gemini 4 Argon",
+    "Gemini Weekly Limit": "Limite semanal do Gemini",
+    "Gemini Weekly Limit Remaining": "Limite semanal restante do Gemini",
+    "Gemini 5-Hour Limit": "Limite de 5 horas do Gemini",
+    "Gemini 5-Hour Limit Remaining": "Limite de 5 horas restante do Gemini",
+    "Gemini Five Hour Limit": "Limite de 5 horas do Gemini",
+    "Gemini Five Hour Limit Remaining": "Limite de 5 horas restante do Gemini",
+    "Claude and GPT Weekly Limit": "Limite semanal do Claude e GPT",
+    "Claude and GPT Weekly Limit Remaining": "Limite semanal restante do Claude e GPT",
+    "Claude and GPT 5-Hour Limit": "Limite de 5 horas do Claude e GPT",
+    "Claude and GPT 5-Hour Limit Remaining": "Limite de 5 horas restante do Claude e GPT",
+    "Claude and GPT Five Hour Limit": "Limite de 5 horas do Claude e GPT",
+    "Claude and GPT Five Hour Limit Remaining": "Limite de 5 horas restante do Claude e GPT",
+    "Weekly Limit": "Limite semanal",
+    "Weekly limit": "Limite semanal",
+    "5-Hour Limit": "Limite de 5 horas",
+    "5-hour limit": "Limite de 5 horas",
+    "Five Hour Limit": "Limite de 5 horas",
+    "Five hour limit": "Limite de 5 horas",
+    "Daily Limit": "Limite diário",
+    "Daily limit": "Limite diário",
+    "Daily Limit Remaining": "Limite diário restante",
+    "Monthly Limit": "Limite mensal",
+    "Monthly limit": "Limite mensal",
+    "Monthly Limit Remaining": "Limite mensal restante",
+    "Rate Limit": "Limite de uso",
+    "Rate Limits": "Limites de uso",
+    "Rate limits": "Limites de uso",
+    "Model Limits": "Limites dos modelos",
+    "Model limits": "Limites dos modelos",
     "Shared with:": "Compartilhado com:",
     "Plan": "Plano",
     "Agent settings and permissions for conversations outside of projects.": "Configurações e permissões do agente para conversas fora de projetos.",
@@ -4072,10 +4113,36 @@ js_body = r'''(function() {
     function resolveLimitName(lim) {
       const l = (lim || '').toLowerCase().trim();
       if (l === 'weekly') return 'semanal';
-      if (l === '5-hour') return 'de 5 horas';
+      if (l === '5-hour' || l === 'five hour' || l === 'five-hour') return 'de 5 horas';
       if (l === 'daily') return 'diário';
       if (l === 'monthly') return 'mensal';
       return lim;
+    }
+
+    // Limites de modelos específicos (ex: Gemini 4 Argon Weekly Limit)
+    if ((m = /^(.+?)\s+(Weekly|5-Hour|Five Hour|Daily|Monthly)\s+Limit(\s+Remaining)?$/i.exec(s))) {
+      const model = m[1].trim();
+      const period = m[2].toLowerCase();
+      const hasRemaining = !!m[3];
+      let periodPt = 'semanal';
+      if (period.includes('5-hour') || period.includes('five hour')) periodPt = 'de 5 horas';
+      else if (period.includes('daily')) periodPt = 'diário';
+      else if (period.includes('monthly')) periodPt = 'mensal';
+      
+      const remainingPt = hasRemaining ? ' restante' : '';
+      return `Limite ${periodPt}${remainingPt} do ${model}`;
+    }
+
+    if ((m = /^(Weekly|5-Hour|Five Hour|Daily|Monthly)\s+Limit(\s+Remaining)?$/i.exec(s))) {
+      const period = m[1].toLowerCase();
+      const hasRemaining = !!m[2];
+      let periodPt = 'semanal';
+      if (period.includes('5-hour') || period.includes('five hour')) periodPt = 'de 5 horas';
+      else if (period.includes('daily')) periodPt = 'diário';
+      else if (period.includes('monthly')) periodPt = 'mensal';
+      
+      const remainingPt = hasRemaining ? ' restante' : '';
+      return `Limite ${periodPt}${remainingPt}`;
     }
 
     if ((m = /^You have used some of your (.+?) limit, it (?:will )?(?:fully )?refresh(?:es)? in (.+?)\.?$/i.exec(s))) {
@@ -4101,12 +4168,12 @@ js_body = r'''(function() {
       const limitType = resolveLimitName(m[1]);
       return `Você atingiu o seu limite ${limitType}; ele será totalmente renovado em ${translateDuration(m[2])}.`;
     }
-    if ((m = /^Resets in (.+)$/.exec(s))) {
-      let rest = m[1]
-        .replace(/<1m/, '<1min')
-        .replace(/(\d+)d/, '$1d')
-        .replace(/(\d+)h/, '$1h')
-        .replace(/(\d+)m/, '$1min');
+    if ((m = /^(?:Resets|Refreshes)\s+in\s+(.+)$/i.exec(s))) {
+      let rest = translateDuration(m[1])
+        .replace(/<1m\b/gi, '<1min')
+        .replace(/(\d+)d\b/gi, '$1d')
+        .replace(/(\d+)h\b/gi, '$1h')
+        .replace(/(\d+)m\b/gi, '$1min');
       return `Reinicia em ${rest}`;
     }
 

@@ -73,3 +73,16 @@ test('Tradução de Créditos de IA e Alerta de Cota do Modelo', () => {
   const res = sandbox.window.__CAMBRITH_TRANSLATE_STR__(input);
   assert.equal(res, expected);
 });
+
+test('Tradução de Cotas: Limites específicos de modelos e reinício de contagem', () => {
+  const sandbox = setupSandbox();
+  
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Gemini 4 Argon Weekly Limit"), "Limite semanal do Gemini 4 Argon");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Gemini 4 Argon Weekly Limit Remaining"), "Limite semanal restante do Gemini 4 Argon");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Gemini 4 Argon 5-Hour Limit"), "Limite de 5 horas do Gemini 4 Argon");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Claude and GPT Weekly Limit"), "Limite semanal do Claude e GPT");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Weekly Limit"), "Limite semanal");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Weekly Limit Remaining"), "Limite semanal restante");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Resets in 6d"), "Reinicia em 6d");
+  assert.equal(sandbox.window.__CAMBRITH_TRANSLATE_STR__("Resets in 16h 29min"), "Reinicia em 16h 29min");
+});
