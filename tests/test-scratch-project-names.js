@@ -56,11 +56,12 @@ test('Início Rápido: Nomes em Português do Brasil são interceptados e gerado
   assert.deepEqual(adjResult, win.__ANTIGRAVITY_PTBR_ADJETIVOS__);
   assert.deepEqual(subResult, win.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__);
 
-  // Testa a geração de um nome completo
+  // Testa a geração de um nome completo (estritamente duas palavras e um único hífen)
   const nomeGerado = win.__ANTIGRAVITY_GERAR_NOME_PTBR__();
-  assert.match(nomeGerado, /^[a-z-]+-[a-z-]+$/);
-  const [adj, ...rest] = nomeGerado.split('-');
+  assert.match(nomeGerado, /^[a-z]+-[a-z]+$/, 'Deve conter exatamente duas palavras separadas por um único hífen');
+  const [adj, sub] = nomeGerado.split('-');
   assert.ok(win.__ANTIGRAVITY_PTBR_ADJETIVOS__.includes(adj), `Adjetivo "${adj}" deve pertencer à lista pt-BR`);
+  assert.ok(win.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__.includes(sub), `Substantivo "${sub}" deve pertencer à lista pt-BR`);
 
   // Testa prevenção de colisão de nomes existentes
   const nomeComColisao = win.__ANTIGRAVITY_GERAR_NOME_PTBR__([nomeGerado]);

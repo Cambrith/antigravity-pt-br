@@ -15,23 +15,23 @@
 
     const SUBSTANTIVOS_PT_BR = [
       // Pioneiros, cientistas e inventores
-      "santos-dumont", "lattes", "chagas", "oswaldo-cruz", "vital-brazil",
-      "bertha-lutz", "nise-silveira", "johanna-dobereiner", "suzana-herculano",
-      "marcelo-gleiser", "milton-santos", "anizio-teixeira", "paulo-freire",
-      "juliano-moreira", "alvaro-alberto",
+      "dumont", "lattes", "chagas", "cruz", "vital",
+      "lutz", "nise", "dobereiner", "herculano",
+      "gleiser", "milton", "anizio", "freire",
+      "moreira", "alberto",
       // Cultura, literatura, artes e música
-      "machado", "villa-lobos", "guimaraes", "clarice", "drummond",
-      "ariano-suassuna", "niemeyer", "tom-jobim", "cecilia-meireles", "castro-alves",
-      "tarsila", "portinari", "cartola", "gonzaga", "noel-rosa",
+      "machado", "guimaraes", "clarice", "drummond",
+      "suassuna", "niemeyer", "jobim", "meireles", "alves",
+      "tarsila", "portinari", "cartola", "gonzaga", "rosa",
       // Fauna, flora e biomas brasileiros
       "jaguar", "arara", "harpia", "guara", "carcara", "tuiuiu",
-      "onca-pintada", "tamandua", "mico-leao", "boto", "sucuri", "canario",
-      "ipe-amarelo", "jacaranda", "mandacaru", "cerrado", "pantanal", "amazonia",
+      "onca", "tamandua", "mico", "boto", "sucuri", "canario", "tucano",
+      "ipe", "jacaranda", "mandacaru", "cerrado", "pantanal", "amazonia",
       // Cosmos, física e computação
       "aurora", "cosmos", "orion", "nebula", "pulsar", "galaxia", "eclipse",
       "cometa", "astro", "supernova", "quasar", "zenite", "horizonte", "orbita",
-      "constelacao", "quantum", "sinapse", "prisma", "espectro", "vetor",
-      "nucleo", "nexus", "codigo", "algoritmo", "laboratorio", "matriz"
+      "quantum", "sinapse", "prisma", "espectro", "vetor", "nucleo", "nexus",
+      "codigo", "algoritmo", "laboratorio", "matriz", "satelite"
     ];
 
     const origSplit = String.prototype.split;
