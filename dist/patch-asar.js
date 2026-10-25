@@ -140,6 +140,8 @@ function detectAsarPath() {
   let candidates = [];
   if (platform === 'linux') {
     candidates = [
+      path.join(home, '.local', 'opt', 'Antigravity-x64', 'resources', 'app.asar'),
+      path.join(home, '.local', 'opt', 'Antigravity', 'resources', 'app.asar'),
       path.join(home, '.local', 'opt', 'antigravity', 'resources', 'app.asar'),
       '/opt/antigravity/resources/app.asar',
       '/usr/lib/antigravity/resources/app.asar',
@@ -165,6 +167,13 @@ function detectAsarPath() {
 
   for (const c of candidates) {
     if (fs.existsSync(c)) {
+      try {
+        const conf = getExecutableConfigFile();
+        if (!fs.existsSync(conf)) {
+          fs.mkdirSync(path.dirname(conf), { recursive: true });
+          fs.writeFileSync(conf, c + '\n', 'utf8');
+        }
+      } catch (_) {}
       return c;
     }
   }
@@ -448,6 +457,44 @@ try {
                             return true;
                         } catch (e) {
                             console.warn('[Cambrith] Erro ao salvar custom-themes.json:', e);
+                            return false;
+                        }
+                    },
+                    loadActiveTheme: () => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            const filePath = path.join(cfgDir, 'active-theme.json');
+                            if (fs.existsSync(filePath)) {
+                                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                            }
+                        } catch (_) {}
+                        return null;
+                    },
+                    saveActiveTheme: (theme) => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            fs.mkdirSync(cfgDir, { recursive: true });
+                            const filePath = path.join(cfgDir, 'active-theme.json');
+                            fs.writeFileSync(filePath, JSON.stringify(theme, null, 2), 'utf8');
+                            return true;
+                        } catch (e) {
+                            console.warn('[Cambrith] Erro ao salvar active-theme.json:', e);
                             return false;
                         }
                     }
@@ -1495,6 +1542,29 @@ function run() {
   }
 
   // 1. Sincronizar cópia golden e cópia em resources
+  try {
+    if (!fs.existsSync(GOLDEN_DIR)) {
+      fs.mkdirSync(GOLDEN_DIR, { recursive: true });
+    }
+    const customThemesPath = path.join(GOLDEN_DIR, 'custom-themes.json');
+    if (!fs.existsSync(customThemesPath)) {
+      const defaultPresets = [
+        { name: "Dracula Purple", mode: "dark", background: "#282A36", foregroundOverride: "#F8F8F2", primary: "#BD93F9", isDefault: true },
+        { name: "Cyber Neon", mode: "dark", background: "#0D1117", foregroundOverride: "#E6EDF3", primary: "#00FF66", isDefault: true },
+        { name: "Gentoo Cyber Lilás", mode: "dark", background: "#16141F", foregroundOverride: "#EDE7F6", primary: "#C084FC", isDefault: true },
+        { name: "Tokyo Night", mode: "dark", background: "#1A1B26", foregroundOverride: "#C0CAF5", primary: "#7AA2F7", isDefault: true },
+        { name: "Gruvbox Dark", mode: "dark", background: "#282828", foregroundOverride: "#EBDBB2", primary: "#FE8019", isDefault: true },
+        { name: "Clean Minimalist", mode: "light", background: "#FFFFFF", foregroundOverride: "#18181B", primary: "#2563EB", isDefault: true },
+        { name: "Solarized Light", mode: "light", background: "#FDF6E3", foregroundOverride: "#657B83", primary: "#268BD2", isDefault: true },
+        { name: "Rosé Pine Dawn", mode: "light", background: "#FAF4ED", foregroundOverride: "#575279", primary: "#D7827E", isDefault: true }
+      ];
+      fs.writeFileSync(customThemesPath, JSON.stringify(defaultPresets, null, 2), 'utf8');
+      log(`custom-themes.json inicializado com predefinições em ${customThemesPath}.`);
+    }
+  } catch (err) {
+    log(`Aviso ao verificar custom-themes.json: ${err.message}`);
+  }
+
   try {
     const srcFile = fs.existsSync(SOURCE_I18N) ? SOURCE_I18N : (fs.existsSync(GOLDEN_I18N) ? GOLDEN_I18N : null);
     if (srcFile) {

@@ -1,6 +1,6 @@
 {
   "name": "antigravity-pt-br",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "Tradução completa da interface do Google Antigravity para Português do Brasil com suporte a Desktop e Mobile PWA (Linux, Windows, macOS, Android, iOS)",
   "main": "dist/patch-asar.js",
   "scripts": {

@@ -1,5 +1,5 @@
 (function() {
-  // --- Gerador Inteligente de Nomes em Português do Brasil para Projetos Scratch (Início Rápido) ---
+  // --- Gerador Criativo de Nomes em Português do Brasil para Projetos Scratch (Início Rápido) ---
   try {
     const ADJETIVOS_PT_BR = [
       "audaz", "brilhante", "criativo", "curioso", "destemido", "elegante",
@@ -7,17 +7,31 @@
       "harmonioso", "ilustre", "inovador", "inteligente", "intrepido",
       "lucido", "magico", "magnifico", "notavel", "otimista", "pacifico",
       "pioneiro", "poderoso", "prudente", "radiante", "resiliente", "sagaz",
-      "sereno", "soberano", "tenaz", "valente", "veloz", "vibrante", "visionario"
+      "sereno", "soberano", "tenaz", "valente", "veloz", "vibrante", "visionario",
+      "astuto", "perspicaz", "lendario", "genial", "bravio", "vigoroso",
+      "radioso", "incansavel", "habilidoso", "infalivel", "estrategico",
+      "harmonico", "zen", "luminoso", "formidavel", "extraordinario"
     ];
 
     const SUBSTANTIVOS_PT_BR = [
+      // Pioneiros, cientistas e inventores
       "santos-dumont", "lattes", "chagas", "oswaldo-cruz", "vital-brazil",
-      "bertha-lutz", "nise-silveira", "machado", "villa-lobos", "guimaraes",
+      "bertha-lutz", "nise-silveira", "johanna-dobereiner", "suzana-herculano",
+      "marcelo-gleiser", "milton-santos", "anizio-teixeira", "paulo-freire",
+      "juliano-moreira", "alvaro-alberto",
+      // Cultura, literatura, artes e música
+      "machado", "villa-lobos", "guimaraes", "clarice", "drummond",
+      "ariano-suassuna", "niemeyer", "tom-jobim", "cecilia-meireles", "castro-alves",
+      "tarsila", "portinari", "cartola", "gonzaga", "noel-rosa",
+      // Fauna, flora e biomas brasileiros
+      "jaguar", "arara", "harpia", "guara", "carcara", "tuiuiu",
+      "onca-pintada", "tamandua", "mico-leao", "boto", "sucuri", "canario",
+      "ipe-amarelo", "jacaranda", "mandacaru", "cerrado", "pantanal", "amazonia",
+      // Cosmos, física e computação
       "aurora", "cosmos", "orion", "nebula", "pulsar", "galaxia", "eclipse",
-      "cometa", "astro", "supernova", "quasar", "zenite", "horizonte",
-      "arara", "guara", "jaguar", "harpia", "carcara", "tuiuiu",
-      "quantum", "sinapse", "prisma", "espectro", "vetor", "nucleo", "nexus",
-      "codigo", "algoritmo", "laboratorio"
+      "cometa", "astro", "supernova", "quasar", "zenite", "horizonte", "orbita",
+      "constelacao", "quantum", "sinapse", "prisma", "espectro", "vetor",
+      "nucleo", "nexus", "codigo", "algoritmo", "laboratorio", "matriz"
     ];
 
     const origSplit = String.prototype.split;
@@ -32,35 +46,99 @@
       return origSplit.apply(this, arguments);
     };
 
+    let customProjectName = null;
+
     if (typeof window !== "undefined") {
       window.__ANTIGRAVITY_PTBR_ADJETIVOS__ = ADJETIVOS_PT_BR;
       window.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__ = SUBSTANTIVOS_PT_BR;
-      window.__ANTIGRAVITY_GERAR_NOME_PTBR__ = function() {
-        const adj = ADJETIVOS_PT_BR[Math.floor(Math.random() * ADJETIVOS_PT_BR.length)];
-        const sub = SUBSTANTIVOS_PT_BR[Math.floor(Math.random() * SUBSTANTIVOS_PT_BR.length)];
-        return `${adj}-${sub}`;
+
+      window.__ANTIGRAVITY_GERAR_NOME_PTBR__ = function(existingList) {
+        const existing = Array.isArray(existingList)
+          ? existingList.map(e => String(e).trim().toLowerCase().replace(/\s+/g, "-"))
+          : [];
+        let candidate = "";
+        let attempts = 0;
+        do {
+          const adj = ADJETIVOS_PT_BR[Math.floor(Math.random() * ADJETIVOS_PT_BR.length)];
+          const sub = SUBSTANTIVOS_PT_BR[Math.floor(Math.random() * SUBSTANTIVOS_PT_BR.length)];
+          candidate = `${adj}-${sub}`;
+          attempts++;
+        } while (existing.includes(candidate) && attempts < 30);
+
+        let finalName = candidate;
+        if (existing.includes(finalName)) {
+          let suffix = 2;
+          let fallback = 0;
+          do {
+            finalName = `${candidate}-${suffix}`;
+            suffix++;
+            fallback++;
+          } while (existing.includes(finalName) && fallback < 1000);
+        }
+        return finalName;
       };
 
-      let customProjectName = null;
-      function hookGUb() {
+      function applyPtBrScratchProjectNames() {
         try {
-          if (typeof window.GUb === 'function' && !window.GUb.__cambrith_patched) {
-            const origGUb = window.GUb;
-            const patched = function() {
-              if (customProjectName) {
-                const name = customProjectName;
-                customProjectName = null;
-                return name;
+          // 1. Substituir conteúdos dos arrays de palavras em escopo de script se acessíveis
+          try {
+            if (typeof mdc !== 'undefined' && Array.isArray(mdc) && mdc !== ADJETIVOS_PT_BR) {
+              mdc.splice(0, mdc.length, ...ADJETIVOS_PT_BR);
+            }
+            if (typeof ndc !== 'undefined' && Array.isArray(ndc) && ndc !== SUBSTANTIVOS_PT_BR) {
+              ndc.splice(0, ndc.length, ...SUBSTANTIVOS_PT_BR);
+            }
+          } catch (_) {}
+
+          // 2. Localizar dinamicamente qualquer função no window que gere nomes scratch
+          const candidateNames = ['odc', 'GUb'];
+          for (const key of Object.getOwnPropertyNames(window)) {
+            try {
+              if (key.startsWith('__') || candidateNames.includes(key)) continue;
+              const fn = window[key];
+              if (typeof fn === 'function' && fn.length === 1) {
+                const src = fn.toString();
+                if ((src.includes('Math.random()') && src.includes('Math.floor(') && src.includes('-')) ||
+                    (src.includes('createScratchProjectFolder') || (src.includes('.map(') && src.includes('.toLowerCase().replace(')))) {
+                  candidateNames.push(key);
+                }
               }
-              return origGUb.apply(this, arguments);
-            };
-            patched.__cambrith_patched = true;
-            window.GUb = patched;
+            } catch (_) {}
           }
-        } catch (_) {}
+
+          for (const fnName of candidateNames) {
+            try {
+              const orig = window[fnName];
+              if (typeof orig === 'function' && !orig.__cambrith_ptbr_patched) {
+                const patched = function(existingList) {
+                  const custom = window.__cambrith_customProjectName || customProjectName;
+                  if (custom) {
+                    window.__cambrith_customProjectName = null;
+                    customProjectName = null;
+                    return custom;
+                  }
+                  if (typeof window.__ANTIGRAVITY_GERAR_NOME_PTBR__ === 'function') {
+                    return window.__ANTIGRAVITY_GERAR_NOME_PTBR__(existingList);
+                  }
+                  return orig.apply(this, arguments);
+                };
+                patched.__cambrith_ptbr_patched = true;
+                patched.__orig = orig;
+                window[fnName] = patched;
+              }
+            } catch (_) {}
+          }
+        } catch (err) {
+          console.warn('[Cambrith] Erro ao aplicar nomes scratch em pt-BR:', err);
+        }
       }
-      window.__CAMBRITH_HOOK_GUB__ = hookGUb;
-      hookGUb();
+
+      window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__ = applyPtBrScratchProjectNames;
+      window.__CAMBRITH_HOOK_GUB__ = applyPtBrScratchProjectNames;
+      applyPtBrScratchProjectNames();
+      setTimeout(applyPtBrScratchProjectNames, 100);
+      setTimeout(applyPtBrScratchProjectNames, 500);
+      setTimeout(applyPtBrScratchProjectNames, 1500);
     }
   } catch (e) {
     console.warn("[i18n-pt-br] Erro ao registrar gerador de nomes scratch em pt-BR:", e);
@@ -3059,6 +3137,12 @@
 
   function applyCustomTheme(theme) {
     if (!theme) return;
+    try {
+      localStorage.setItem('antigravity_active_custom_theme', JSON.stringify(theme));
+      if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.saveActiveTheme) {
+        window.__CAMBRITH_NATIVE_BRIDGE__.saveActiveTheme(theme);
+      }
+    } catch (_) {}
     const targetMode = theme.mode || 'dark';
     const isCurrentlyDark = document.querySelector('button[aria-label="Escuro"]')?.getAttribute('data-pressed') !== null;
     if (targetMode === 'dark' && !isCurrentlyDark) {
@@ -3108,6 +3192,25 @@
     } else {
       performSeedUpdate();
     }
+  }
+
+  function applyActiveThemeOnBoot() {
+    try {
+      let active = null;
+      if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.loadActiveTheme) {
+        active = window.__CAMBRITH_NATIVE_BRIDGE__.loadActiveTheme();
+      }
+      if (!active) {
+        const raw = localStorage.getItem('antigravity_active_custom_theme');
+        if (raw) active = JSON.parse(raw);
+      }
+      if (active && active.background && active.foregroundOverride && active.primary) {
+        const root = document.documentElement;
+        root.style.setProperty('--background', active.background);
+        root.style.setProperty('--foreground', active.foregroundOverride);
+        root.style.setProperty('--primary', active.primary);
+      }
+    } catch (_) {}
   }
 
   let activeThemeFilter = 'all';
@@ -3545,6 +3648,7 @@
   }
 
   const boot = () => {
+    applyActiveThemeOnBoot();
     injectThoughtStyles();
     walkAndTranslate(document.body || document.documentElement);
     ensureSettingsAccess();

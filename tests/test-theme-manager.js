@@ -4,11 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-test('Temas Personalizados: Bridge nativa suporta carregar e salvar custom-themes.json', () => {
+test('Temas Personalizados: Bridge nativa suporta carregar e salvar custom-themes.json e active-theme.json', () => {
   const patchCode = fs.readFileSync(path.join(__dirname, '..', 'patch-asar.js'), 'utf8');
   assert.ok(patchCode.includes('loadCustomThemes:'), 'patch-asar deve expor loadCustomThemes');
   assert.ok(patchCode.includes('saveCustomThemes:'), 'patch-asar deve expor saveCustomThemes');
+  assert.ok(patchCode.includes('loadActiveTheme:'), 'patch-asar deve expor loadActiveTheme');
+  assert.ok(patchCode.includes('saveActiveTheme:'), 'patch-asar deve expor saveActiveTheme');
   assert.ok(patchCode.includes('custom-themes.json'), 'patch-asar deve persistir em custom-themes.json');
+  assert.ok(patchCode.includes('active-theme.json'), 'patch-asar deve persistir em active-theme.json');
 });
 
 test('Temas Personalizados: i18n-pt-br exporta gerenciador de temas e lista de padrões com modo escuro e claro', () => {

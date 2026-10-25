@@ -2,7 +2,16 @@
 # Inicia Antigravity com as personalizações Cambrith persistentes.
 set -u
 
-APP_DIR="${ANTIGRAVITY_APP_DIR:-$HOME/.local/opt/antigravity}"
+APP_DIR="${ANTIGRAVITY_APP_DIR:-}"
+if [[ -z "$APP_DIR" ]]; then
+    for cand in "$HOME/.local/opt/Antigravity-x64" "$HOME/.local/opt/Antigravity" "$HOME/.local/opt/antigravity" "/opt/antigravity"; do
+        if [[ -x "$cand/antigravity" ]]; then
+            APP_DIR="$cand"
+            break
+        fi
+    done
+fi
+APP_DIR="${APP_DIR:-$HOME/.local/opt/antigravity}"
 ASAR="$APP_DIR/resources/app.asar"
 PATCHER="${ANTIGRAVITY_PATCHER:-$HOME/.config/Antigravity/i18n/patch-asar.js}"
 LOG_DIR="$HOME/.local/state/antigravity-cambrith"

@@ -66,6 +66,8 @@ resolve_executable() {
 
     # C. Caminhos padrão do sistema e usuário
     local candidates=(
+        "$HOME/.local/opt/Antigravity-x64/antigravity"
+        "$HOME/.local/opt/Antigravity/antigravity"
         "$HOME/.local/opt/antigravity/antigravity"
         "/opt/antigravity/antigravity"
         "/usr/lib/antigravity/antigravity"

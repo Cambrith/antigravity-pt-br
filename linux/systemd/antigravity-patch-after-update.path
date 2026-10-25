@@ -3,6 +3,8 @@ Description=Detecta atualizações dos arquivos do Google Antigravity
 
 [Path]
 PathChanged=%h/.local/opt/antigravity/resources
+PathChanged=%h/.local/opt/Antigravity-x64/resources
+PathChanged=%h/.local/opt/Antigravity/resources
 Unit=antigravity-patch-after-update.service
 
 [Install]

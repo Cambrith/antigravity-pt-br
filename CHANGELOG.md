@@ -4,6 +4,17 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.6] - 2026-10-25
+
+### Adicionado
+- **Blindagem e Resiliência contra Atualizações e Reinicializações**:
+  - **Suporte Multi-Caminho no Launcher e Patcher**: Auto-detecção de diretórios de instalação Linux variantes (`~/.local/opt/Antigravity-x64`, `~/.local/opt/Antigravity`, `~/.local/opt/antigravity`, `/opt/antigravity`).
+  - **Monitoramento em Tempo Real via Systemd**: Ativação do `antigravity-patch-after-update.path` para vigiar a pasta `resources/` de qualquer variante de instalação e reaplicar as customizações de forma invisível e instantânea sempre que a Google atualizar o `app.asar`.
+  - **Launcher Auto-Recuperador**: Antes de abrir a janela, o executável `~/.local/bin/antigravity` verifica a assinatura de injeção e restaura qualquer arquivo modificado em frações de segundo, impedindo que o app abra desatualizado ou em inglês.
+  - **Persistência Completa de Temas Ativos**: Nova bridge nativa com `loadActiveTheme` e `saveActiveTheme` em `active-theme.json` e inicialização de variáveis CSS no ciclo `boot` (`applyActiveThemeOnBoot`), mantendo o tema customizado aplicado mesmo ao fechar e reabrir o Antigravity.
+  - **Catálogo Permanente de Temas Customizados**: Inicialização e preservação automática de `custom-themes.json` em `~/.config/Antigravity/i18n/`, isolando temas de usuários e predefinições contra atualizações ou remoções do aplicativo.
+  - **Correção no Atalho Desktop**: Atualização robusta das entradas `Exec` nos arquivos `.desktop` (`antigravity.desktop` e `google-antigravity.desktop`) apontando para o launcher com suporte nativo a `--lang=pt-BR`.
+
 ## [1.7.5] - 2026-10-25
 
 ### Adicionado
