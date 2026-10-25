@@ -3611,6 +3611,66 @@ js_body = r'''(function() {
     if ((m = /^Worked for (\d+)h (\d+)m$/.exec(s))) return `Trabalhou por ${m[1]}h ${m[2]}m`;
     if ((m = /^Worked for (\d+)h$/.exec(s))) return `Trabalhou por ${m[1]}h`;
 
+    // Timestamps relativos avulsos e em mensagens de chat (ex: "1m ago", "2h ago", "1d ago", "30s ago")
+    if ((m = /^(\d+)\s*(s|sec|seconds?)\s*ago$/i.exec(s))) {
+      return `há ${m[1]}s`;
+    }
+    if ((m = /^(\d+)\s*(m|min|minutes?)\s*ago$/i.exec(s))) {
+      const n = m[1];
+      return m[2].toLowerCase().startsWith('minut')
+        ? `há ${n} ${n === '1' ? 'minuto' : 'minutos'}`
+        : `há ${n} min`;
+    }
+    if ((m = /^(\d+)\s*(h|hr|hours?)\s*ago$/i.exec(s))) {
+      const n = m[1];
+      return m[2].toLowerCase().startsWith('hour')
+        ? `há ${n} ${n === '1' ? 'hora' : 'horas'}`
+        : `há ${n}h`;
+    }
+    if ((m = /^(\d+)\s*(d|days?)\s*ago$/i.exec(s))) {
+      const n = m[1];
+      return m[2].toLowerCase().startsWith('day')
+        ? `há ${n} ${n === '1' ? 'dia' : 'dias'}`
+        : `há ${n}d`;
+    }
+    if ((m = /^(\d+)\s*(w|weeks?)\s*ago$/i.exec(s))) {
+      const n = m[1];
+      return m[2].toLowerCase().startsWith('week')
+        ? `há ${n} ${n === '1' ? 'semana' : 'semanas'}`
+        : `há ${n} sem`;
+    }
+    if ((m = /^(\d+)\s*(mo|months?)\s*ago$/i.exec(s))) {
+      const n = m[1];
+      return `há ${n} ${n === '1' ? 'mês' : 'meses'}`;
+    }
+    if ((m = /^(\d+)\s*(y|years?)\s*ago$/i.exec(s))) {
+      const n = m[1];
+      return `há ${n} ${n === '1' ? 'ano' : 'anos'}`;
+    }
+
+    // Prefixo de status com timestamp relativo (ex: "Sent 1m ago", "Edited 2h ago")
+    if ((m = /^(Sent|Edited|Finished|Started)\s+(\d+)\s*(m|min|minutes?)\s*ago$/i.exec(s))) {
+      const verbMap = { sent: 'Enviado', edited: 'Editado', finished: 'Concluído', started: 'Iniciado' };
+      const verb = verbMap[m[1].toLowerCase()] || m[1];
+      const n = m[2];
+      return `${verb} há ${n} min`;
+    }
+    if ((m = /^(Sent|Edited|Finished|Started)\s+(\d+)\s*(h|hr|hours?)\s*ago$/i.exec(s))) {
+      const verbMap = { sent: 'Enviado', edited: 'Editado', finished: 'Concluído', started: 'Iniciado' };
+      const verb = verbMap[m[1].toLowerCase()] || m[1];
+      return `${verb} há ${m[2]}h`;
+    }
+    if ((m = /^(Sent|Edited|Finished|Started)\s+(\d+)\s*(d|days?)\s*ago$/i.exec(s))) {
+      const verbMap = { sent: 'Enviado', edited: 'Editado', finished: 'Concluído', started: 'Iniciado' };
+      const verb = verbMap[m[1].toLowerCase()] || m[1];
+      return `${verb} há ${m[2]}d`;
+    }
+    if ((m = /^(Sent|Edited|Finished|Started)\s+(\d+)\s*(s|sec|seconds?)\s*ago$/i.exec(s))) {
+      const verbMap = { sent: 'Enviado', edited: 'Editado', finished: 'Concluído', started: 'Iniciado' };
+      const verb = verbMap[m[1].toLowerCase()] || m[1];
+      return `${verb} há ${m[2]}s`;
+    }
+
     // Atualização de horário e timestamps de conversas, arquivos e tarefas (Updated / Created / Last updated)
     if ((m = /^Updated\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)$/i.exec(s))) {
       return `Atualizado às ${formatDateTimePtBr(m[1])}`;

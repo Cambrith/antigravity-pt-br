@@ -1161,6 +1161,22 @@ test('Tradução de Atualização de Horário e Timestamps (Updated / Created / 
   assert.equal(tr('Updated 2 hours ago'), 'Atualizado há 2 horas');
   assert.equal(tr('Updated 3 days ago'), 'Atualizado há 3 dias');
 
+  // Timestamps relativos avulsos e compactos de mensagens de chat
+  assert.equal(tr('1m ago'), 'há 1 min');
+  assert.equal(tr('2m ago'), 'há 2 min');
+  assert.equal(tr('15m ago'), 'há 15 min');
+  assert.equal(tr('1h ago'), 'há 1h');
+  assert.equal(tr('2h ago'), 'há 2h');
+  assert.equal(tr('1d ago'), 'há 1d');
+  assert.equal(tr('3d ago'), 'há 3d');
+  assert.equal(tr('30s ago'), 'há 30s');
+  assert.equal(tr('1w ago'), 'há 1 sem');
+  assert.equal(tr('1mo ago'), 'há 1 mês');
+  assert.equal(tr('2mo ago'), 'há 2 meses');
+  assert.equal(tr('1y ago'), 'há 1 ano');
+  assert.equal(tr('Sent 1m ago'), 'Enviado há 1 min');
+  assert.equal(tr('Edited 2h ago'), 'Editado há 2h');
+
   // Created e Last updated
   assert.equal(tr('Created 17:41'), 'Criado às 17:41');
   assert.equal(tr('Created Oct 18, 17:41'), 'Criado em 18 de out., às 17:41');
