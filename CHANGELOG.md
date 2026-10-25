@@ -4,6 +4,15 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.4] - 2026-10-25
+
+### Corrigido
+- **Pasta de Destino na Criação de Projetos (`Documentos`)**:
+  - Correção do caminho base padrão exibido no modal "Criar Novo Projeto" de `~/Documents/antigravity/...` para `~/Documentos/antigravity/...`.
+  - Implementação de resolução dinâmica via bridge nativa (`getDocsFolder`) no `patch-asar.js` para detectar automaticamente a existência de `Documentos` ou `Documents` no sistema do usuário.
+  - Atualização do método de criação de README (`createReadme`) para suportar múltiplos diretórios candidatos (`Documentos/antigravity`, `Documents/antigravity`, `antigravity`, `Documentos`, `Documents`).
+  - Adição de testes unitários automatizados em `tests/test-scratch-project-names.js`.
+
 ## [1.7.3] - 2026-10-23
 
 ### Adicionado

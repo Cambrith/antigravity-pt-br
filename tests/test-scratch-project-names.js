@@ -62,3 +62,13 @@ test('Início Rápido: Nomes em Português do Brasil são interceptados e gerado
   const [adj, ...rest] = nomeGerado.split('-');
   assert.ok(win.__ANTIGRAVITY_PTBR_ADJETIVOS__.includes(adj), `Adjetivo "${adj}" deve pertencer à lista pt-BR`);
 });
+
+test('Criar Projeto: Modal utiliza pasta Documentos e suporta bridge nativa', () => {
+  const i18nCode = fs.readFileSync(path.join(__dirname, '..', 'i18n-pt-br.js'), 'utf8');
+  assert.ok(i18nCode.includes('~/Documentos/antigravity/...'), 'Template inicial deve exibir Documentos');
+  assert.ok(!i18nCode.includes('~/Documents/antigravity/...'), 'Não deve conter Documents hardcoded no preview');
+
+  const patchCode = fs.readFileSync(path.join(__dirname, '..', 'patch-asar.js'), 'utf8');
+  assert.ok(patchCode.includes('getDocsFolder:'), 'Bridge nativa deve conter getDocsFolder');
+  assert.ok(patchCode.includes("'Documentos', 'antigravity', folderName"), 'createReadme deve verificar Documentos');
+});

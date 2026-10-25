@@ -380,15 +380,33 @@ try {
         const runI18n = () => {
             try {
                 const nativeBridge = {
+                    getDocsFolder: () => {
+                        try {
+                            const home = os.homedir();
+                            if (fs.existsSync(path.join(home, 'Documentos'))) return 'Documentos';
+                            if (fs.existsSync(path.join(home, 'Documents'))) return 'Documents';
+                        } catch (_) {}
+                        return 'Documentos';
+                    },
                     createReadme: (folderName, projectName) => {
                         try {
-                            const targetDir = path.join(os.homedir(), 'Documents', 'antigravity', folderName);
-                            if (fs.existsSync(targetDir)) {
-                                const readmePath = path.join(targetDir, 'README.md');
-                                if (!fs.existsSync(readmePath)) {
-                                    const titleStr = projectName || folderName;
-                                    const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visao Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
-                                    fs.writeFileSync(readmePath, content, 'utf8');
+                            const home = os.homedir();
+                            const candidateDirs = [
+                                path.join(home, 'Documentos', 'antigravity', folderName),
+                                path.join(home, 'Documents', 'antigravity', folderName),
+                                path.join(home, 'antigravity', folderName),
+                                path.join(home, 'Documentos', folderName),
+                                path.join(home, 'Documents', folderName)
+                            ];
+                            for (const targetDir of candidateDirs) {
+                                if (fs.existsSync(targetDir)) {
+                                    const readmePath = path.join(targetDir, 'README.md');
+                                    if (!fs.existsSync(readmePath)) {
+                                        const titleStr = projectName || folderName;
+                                        const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visao Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
+                                        fs.writeFileSync(readmePath, content, 'utf8');
+                                    }
+                                    break;
                                 }
                             }
                         } catch (e) {

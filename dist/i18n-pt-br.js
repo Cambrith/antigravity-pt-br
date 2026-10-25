@@ -2770,7 +2770,7 @@
                 style="background-color: var(--background, #09090b); color: var(--foreground, #fafafa); border-color: var(--border, #27272a);"
               />
               <span class="text-[11px] text-muted-foreground" id="cambrith-folder-preview">
-                Pasta de destino: <code class="font-mono text-secondary-foreground" id="cambrith-target-preview">~/Documents/antigravity/...</code>
+                Pasta de destino: <code class="font-mono text-secondary-foreground" id="cambrith-target-preview">~/Documentos/antigravity/...</code>
               </span>
             </div>
 
@@ -2846,9 +2846,19 @@
           .replace(/^-|-$/g, '');
       };
 
+      const getDocsFolderName = () => {
+        try {
+          if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.getDocsFolder) {
+            return window.__CAMBRITH_NATIVE_BRIDGE__.getDocsFolder();
+          }
+        } catch (_) {}
+        return 'Documentos';
+      };
+
       input.addEventListener('input', () => {
         const clean = formatSlug(input.value);
-        targetPreview.textContent = clean ? `~/Documents/antigravity/${clean}` : '~/Documents/antigravity/...';
+        const folder = getDocsFolderName();
+        targetPreview.textContent = clean ? `~/${folder}/antigravity/${clean}` : `~/${folder}/antigravity/...`;
         errorDiv.classList.add('hidden');
       });
 
