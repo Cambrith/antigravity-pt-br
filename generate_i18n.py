@@ -3347,6 +3347,48 @@ js_body = r'''(function() {
       return origSplit.apply(this, arguments);
     };
 
+    // --- Interceptação de Prompts Automáticos em Inglês (ex: /automation, /migrate-workflows) ---
+    const origSubstring = String.prototype.substring;
+    String.prototype.substring = function(start, end) {
+      const res = origSubstring.apply(this, arguments);
+      if (typeof res === "string") {
+        if (res.trim() === "Guide me through creating an automated task") {
+          return res.startsWith(" ") ? " Me guie na criação de uma tarefa automatizada." : "Me guie na criação de uma tarefa automatizada.";
+        }
+        if (res.trim() === "migrate my existing workflows to skills") {
+          return res.startsWith(" ") ? " migre meus fluxos de trabalho existentes para habilidades." : "migre meus fluxos de trabalho existentes para habilidades.";
+        }
+      }
+      return res;
+    };
+
+    const origSlice = String.prototype.slice;
+    String.prototype.slice = function(start, end) {
+      const res = origSlice.apply(this, arguments);
+      if (typeof res === "string") {
+        if (res.trim() === "Guide me through creating an automated task") {
+          return res.startsWith(" ") ? " Me guie na criação de uma tarefa automatizada." : "Me guie na criação de uma tarefa automatizada.";
+        }
+        if (res.trim() === "migrate my existing workflows to skills") {
+          return res.startsWith(" ") ? " migre meus fluxos de trabalho existentes para habilidades." : "migre meus fluxos de trabalho existentes para habilidades.";
+        }
+      }
+      return res;
+    };
+
+    const origJSONParse = JSON.parse;
+    JSON.parse = function(text, reviver) {
+      if (typeof text === "string") {
+        if (text.includes("Guide me through creating an automated task")) {
+          text = text.replace(/Guide me through creating an automated task/g, "Me guie na criação de uma tarefa automatizada.");
+        }
+        if (text.includes("migrate my existing workflows to skills")) {
+          text = text.replace(/migrate my existing workflows to skills/g, "migre meus fluxos de trabalho existentes para habilidades.");
+        }
+      }
+      return origJSONParse.call(this, text, reviver);
+    };
+
     let customProjectName = null;
 
     if (typeof window !== "undefined") {
@@ -7060,6 +7102,23 @@ js_body = r'''(function() {
     ensureProjectsCustomizations();
     ensureThemeManager();
     scanAndTranslateAllThoughts();
+    document.addEventListener("click", (ev) => {
+      const btn = ev.target && ev.target.closest && ev.target.closest('[data-testid="sidecar-create-with-prompt"]');
+      if (btn) {
+        setTimeout(() => {
+          const editor = document.querySelector('[contenteditable="true"]');
+          if (editor) {
+            const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT, null);
+            let n;
+            while ((n = walker.nextNode())) {
+              if (n.nodeValue && n.nodeValue.includes("Guide me through creating an automated task")) {
+                n.nodeValue = n.nodeValue.replace(/Guide me through creating an automated task/g, "Me guie na criação de uma tarefa automatizada.");
+              }
+            }
+          }
+        }, 50);
+      }
+    }, true);
     if (window.__CAMBRITH_I18N_OBS__) {
       try { window.__CAMBRITH_I18N_OBS__.disconnect(); } catch (_) {}
     }

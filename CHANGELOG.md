@@ -4,6 +4,17 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.9] - 2026-10-25
+
+### Adicionado
+- **Tradução Completa do Modal e Painel de Automações e Sidecars**:
+  - Tradução integral do modal de criação de automações ("Nova automação", "Adicionar automação", "Digite o nome da automação...", "Fuso horário", "por volta das", "em", "Este computador", "Executa na nuvem", "Executa neste computador", "Criando…", etc.).
+  - Tradução dos seletores de frequência, gatilhos de horário e eventos ("Gatilho de horário", "Gatilho de evento", "Tipo de gatilho", "Frequência", "Identidade de execução", "Ambiente").
+  - Tradução dos rótulos e botões essenciais da interface ("Nome", "Título", "Gatilho", "Gerenciar permissões", "Executar agora", "Excluir automação").
+  - **Interceptação e Tradução Automática do Prompt `/automation`**: Quando o usuário clica em "Criar com prompt" na página de Automações, o texto inserido no editor é automaticamente traduzido de *"Guide me through creating an automated task"* para *"Me guie na criação de uma tarefa automatizada."*, com cobertura tripla via hooks de protótipo de String (`substring`/`slice`), desserialização do estado Lexical (`JSON.parse`) e observador de eventos no editor.
+  - Varredura e tradução de dezenas de elementos de interface pendentes em todo o aplicativo (atalhos de cópia, permissões, contexto, subagentes secundários, mensagens de rede e status da barra).
+  - Bateria de testes automatizados dedicados em `tests/test-translations.js` cobrindo o modal, página de automações e interceptação do prompt do comando.
+
 ## [1.7.6] - 2026-10-25
 
 ### Adicionado

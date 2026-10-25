@@ -1259,4 +1259,58 @@ test('Tradução de Histórico de Conversas e Dashboard de Automações (v1.7.1)
   assert.equal(tr('Requesting your permission:'), 'Solicitando sua permissão:');
 });
 
+test('Tradução Completa do Modal e Página de Automações e Sidecars (v1.7.9)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Modal de Criação de Automação e Sidecars
+  assert.equal(tr('New Automation'), 'Nova automação');
+  assert.equal(tr('Add Automation'), 'Adicionar automação');
+  assert.equal(tr('Enter automation name...'), 'Digite o nome da automação...');
+  assert.equal(tr('New Scheduled Task'), 'Nova tarefa agendada');
+  assert.equal(tr('Add Scheduled Task'), 'Adicionar tarefa agendada');
+  assert.equal(tr('Enter scheduled task name...'), 'Digite o nome da tarefa agendada...');
+  assert.equal(tr('New Sidecar'), 'Novo sidecar');
+  assert.equal(tr('Add Sidecar'), 'Adicionar sidecar');
+  assert.equal(tr('Enter sidecar name...'), 'Digite o nome do sidecar...');
+  assert.equal(tr('Name'), 'Nome');
+  assert.equal(tr('Title'), 'Título');
+  assert.equal(tr('Trigger'), 'Gatilho');
+  assert.equal(tr('Time Zone'), 'Fuso horário');
+  assert.equal(tr('around'), 'por volta das');
+  assert.equal(tr('on'), 'em');
+  assert.equal(tr('This computer'), 'Este computador');
+  assert.equal(tr('Runs in the cloud'), 'Executa na nuvem');
+  assert.equal(tr('Runs on this computer'), 'Executa neste computador');
+  assert.equal(tr('Select Day'), 'Selecionar dia');
+  assert.equal(tr('Select workspace'), 'Selecionar espaço de trabalho');
+  assert.equal(tr('Time Trigger'), 'Gatilho de horário');
+  assert.equal(tr('Event Trigger'), 'Gatilho de evento');
+  assert.equal(tr('Trigger Type'), 'Tipo de gatilho');
+  assert.equal(tr('Frequency'), 'Frequência');
+  assert.equal(tr('Execution Identity'), 'Identidade de execução');
+  assert.equal(tr('Environment'), 'Ambiente');
+  assert.equal(tr('Manage Permissions'), 'Gerenciar permissões');
+  assert.equal(tr('Run Now'), 'Executar agora');
+  assert.equal(tr('Delete Automation'), 'Excluir automação');
+  assert.equal(tr('Deleting...'), 'Excluindo...');
+  assert.equal(tr('Creating…'), 'Criando…');
+
+  // Interceptação de Prompts Automáticos do Slash Command (/automation)
+  const autoCmd = "[/automation](slashCommand;automation) Guide me through creating an automated task";
+  const sub38 = vm.runInContext(`JSON.stringify(("${autoCmd}").substring(38))`, sandbox);
+  const sub39 = vm.runInContext(`JSON.stringify(("${autoCmd}").substring(39))`, sandbox);
+  assert.equal(JSON.parse(sub38), " Me guie na criação de uma tarefa automatizada.");
+  assert.equal(JSON.parse(sub39), "Me guie na criação de uma tarefa automatizada.");
+
+  const slice38 = vm.runInContext(`JSON.stringify(("${autoCmd}").slice(38))`, sandbox);
+  const slice39 = vm.runInContext(`JSON.stringify(("${autoCmd}").slice(39))`, sandbox);
+  assert.equal(JSON.parse(slice38), " Me guie na criação de uma tarefa automatizada.");
+  assert.equal(JSON.parse(slice39), "Me guie na criação de uma tarefa automatizada.");
+
+  const jsonParsed = vm.runInContext(`JSON.parse(JSON.stringify({ prompt: "${autoCmd}" }))`, sandbox);
+  assert.equal(jsonParsed.prompt, "[/automation](slashCommand;automation) Me guie na criação de uma tarefa automatizada.");
+});
+
+
 
