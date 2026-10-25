@@ -4,6 +4,19 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.5] - 2026-10-25
+
+### Adicionado
+- **Gerenciador e Criador de Temas Personalizados em Configurações $\rightarrow$ Aparência**:
+  - Nova seção interativa em **Configurações $\rightarrow$ Aparência** permitindo criar, salvar, carregar e gerenciar temas visuais próprios com suporte integral a modos **Escuro** e **Claro**.
+  - Ferramenta de criação de temas com seletor de modo, paleta de cores para Fundo (*Background*), Texto/Primeiro Plano (*Foreground*) e Destaque (*Accent/Primary*), com pré-visualização instantânea em miniatura.
+  - Recurso "Capturar Cores Atuais" para importar instantaneamente as cores em uso no editor/interface para criar variações com facilidade.
+  - Persistência híbrida resiliente: sincronização em tempo real via `localStorage` e persistência em arquivo JSON (`~/.config/Antigravity/i18n/custom-themes.json`) por meio dos novos métodos da bridge nativa (`loadCustomThemes`, `saveCustomThemes`).
+  - Aplicação transparente e reativa de temas com disparo direto no Fiber do React do Antigravity (`onUpdate`) e ajuste dinâmico das variáveis CSS e alternância automática de tema claro/escuro.
+  - Catálogo de temas salvos com filtros de visualização (*Todos*, *Escuros*, *Claros*), indicador visual de modo, botão de exclusão e suporte completo a Backup (Exportar/Importar JSON).
+  - Inclui 8 temas predefinidos de alto contraste e harmonia estética: *Dracula Purple*, *Cyber Neon*, *Gentoo Cyber Lilás*, *Tokyo Night*, *Gruvbox Dark*, *Clean Minimalist*, *Solarized Light* e *Rosé Pine Dawn*.
+  - Bateria de testes unitários automatizados cobrindo a bridge nativa, catálogo de temas, manipulação e persistência em `tests/test-theme-manager.js`.
+
 ## [1.7.4] - 2026-10-25
 
 ### Corrigido

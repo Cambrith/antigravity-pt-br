@@ -2999,7 +2999,532 @@
     }
   }
 
-  // Listeners globais de fechamento de tooltips
+  // =========================================================================
+  // Gerenciador de Criação e Salvamento de Temas Personalizados (Aparência)
+  // =========================================================================
+  const CAMBRITH_THEMES_KEY = '__cambrith_user_custom_themes__';
+  const DEFAULT_CUSTOM_THEMES = [
+    { id: 'dracula-purple', name: 'Dracula Purple', mode: 'dark', background: '#282A36', foregroundOverride: '#F8F8F2', primary: '#BD93F9' },
+    { id: 'cyber-neon', name: 'Cyber Neon (Matrix)', mode: 'dark', background: '#0D1117', foregroundOverride: '#E6EDF3', primary: '#00FF66' },
+    { id: 'gentoo-lilac', name: 'Gentoo Cyber Lilás', mode: 'dark', background: '#100E17', foregroundOverride: '#E0DEF4', primary: '#9D7CD8' },
+    { id: 'tokyo-night', name: 'Tokyo Night Neon', mode: 'dark', background: '#1A1B26', foregroundOverride: '#C0CAF5', primary: '#7AA2F7' },
+    { id: 'gruvbox-dark', name: 'Gruvbox Material', mode: 'dark', background: '#1D2021', foregroundOverride: '#EBDBB2', primary: '#FE8019' },
+    { id: 'clean-light', name: 'Clean Minimalist', mode: 'light', background: '#F9F9F9', foregroundOverride: '#18181B', primary: '#007ACC' },
+    { id: 'solarized-light', name: 'Solarized Soft Light', mode: 'light', background: '#FDF6E3', foregroundOverride: '#657B83', primary: '#268BD2' },
+    { id: 'rose-pine-dawn', name: 'Rosé Pine Dawn', mode: 'light', background: '#FAF4ED', foregroundOverride: '#575279', primary: '#907AA9' }
+  ];
+
+  function getSavedCustomThemes() {
+    let themes = null;
+    try {
+      if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.loadCustomThemes) {
+        themes = window.__CAMBRITH_NATIVE_BRIDGE__.loadCustomThemes();
+      }
+    } catch (_) {}
+    if (!themes || !Array.isArray(themes)) {
+      try {
+        const raw = localStorage.getItem(CAMBRITH_THEMES_KEY);
+        if (raw) themes = JSON.parse(raw);
+      } catch (_) {}
+    }
+    if (!themes || !Array.isArray(themes) || themes.length === 0) {
+      themes = [...DEFAULT_CUSTOM_THEMES];
+      persistCustomThemes(themes);
+    }
+    return themes;
+  }
+
+  function persistCustomThemes(themes) {
+    try {
+      localStorage.setItem(CAMBRITH_THEMES_KEY, JSON.stringify(themes));
+    } catch (_) {}
+    try {
+      if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.saveCustomThemes) {
+        window.__CAMBRITH_NATIVE_BRIDGE__.saveCustomThemes(themes);
+      }
+    } catch (_) {}
+  }
+
+  function normalizeHex(val, fallback) {
+    if (!val) return fallback;
+    let clean = String(val).trim().replace(/^#/, '');
+    if (clean.length === 3) {
+      clean = clean.split('').map(c => c + c).join('');
+    }
+    if (/^[0-9A-Fa-f]{6}$/.test(clean)) {
+      return '#' + clean.toUpperCase();
+    }
+    return fallback;
+  }
+
+  function applyCustomTheme(theme) {
+    if (!theme) return;
+    const targetMode = theme.mode || 'dark';
+    const isCurrentlyDark = document.querySelector('button[aria-label="Escuro"]')?.getAttribute('data-pressed') !== null;
+    if (targetMode === 'dark' && !isCurrentlyDark) {
+      document.querySelector('button[aria-label="Escuro"]')?.click();
+    } else if (targetMode === 'light' && isCurrentlyDark) {
+      document.querySelector('button[aria-label="Claro"]')?.click();
+    }
+
+    const performSeedUpdate = () => {
+      const inputs = Array.from(document.querySelectorAll('input')).filter(i => /^[0-9A-Fa-f]{6}$/.test(i.value));
+      if (inputs.length >= 3) {
+        const fiberKey = Object.keys(inputs[0]).find(k => k.startsWith('__reactFiber$'));
+        let fiber = inputs[0][fiberKey];
+        while (fiber && typeof fiber.memoizedProps?.onUpdate !== 'function') {
+          fiber = fiber.return;
+        }
+        if (fiber && fiber.memoizedProps?.onUpdate) {
+          fiber.memoizedProps.onUpdate({
+            background: theme.background,
+            foregroundOverride: theme.foregroundOverride,
+            primary: theme.primary
+          });
+        }
+        function triggerInputVal(input, val) {
+          const clean = val.replace(/^#/, '').toUpperCase();
+          const last = input.value;
+          input.value = clean;
+          if (input._valueTracker) input._valueTracker.setValue(last);
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          input.dispatchEvent(new Event('blur', { bubbles: true }));
+        }
+        triggerInputVal(inputs[0], theme.background);
+        triggerInputVal(inputs[1], theme.foregroundOverride);
+        triggerInputVal(inputs[2], theme.primary);
+      }
+      try {
+        const root = document.documentElement;
+        root.style.setProperty('--background', theme.background);
+        root.style.setProperty('--foreground', theme.foregroundOverride);
+        root.style.setProperty('--primary', theme.primary);
+      } catch (_) {}
+    };
+
+    if ((targetMode === 'dark' && !isCurrentlyDark) || (targetMode === 'light' && isCurrentlyDark)) {
+      setTimeout(performSeedUpdate, 120);
+    } else {
+      performSeedUpdate();
+    }
+  }
+
+  let activeThemeFilter = 'all';
+
+  function ensureThemeManager() {
+    try {
+      if (typeof document === 'undefined') return;
+      const themeH3 = Array.from(document.querySelectorAll('h3')).find(h => /Tema escuro|Tema claro/.test(h.innerText));
+      if (!themeH3) return;
+      const themeCard = themeH3.closest('.space-y-2');
+      if (!themeCard || !themeCard.parentElement) return;
+
+      let card = document.getElementById('cambrith-custom-themes-card');
+      if (!card) {
+        card = document.createElement('div');
+        card.id = 'cambrith-custom-themes-card';
+        card.className = 'space-y-2 mt-4';
+        themeCard.insertAdjacentElement('afterend', card);
+      }
+
+      const isDark = document.querySelector('button[aria-label="Escuro"]')?.getAttribute('data-pressed') !== null;
+      const hexInputs = Array.from(themeCard.querySelectorAll('input')).filter(i => /^[0-9A-Fa-f]{6}$/.test(i.value));
+      const currBg = hexInputs[0] ? '#' + hexInputs[0].value.replace(/^#/, '') : (isDark ? '#282A36' : '#F9F9F9');
+      const currFg = hexInputs[1] ? '#' + hexInputs[1].value.replace(/^#/, '') : (isDark ? '#F8F8F2' : '#18181B');
+      const currAccent = hexInputs[2] ? '#' + hexInputs[2].value.replace(/^#/, '') : '#3B82F6';
+      const currMode = isDark ? 'dark' : 'light';
+
+      if (!card.__cambrith_initialized) {
+        card.__cambrith_initialized = true;
+        renderThemeManagerCard(card, currBg, currFg, currAccent, currMode, themeCard);
+      }
+    } catch (e) {
+      console.warn('[Cambrith] Erro em ensureThemeManager:', e);
+    }
+  }
+
+  function renderThemeManagerCard(card, currBg, currFg, currAccent, currMode, themeCard) {
+    card.innerHTML = `
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary" style="color: var(--primary, #3b82f6);">
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"></path>
+            </svg>
+            <h3 class="m-0 text-sm font-medium">Temas Personalizados</h3>
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wider" style="background-color: color-mix(in srgb, var(--primary, #3b82f6) 20%, transparent); color: var(--primary, #3b82f6);">Cambrith</span>
+          </div>
+          <button id="cambrith-toggle-json-btn" type="button" class="text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/40 px-2 py-1 rounded transition-colors cursor-pointer outline-none border-none flex items-center gap-1" title="Backup e Importação JSON">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span>JSON</span>
+          </button>
+        </div>
+        <span class="text-xs text-muted-foreground">
+          Crie, personalize e salve suas próprias combinações de cores para o modo escuro e claro.
+        </span>
+      </div>
+
+      <div class="bg-transparent rounded-xl border border-border overflow-hidden divide-y divide-border" style="border-color: var(--border);">
+        <!-- Área de Criação de Tema -->
+        <div class="py-3 px-3.5 w-full bg-secondary/15 flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-2.5 flex-wrap">
+            <div class="flex items-center gap-2 flex-1 min-w-[220px]">
+              <input 
+                type="text" 
+                id="cambrith-input-theme-name" 
+                placeholder="Nome do tema (ex: Meu Tema, Cyber Neon, Gentoo...)" 
+                class="text-xs px-2.5 py-1.5 rounded-lg flex-1 outline-none border border-border transition-all focus:border-primary"
+                style="background-color: var(--background); color: var(--foreground); border-color: var(--border);"
+              />
+              <select 
+                id="cambrith-select-theme-mode" 
+                class="text-xs px-2.5 py-1.5 rounded-lg outline-none border border-border cursor-pointer"
+                style="background-color: var(--background); color: var(--foreground); border-color: var(--border);"
+              >
+                <option value="dark" ${currMode === 'dark' ? 'selected' : ''}>Modo Escuro</option>
+                <option value="light" ${currMode === 'light' ? 'selected' : ''}>Modo Claro</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button 
+                type="button" 
+                id="cambrith-btn-pull-screen" 
+                class="px-2.5 py-1.5 text-xs text-secondary-foreground hover:bg-secondary rounded-lg transition-colors cursor-pointer outline-none border border-border flex items-center gap-1"
+                title="Preencher com as cores ativas da tela"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                <span>Puxar da tela</span>
+              </button>
+              <button 
+                type="button" 
+                id="cambrith-btn-save-theme" 
+                class="px-3 py-1.5 text-xs font-medium rounded-lg shadow-sm transition-all flex items-center gap-1.5 cursor-pointer outline-none"
+                style="background-color: var(--primary, #3b82f6); color: var(--primary-foreground, #ffffff);"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <span>Salvar Tema</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Três seletores de cor interativos -->
+          <div class="flex items-center gap-4 flex-wrap pt-1 text-xs">
+            <!-- Fundo -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-muted-foreground text-[11px]">Fundo:</span>
+              <div class="flex items-center gap-1 border border-border rounded-md px-1.5 py-0.5 bg-background">
+                <input type="color" id="cambrith-pick-bg" value="${currBg}" class="w-4 h-4 p-0 border-0 rounded cursor-pointer bg-transparent" />
+                <input type="text" id="cambrith-hex-bg" value="${currBg}" maxlength="7" class="w-16 font-mono text-[11px] bg-transparent outline-none uppercase" />
+              </div>
+            </div>
+
+            <!-- Texto -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-muted-foreground text-[11px]">Texto:</span>
+              <div class="flex items-center gap-1 border border-border rounded-md px-1.5 py-0.5 bg-background">
+                <input type="color" id="cambrith-pick-fg" value="${currFg}" class="w-4 h-4 p-0 border-0 rounded cursor-pointer bg-transparent" />
+                <input type="text" id="cambrith-hex-fg" value="${currFg}" maxlength="7" class="w-16 font-mono text-[11px] bg-transparent outline-none uppercase" />
+              </div>
+            </div>
+
+            <!-- Destaque -->
+            <div class="flex items-center gap-1.5">
+              <span class="text-muted-foreground text-[11px]">Destaque:</span>
+              <div class="flex items-center gap-1 border border-border rounded-md px-1.5 py-0.5 bg-background">
+                <input type="color" id="cambrith-pick-accent" value="${currAccent}" class="w-4 h-4 p-0 border-0 rounded cursor-pointer bg-transparent" />
+                <input type="text" id="cambrith-hex-accent" value="${currAccent}" maxlength="7" class="w-16 font-mono text-[11px] bg-transparent outline-none uppercase" />
+              </div>
+            </div>
+
+            <span id="cambrith-theme-msg" class="text-xs font-medium ml-auto hidden" style="color: var(--primary, #3b82f6);"></span>
+          </div>
+
+          <!-- Painel JSON expansível -->
+          <div id="cambrith-json-container" class="hidden flex flex-col gap-2 pt-2 border-t border-border/40">
+            <textarea id="cambrith-json-area" rows="4" class="w-full text-[11px] font-mono bg-background text-foreground border border-border rounded-lg p-2 outline-none focus:border-primary" style="background-color: var(--background); color: var(--foreground); border-color: var(--border);"></textarea>
+            <div class="flex items-center justify-end gap-2">
+              <button type="button" id="cambrith-json-copy-btn" class="px-2.5 py-1 text-xs border border-border hover:bg-secondary rounded transition-colors cursor-pointer outline-none">Copiar JSON</button>
+              <button type="button" id="cambrith-json-import-btn" class="px-2.5 py-1 text-xs font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded transition-colors cursor-pointer outline-none" style="background-color: var(--primary, #3b82f6); color: var(--primary-foreground, #ffffff);">Importar JSON</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filtros e Cabeçalho da Lista -->
+        <div class="py-2 px-3 w-full bg-transparent flex justify-between gap-2 items-center flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-medium text-foreground">Temas Salvos:</span>
+            <span id="cambrith-themes-count-badge" class="text-[11px] text-muted-foreground bg-secondary/50 px-1.5 py-0.2 rounded">0</span>
+          </div>
+          <div class="flex items-center gap-1 bg-secondary/20 p-0.5 rounded-lg border border-border/50">
+            <button type="button" class="cambrith-filter-btn px-2 py-0.5 text-xs rounded transition-colors ${activeThemeFilter === 'all' ? 'text-foreground bg-secondary font-medium' : 'text-muted-foreground hover:text-foreground'}" data-filter="all">Todos</button>
+            <button type="button" class="cambrith-filter-btn px-2 py-0.5 text-xs rounded transition-colors ${activeThemeFilter === 'dark' ? 'text-foreground bg-secondary font-medium' : 'text-muted-foreground hover:text-foreground'}" data-filter="dark">Escuros</button>
+            <button type="button" class="cambrith-filter-btn px-2 py-0.5 text-xs rounded transition-colors ${activeThemeFilter === 'light' ? 'text-foreground bg-secondary font-medium' : 'text-muted-foreground hover:text-foreground'}" data-filter="light">Claros</button>
+          </div>
+        </div>
+
+        <!-- Lista de Temas -->
+        <div id="cambrith-saved-themes-list" class="divide-y divide-border/50 max-h-[300px] overflow-y-auto">
+        </div>
+      </div>
+    `;
+
+    // Vincular sincronização dos seletores de cor com campos hex
+    function bindColorSync(pickId, hexId) {
+      const pick = card.querySelector('#' + pickId);
+      const hex = card.querySelector('#' + hexId);
+      if (!pick || !hex) return;
+      pick.addEventListener('input', () => {
+        hex.value = pick.value.toUpperCase();
+      });
+      hex.addEventListener('input', () => {
+        const norm = normalizeHex(hex.value, null);
+        if (norm) pick.value = norm;
+      });
+      hex.addEventListener('blur', () => {
+        hex.value = normalizeHex(hex.value, pick.value);
+        pick.value = hex.value;
+      });
+    }
+    bindColorSync('cambrith-pick-bg', 'cambrith-hex-bg');
+    bindColorSync('cambrith-pick-fg', 'cambrith-hex-fg');
+    bindColorSync('cambrith-pick-accent', 'cambrith-hex-accent');
+
+    // Botão "Puxar da tela"
+    const pullBtn = card.querySelector('#cambrith-btn-pull-screen');
+    if (pullBtn) {
+      pullBtn.onclick = () => {
+        const isDarkNow = document.querySelector('button[aria-label="Escuro"]')?.getAttribute('data-pressed') !== null;
+        const hexInputs = Array.from(document.querySelectorAll('input')).filter(i => /^[0-9A-Fa-f]{6}$/.test(i.value));
+        const bg = hexInputs[0] ? '#' + hexInputs[0].value.replace(/^#/, '') : (isDarkNow ? '#282A36' : '#F9F9F9');
+        const fg = hexInputs[1] ? '#' + hexInputs[1].value.replace(/^#/, '') : (isDarkNow ? '#F8F8F2' : '#18181B');
+        const ac = hexInputs[2] ? '#' + hexInputs[2].value.replace(/^#/, '') : '#3B82F6';
+        
+        card.querySelector('#cambrith-pick-bg').value = bg;
+        card.querySelector('#cambrith-hex-bg').value = bg.toUpperCase();
+        card.querySelector('#cambrith-pick-fg').value = fg;
+        card.querySelector('#cambrith-hex-fg').value = fg.toUpperCase();
+        card.querySelector('#cambrith-pick-accent').value = ac;
+        card.querySelector('#cambrith-hex-accent').value = ac.toUpperCase();
+        card.querySelector('#cambrith-select-theme-mode').value = isDarkNow ? 'dark' : 'light';
+        showStatus('Cores da tela carregadas!');
+      };
+    }
+
+    function showStatus(text) {
+      const msg = card.querySelector('#cambrith-theme-msg');
+      if (msg) {
+        msg.textContent = text;
+        msg.classList.remove('hidden');
+        setTimeout(() => { msg.classList.add('hidden'); }, 3000);
+      }
+    }
+
+    // Renderizar Lista de Temas
+    function refreshThemesList() {
+      const list = card.querySelector('#cambrith-saved-themes-list');
+      const badge = card.querySelector('#cambrith-themes-count-badge');
+      if (!list) return;
+
+      const allThemes = getSavedCustomThemes();
+      const filtered = allThemes.filter(t => {
+        if (activeThemeFilter === 'dark') return t.mode === 'dark';
+        if (activeThemeFilter === 'light') return t.mode === 'light';
+        return true;
+      });
+
+      if (badge) badge.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div class="py-4 text-center text-xs text-muted-foreground">
+            Nenhum tema encontrado neste filtro. Crie um novo tema acima!
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = filtered.map(t => `
+        <div class="py-2 px-3 flex items-center justify-between gap-3 hover:bg-secondary/20 transition-colors" data-theme-id="${t.id}">
+          <div class="flex items-center gap-3 min-w-[140px] flex-1">
+            <!-- Swatches -->
+            <div class="flex items-center -space-x-1 shrink-0">
+              <span class="w-4 h-4 rounded-full border border-border shadow-sm inline-block" style="background-color: ${t.background};" title="Fundo: ${t.background}"></span>
+              <span class="w-4 h-4 rounded-full border border-border shadow-sm inline-block" style="background-color: ${t.foregroundOverride};" title="Texto: ${t.foregroundOverride}"></span>
+              <span class="w-4 h-4 rounded-full border border-border shadow-sm inline-block" style="background-color: ${t.primary};" title="Destaque: ${t.primary}"></span>
+            </div>
+            <!-- Nome e Badge -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-medium text-foreground">${t.name}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded font-medium ${t.mode === 'dark' ? 'bg-zinc-800 text-zinc-300 border border-zinc-700' : 'bg-amber-100 text-amber-800 border border-amber-300'}">
+                ${t.mode === 'dark' ? 'Escuro' : 'Claro'}
+              </span>
+            </div>
+          </div>
+
+          <!-- Valores Hex compactos -->
+          <div class="hidden sm:flex items-center gap-2 text-[10px] font-mono text-muted-foreground">
+            <span>${t.background}</span>
+            <span>${t.primary}</span>
+          </div>
+
+          <!-- Ações -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" class="cambrith-btn-apply-theme px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer outline-none border border-border flex items-center gap-1 hover:text-foreground" style="background-color: color-mix(in srgb, var(--primary, #3b82f6) 15%, transparent); color: var(--primary, #3b82f6);" title="Aplicar este tema agora">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Aplicar</span>
+            </button>
+            <button type="button" class="cambrith-btn-delete-theme p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors cursor-pointer outline-none border-none" title="Excluir tema">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Eventos de Aplicar e Excluir
+      list.querySelectorAll('.cambrith-btn-apply-theme').forEach(btn => {
+        btn.onclick = () => {
+          const row = btn.closest('[data-theme-id]');
+          const id = row?.getAttribute('data-theme-id');
+          const t = allThemes.find(x => x.id === id);
+          if (t) {
+            applyCustomTheme(t);
+            const span = btn.querySelector('span');
+            if (span) {
+              const orig = span.textContent;
+              span.textContent = 'Aplicado!';
+              setTimeout(() => { span.textContent = orig; }, 1800);
+            }
+            showStatus('Tema "' + t.name + '" aplicado!');
+          }
+        };
+      });
+
+      list.querySelectorAll('.cambrith-btn-delete-theme').forEach(btn => {
+        btn.onclick = () => {
+          const row = btn.closest('[data-theme-id]');
+          const id = row?.getAttribute('data-theme-id');
+          const t = allThemes.find(x => x.id === id);
+          if (t) {
+            const next = allThemes.filter(x => x.id !== id);
+            persistCustomThemes(next);
+            refreshThemesList();
+            showStatus('Tema "' + t.name + '" excluído.');
+          }
+        };
+      });
+    }
+
+    // Salvar Novo Tema
+    const saveBtn = card.querySelector('#cambrith-btn-save-theme');
+    const nameInput = card.querySelector('#cambrith-input-theme-name');
+    const modeSelect = card.querySelector('#cambrith-new-theme-mode') || card.querySelector('#cambrith-select-theme-mode');
+
+    if (saveBtn && nameInput && modeSelect) {
+      saveBtn.onclick = () => {
+        const rawName = nameInput.value.trim();
+        if (!rawName) {
+          nameInput.focus();
+          showStatus('Por favor, digite um nome para o tema.');
+          return;
+        }
+
+        const bg = normalizeHex(card.querySelector('#cambrith-hex-bg').value, '#282A36');
+        const fg = normalizeHex(card.querySelector('#cambrith-hex-fg').value, '#F8F8F2');
+        const ac = normalizeHex(card.querySelector('#cambrith-hex-accent').value, '#BD93F9');
+        const mode = modeSelect.value;
+
+        const currentThemes = getSavedCustomThemes();
+        const existingIdx = currentThemes.findIndex(t => t.name.toLowerCase() === rawName.toLowerCase() && t.mode === mode);
+
+        const newTheme = {
+          id: existingIdx >= 0 ? currentThemes[existingIdx].id : 'theme-' + Date.now(),
+          name: rawName,
+          mode: mode,
+          background: bg,
+          foregroundOverride: fg,
+          primary: ac
+        };
+
+        if (existingIdx >= 0) {
+          currentThemes[existingIdx] = newTheme;
+        } else {
+          currentThemes.unshift(newTheme);
+        }
+
+        persistCustomThemes(currentThemes);
+        refreshThemesList();
+        nameInput.value = '';
+        showStatus('Tema "' + rawName + '" salvo com sucesso!');
+      };
+    }
+
+    // Filtros
+    card.querySelectorAll('.cambrith-filter-btn').forEach(btn => {
+      btn.onclick = () => {
+        card.querySelectorAll('.cambrith-filter-btn').forEach(b => {
+          b.className = 'cambrith-filter-btn px-2 py-0.5 text-xs rounded transition-colors text-muted-foreground hover:text-foreground';
+        });
+        btn.className = 'cambrith-filter-btn px-2 py-0.5 text-xs rounded transition-colors text-foreground bg-secondary font-medium';
+        activeThemeFilter = btn.getAttribute('data-filter') || 'all';
+        refreshThemesList();
+      };
+    });
+
+    // Toggle JSON
+    const jsonToggle = card.querySelector('#cambrith-toggle-json-btn');
+    const jsonContainer = card.querySelector('#cambrith-json-container');
+    const jsonArea = card.querySelector('#cambrith-json-area');
+    const jsonCopyBtn = card.querySelector('#cambrith-json-copy-btn');
+    const jsonImportBtn = card.querySelector('#cambrith-json-import-btn');
+
+    if (jsonToggle && jsonContainer && jsonArea) {
+      jsonToggle.onclick = () => {
+        jsonContainer.classList.toggle('hidden');
+        if (!jsonContainer.classList.contains('hidden')) {
+          jsonArea.value = JSON.stringify(getSavedCustomThemes(), null, 2);
+        }
+      };
+
+      if (jsonCopyBtn) {
+        jsonCopyBtn.onclick = () => {
+          try {
+            navigator.clipboard.writeText(jsonArea.value);
+            showStatus('JSON copiado para a área de transferência!');
+          } catch (_) {}
+        };
+      }
+
+      if (jsonImportBtn) {
+        jsonImportBtn.onclick = () => {
+          try {
+            const imported = JSON.parse(jsonArea.value);
+            if (Array.isArray(imported)) {
+              persistCustomThemes(imported);
+              refreshThemesList();
+              showStatus('Temas importados com sucesso!');
+              jsonContainer.classList.add('hidden');
+            } else {
+              showStatus('JSON inválido: deve ser uma lista de temas.');
+            }
+          } catch (e) {
+            showStatus('Erro ao importar JSON: formato inválido.');
+          }
+        };
+      }
+    }
+
+    refreshThemesList();
+  }
+
+  window.__CAMBRITH_ENSURE_THEME_MANAGER__ = ensureThemeManager;
+  window.__CAMBRITH_APPLY_CUSTOM_THEME__ = applyCustomTheme;
+
+  // Listeners globais de fechamento de tooltips e navegação nas configurações
   if (typeof document !== 'undefined') {
     document.addEventListener('pointerdown', (e) => {
       if (!e.target.closest('#cambrith-floating-tooltip')) {
@@ -3010,6 +3535,13 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') hideProjectTooltip();
     });
+
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.closest && e.target.closest('[role="dialog"], [data-testid="settings-modal"], nav, button')) {
+        setTimeout(ensureThemeManager, 60);
+        setTimeout(ensureThemeManager, 200);
+      }
+    }, { passive: true });
   }
 
   const boot = () => {
@@ -3017,6 +3549,7 @@
     walkAndTranslate(document.body || document.documentElement);
     ensureSettingsAccess();
     ensureProjectsCustomizations();
+    ensureThemeManager();
     scanAndTranslateAllThoughts();
     if (window.__CAMBRITH_I18N_OBS__) {
       try { window.__CAMBRITH_I18N_OBS__.disconnect(); } catch (_) {}
@@ -3045,6 +3578,7 @@
       if (mutations.some(m => m.type === 'childList')) {
         scheduleSettingsAccess();
         ensureProjectsCustomizations();
+        ensureThemeManager();
       }
       if (shouldScanThoughts) {
         scheduleThoughtScan(40);

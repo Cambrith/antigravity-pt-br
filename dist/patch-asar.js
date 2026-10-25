@@ -412,6 +412,44 @@ try {
                         } catch (e) {
                             console.warn('[Cambrith] Erro ao criar README:', e);
                         }
+                    },
+                    loadCustomThemes: () => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            const filePath = path.join(cfgDir, 'custom-themes.json');
+                            if (fs.existsSync(filePath)) {
+                                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                            }
+                        } catch (_) {}
+                        return null;
+                    },
+                    saveCustomThemes: (themes) => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            fs.mkdirSync(cfgDir, { recursive: true });
+                            const filePath = path.join(cfgDir, 'custom-themes.json');
+                            fs.writeFileSync(filePath, JSON.stringify(themes, null, 2), 'utf8');
+                            return true;
+                        } catch (e) {
+                            console.warn('[Cambrith] Erro ao salvar custom-themes.json:', e);
+                            return false;
+                        }
                     }
                 };
                 if (typeof electron_1 !== 'undefined' && electron_1.contextBridge && electron_1.contextBridge.exposeInMainWorld) {
