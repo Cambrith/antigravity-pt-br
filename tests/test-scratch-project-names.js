@@ -43,8 +43,8 @@ test('Início Rápido: Nomes em Português do Brasil são interceptados e gerado
 
   assert.ok(Array.isArray(win.__ANTIGRAVITY_PTBR_ADJETIVOS__), 'Lista de adjetivos pt-BR deve existir');
   assert.ok(Array.isArray(win.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__), 'Lista de substantivos pt-BR deve existir');
-  assert.ok(win.__ANTIGRAVITY_PTBR_ADJETIVOS__.length > 20, 'Deve ter lista rica de adjetivos');
-  assert.ok(win.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__.length > 20, 'Deve ter lista rica de substantivos');
+  assert.ok(win.__ANTIGRAVITY_PTBR_ADJETIVOS__.length >= 45, 'Deve ter lista rica e expressiva de adjetivos pt-BR');
+  assert.ok(win.__ANTIGRAVITY_PTBR_SUBSTANTIVOS__.length >= 50, 'Deve ter lista rica e expressiva de substantivos pt-BR');
 
   // Simula a divisão nativa original de adjetivos e cientistas do Antigravity
   const testAdjStr = "adventurous agitated amazing beautiful blissful bold brave busy calm charming clever cool dazzling delightful eager elegant epic excited fearless fervent focused friendly gallant goofy happy hopeful intelligent jolly joyful keen kind lively lucid magical modest mysterious nifty noble optimistic peaceful proud quick quirky radiant resilient serene sharp silly splendid valiant vibrant wise wonderful zealous";
@@ -61,6 +61,25 @@ test('Início Rápido: Nomes em Português do Brasil são interceptados e gerado
   assert.match(nomeGerado, /^[a-z-]+-[a-z-]+$/);
   const [adj, ...rest] = nomeGerado.split('-');
   assert.ok(win.__ANTIGRAVITY_PTBR_ADJETIVOS__.includes(adj), `Adjetivo "${adj}" deve pertencer à lista pt-BR`);
+
+  // Testa prevenção de colisão de nomes existentes
+  const nomeComColisao = win.__ANTIGRAVITY_GERAR_NOME_PTBR__([nomeGerado]);
+  assert.notEqual(nomeComColisao, nomeGerado, 'Nome gerado deve ser diferente de projeto existente');
+
+  // Testa hook dinâmico em window.odc e window.GUb
+  win.odc = function(list) { return "original-english-odc"; };
+  win.GUb = function(list) { return "original-english-gub"; };
+  win.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__();
+
+  const odcResultado = win.odc([]);
+  assert.notEqual(odcResultado, "original-english-odc", 'window.odc deve ser interceptado');
+  assert.match(odcResultado, /^[a-z-]+-[a-z-]+$/);
+
+  // Testa override de nome personalizado
+  win.__cambrith_customProjectName = "meu-projeto-criativo";
+  const customResultado = win.odc([]);
+  assert.equal(customResultado, "meu-projeto-criativo", 'Nome customizado deve ser respeitado');
+  assert.equal(win.__cambrith_customProjectName, null, 'Nome customizado deve ser consumido');
 });
 
 test('Criar Projeto: Modal utiliza pasta Documentos e suporta bridge nativa', () => {

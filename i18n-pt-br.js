@@ -2971,6 +2971,7 @@
           submitBtn.querySelector('span').textContent = 'Criando...';
 
           try {
+            window.__cambrith_customProjectName = clean;
             customProjectName = clean;
             scratchAction();
             if (shouldCreateReadme && window.__CAMBRITH_NATIVE_BRIDGE__?.createReadme) {
@@ -3035,8 +3036,18 @@
                   items[0].tooltipText = undefined;
                   
                   items[1].label = 'Início rápido';
-                  delete items[1].tooltipText;
-                  items[1].tooltipText = undefined;
+                  items[1].tooltipText = 'Criar projeto instantâneo com nome criativo em português';
+                  const origScratchClick = items[1].onClick;
+                  items[1].onClick = function() {
+                    try {
+                      if (typeof window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__ === 'function') {
+                        window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__();
+                      }
+                    } catch (_) {}
+                    if (typeof origScratchClick === 'function') {
+                      origScratchClick.apply(this, arguments);
+                    }
+                  };
 
                   if (items.length === 2) {
                     items.push({
@@ -3066,6 +3077,11 @@
     if (addProjectBtn && !addProjectBtn.__cambrith_click_hooked) {
       addProjectBtn.__cambrith_click_hooked = true;
       const triggerHandler = () => {
+        try {
+          if (typeof window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__ === 'function') {
+            window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__();
+          }
+        } catch (_) {}
         hookProjectsCustomizations();
         setTimeout(() => {
           const pop = document.querySelector('[role="dialog"], [class*="!w-[210px]"]');
