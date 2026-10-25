@@ -3,4 +3,5 @@ Description=Reaplica as personalizações Cambrith após atualizações do Antig
 
 [Service]
 Type=oneshot
+Environment="PATH=%h/.local/bin:%h/.nvm/versions/node/v26.12.1/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
 ExecStart=%h/.config/Antigravity/i18n/patch-after-update.sh

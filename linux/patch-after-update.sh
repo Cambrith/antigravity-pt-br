@@ -16,6 +16,14 @@ PATCHER="${ANTIGRAVITY_PATCHER:-$HOME/.config/Antigravity/i18n/patch-asar.js}"
 
 [[ -f "$ASAR" && -f "$PATCHER" ]] || exit 0
 
+# Garante que PATH contenha ~/.local/bin e o executável do Node.js (inclusive sob systemd/cron)
+export PATH="$HOME/.local/bin:${PATH:-}"
+for cand_node_dir in "$HOME/.nvm/versions/node/"*"/bin" "/usr/local/bin" "/opt/bin"; do
+    if [[ -d "$cand_node_dir" ]]; then
+        export PATH="$cand_node_dir:$PATH"
+    fi
+done
+
 # Aguarda a substituição atômica ou a gravação do atualizador terminar.
 previous=""
 stable=0

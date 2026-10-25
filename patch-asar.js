@@ -507,10 +507,11 @@ try {
                 electron_1.webFrame.executeJavaScript(i18nCode);
             } catch (e) {}
         };
+        // Cambrith: Executa imediatamente no preload para que hooks de protótipo (ex: String.prototype.split)
+        // estejam ativos antes de qualquer script da aplicação ser avaliado.
+        runI18n();
         if (document.readyState === 'loading') {
             window.addEventListener('DOMContentLoaded', runI18n, { once: true });
-        } else {
-            runI18n();
         }
     }
 } catch (err) {

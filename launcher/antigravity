@@ -114,6 +114,13 @@ if [[ ! -f "$ASAR" && -f "$APP_DIR/app.asar" ]]; then
 fi
 
 if [[ -f "$ASAR" && -f "$PATCHER" ]]; then
+    # Garante acesso ao node mesmo quando iniciado por menu de desktop / atalho
+    export PATH="$HOME/.local/bin:${PATH:-}"
+    for cand_node_dir in "$HOME/.nvm/versions/node/"*"/bin" "/usr/local/bin" "/opt/bin"; do
+        if [[ -d "$cand_node_dir" ]]; then
+            export PATH="$cand_node_dir:$PATH"
+        fi
+    done
     # Executa o patcher: ele só regrava se a assinatura estiver ausente
     if ! node "$PATCHER" "--asar=$ASAR" >>"$LOG_FILE" 2>&1; then
         printf '[%s] Falha ao verificar ou reaplicar as personalizações em %s.\n' "$(date -Is)" "$ASAR" >>"$LOG_FILE"

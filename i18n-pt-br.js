@@ -90,6 +90,20 @@
             }
           } catch (_) {}
 
+          // 1.1 Varredura resiliente em window para localizar quaisquer arrays de palavras mesmo após atualizações e minificações
+          for (const key of Object.getOwnPropertyNames(window)) {
+            try {
+              const val = window[key];
+              if (Array.isArray(val) && val.length > 5 && typeof val[0] === 'string') {
+                if (val.includes('adventurous') || val.includes('curious') || val.includes('fearless')) {
+                  val.splice(0, val.length, ...ADJETIVOS_PT_BR);
+                } else if (val.includes('archimedes') || val.includes('curie') || val.includes('darwin')) {
+                  val.splice(0, val.length, ...SUBSTANTIVOS_PT_BR);
+                }
+              }
+            } catch (_) {}
+          }
+
           // 2. Localizar dinamicamente qualquer função no window que gere nomes scratch
           const candidateNames = ['odc', 'GUb'];
           for (const key of Object.getOwnPropertyNames(window)) {
@@ -3082,6 +3096,20 @@
         if (q && typeof q.get === 'function') {
           let cust = null;
           try { cust = q.get('projectsCustomizations'); } catch (_) {}
+          let pm = null;
+          try { pm = q.get('projectManagementFeature'); } catch (_) {}
+          if (pm && typeof pm.createScratchProjectFolder === 'function' && !pm.__cambrith_scratch_hooked) {
+            pm.__cambrith_scratch_hooked = true;
+            const origCreateScratch = pm.createScratchProjectFolder;
+            pm.createScratchProjectFolder = function(folderName) {
+              try {
+                if (typeof window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__ === 'function') {
+                  window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__();
+                }
+              } catch (_) {}
+              return origCreateScratch.apply(this, arguments);
+            };
+          }
           if (cust && typeof cust.sidebarDropdownEntrypoints === 'function' && !cust.__cambrith_entrypoints_hooked) {
             cust.__cambrith_entrypoints_hooked = true;
             const orig = cust.sidebarDropdownEntrypoints;
