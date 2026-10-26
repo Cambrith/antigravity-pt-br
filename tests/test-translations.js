@@ -1312,5 +1312,23 @@ test('Tradução Completa do Modal e Página de Automações e Sidecars (v1.7.9)
   assert.equal(jsonParsed.prompt, "[/automation](slashCommand;automation) Me guie na criação de uma tarefa automatizada.");
 });
 
+test('Tradução de Permissões e Políticas em Conversas Fora de Projetos (v1.8.0)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Frases compostas de escopo de conversa e predefinições de permissões
+  assert.equal(tr('when working in these conversations.'), 'ao trabalhar nestas conversas.');
+  assert.equal(tr('when working in these conversations'), 'ao trabalhar nestas conversas');
+  assert.equal(tr('when working in this project.'), 'ao trabalhar neste projeto.');
+  assert.equal(tr('Inherits your Global Permissions when working in these conversations.'), 'Herda suas Permissões Globais ao trabalhar nestas conversas.');
+  assert.equal(tr('Inherits your Global Permissions when working in these conversations'), 'Herda suas Permissões Globais ao trabalhar nestas conversas');
+  assert.equal(tr('Inherits your Global Plan Review Policy when working in these conversations.'), 'Herda sua Política Global de Revisão de Planos ao trabalhar nestas conversas.');
+  assert.equal(tr('Inherits your Global Artifact Review Policy when working in these conversations.'), 'Herda sua Política Global de Revisão de Artefatos ao trabalhar nestas conversas.');
+  assert.equal(tr('Terminal commands always require review and the agent cannot access files outside of its given working folders.'), 'Comandos de terminal sempre exigem revisão e o agente não pode acessar arquivos fora das pastas de trabalho definidas.');
+  assert.equal(tr('By default, agents work in folders you choose and ask before sensitive changes. Adjust this anytime in Settings.'), 'Por padrão, os agentes trabalham nas pastas que você escolher e pedem permissão antes de alterações sensíveis. Ajuste isso a qualquer momento nas Configurações.');
+  assert.equal(tr('Proceed in Sandbox'), 'Prosseguir no sandbox');
+});
+
+
 
 

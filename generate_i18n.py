@@ -2655,6 +2655,40 @@ EXACT_MAP = {
     "Allowed Domains": "Domínios permitidos",
     "Also includes": "Também inclui",
     "when working in this project.": "ao trabalhar neste projeto.",
+    "when working in this project": "ao trabalhar neste projeto",
+    "when working in these conversations.": "ao trabalhar nestas conversas.",
+    "when working in these conversations": "ao trabalhar nestas conversas",
+    "when working in this workspace.": "ao trabalhar neste espaço de trabalho.",
+    "when working in this workspace": "ao trabalhar neste espaço de trabalho",
+    "when working": "ao trabalhar",
+    "in these conversations": "nestas conversas",
+    "in this project": "neste projeto",
+    "in this workspace": "neste espaço de trabalho",
+    "Inherits your Global Permissions when working in this project.": "Herda suas Permissões Globais ao trabalhar neste projeto.",
+    "Inherits your Global Permissions when working in this project": "Herda suas Permissões Globais ao trabalhar neste projeto",
+    "Inherits your Global Permissions when working in these conversations.": "Herda suas Permissões Globais ao trabalhar nestas conversas.",
+    "Inherits your Global Permissions when working in these conversations": "Herda suas Permissões Globais ao trabalhar nestas conversas",
+    "Inherits your Global Permissions when working in this workspace.": "Herda suas Permissões Globais ao trabalhar neste espaço de trabalho.",
+    "Inherits your Global Permissions when working in this workspace": "Herda suas Permissões Globais ao trabalhar neste espaço de trabalho",
+    "Inherits your Global Plan Review Policy when working in this project.": "Herda sua Política Global de Revisão de Planos ao trabalhar neste projeto.",
+    "Inherits your Global Plan Review Policy when working in this project": "Herda sua Política Global de Revisão de Planos ao trabalhar neste projeto",
+    "Inherits your Global Plan Review Policy when working in these conversations.": "Herda sua Política Global de Revisão de Planos ao trabalhar nestas conversas.",
+    "Inherits your Global Plan Review Policy when working in these conversations": "Herda sua Política Global de Revisão de Planos ao trabalhar nestas conversas",
+    "Inherits your Global Plan Review Policy when working in this workspace.": "Herda sua Política Global de Revisão de Planos ao trabalhar neste espaço de trabalho.",
+    "Inherits your Global Plan Review Policy when working in this workspace": "Herda sua Política Global de Revisão de Planos ao trabalhar neste espaço de trabalho",
+    "Inherits your Global Artifact Review Policy when working in this project.": "Herda sua Política Global de Revisão de Artefatos ao trabalhar neste projeto.",
+    "Inherits your Global Artifact Review Policy when working in this project": "Herda sua Política Global de Revisão de Artefatos ao trabalhar neste projeto",
+    "Inherits your Global Artifact Review Policy when working in these conversations.": "Herda sua Política Global de Revisão de Artefatos ao trabalhar nestas conversas.",
+    "Inherits your Global Artifact Review Policy when working in these conversations": "Herda sua Política Global de Revisão de Artefatos ao trabalhar nestas conversas",
+    "Inherits your Global Artifact Review Policy when working in this workspace.": "Herda sua Política Global de Revisão de Artefatos ao trabalhar neste espaço de trabalho.",
+    "Inherits your Global Artifact Review Policy when working in this workspace": "Herda sua Política Global de Revisão de Artefatos ao trabalhar neste espaço de trabalho",
+    "A shell setup script run before every command the agent executes in these conversations. Overrides the global script.": "Um script de configuração de shell executado antes de cada comando que o agente executa nestas conversas. Substitui o script global.",
+    "A shell setup script run before every command the agent executes in this workspace. Overrides the global script.": "Um script de configuração de shell executado antes de cada comando que o agente executa neste espaço de trabalho. Substitui o script global.",
+    "Terminal commands always require review and the agent cannot access files outside of its given working folders.": "Comandos de terminal sempre exigem revisão e o agente não pode acessar arquivos fora das pastas de trabalho definidas.",
+    "Terminal commands always require review and the agent cannot access files outside of its given projects.": "Comandos de terminal sempre exigem revisão e o agente não pode acessar arquivos fora dos projetos definidos.",
+    "By default, agents work in folders you choose and ask before sensitive changes. Adjust this anytime in Settings.": "Por padrão, os agentes trabalham nas pastas que você escolher e perguntam antes de alterações sensíveis. Ajuste isso a qualquer momento nas Configurações.",
+    "Proceed in Sandbox": "Prosseguir no sandbox",
+    "Proceed in sandbox": "Prosseguir no sandbox",
     "Learn more about": "Saiba mais sobre",
     "This project was created for": "Este projeto foi criado para",
     "automation.": "automação.",
@@ -3448,13 +3482,14 @@ js_body = r'''(function() {
           }
 
           // 2. Localizar dinamicamente qualquer função no window que gere nomes scratch
-          const candidateNames = ['odc', 'GUb'];
+          const candidateNames = ['odc'];
           for (const key of Object.getOwnPropertyNames(window)) {
             try {
-              if (key.startsWith('__') || candidateNames.includes(key)) continue;
+              if (key.startsWith('__') || candidateNames.includes(key) || key === 'GUb') continue;
               const fn = window[key];
               if (typeof fn === 'function' && fn.length === 1) {
                 const src = fn.toString();
+                if (src.includes('$$binaryReaderFn') || src.includes('protobuf')) continue;
                 if ((src.includes('Math.random()') && src.includes('Math.floor(') && src.includes('-')) ||
                     (src.includes('createScratchProjectFolder') || (src.includes('.map(') && src.includes('.toLowerCase().replace(')))) {
                   candidateNames.push(key);
@@ -6113,21 +6148,32 @@ js_body = r'''(function() {
   // =========================================================================
   function getNativeScratchAction() {
     try {
+      if (typeof window.__cambrith_handleStartScratchFlow === 'function') {
+        return window.__cambrith_handleStartScratchFlow;
+      }
       const btn = document.querySelector('[data-testid="sidebar-add-project-button"]');
       if (!btn) return null;
-      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber$'));
+      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber'));
       if (!fiberKey) return null;
-      let fiber = btn[fiberKey];
-      while (fiber && fiber.type?.name !== 'yVb') fiber = fiber.return;
-      if (!fiber) return null;
-
-      let hook = fiber.memoizedState;
-      while (hook) {
-        const val = Array.isArray(hook.memoizedState) ? hook.memoizedState[0] : null;
-        if (Array.isArray(val) && val.length > 1 && val[1]?.onClick) {
-          return val[1].onClick;
+      let curr = btn[fiberKey];
+      while (curr) {
+        let h = curr.memoizedState;
+        while (h) {
+          const val = h.memoizedState;
+          if (Array.isArray(val) && typeof val[0] === 'function') {
+            const src = val[0].toString();
+            if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+              return val[0];
+            }
+          } else if (typeof val === 'function') {
+            const src = val.toString();
+            if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+              return val;
+            }
+          }
+          h = h.next;
         }
-        hook = hook.next;
+        curr = curr.return;
       }
     } catch (_) {}
     return null;
@@ -6341,10 +6387,20 @@ js_body = r'''(function() {
           .replace(/^-|-$/g, '');
       };
 
+      const getNativeBridge = () => {
+        try {
+          if (typeof window !== 'undefined') {
+            return window.cambrithNativeBridge || window.__CAMBRITH_NATIVE_BRIDGE__;
+          }
+        } catch (_) {}
+        return null;
+      };
+
       const getDocsFolderName = () => {
         try {
-          if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.getDocsFolder) {
-            return window.__CAMBRITH_NATIVE_BRIDGE__.getDocsFolder();
+          const bridge = getNativeBridge();
+          if (bridge && typeof bridge.getDocsFolder === 'function') {
+            return bridge.getDocsFolder();
           }
         } catch (_) {}
         return 'Documentos';
@@ -6368,7 +6424,7 @@ js_body = r'''(function() {
         input.select();
       };
 
-      form.onsubmit = (e) => {
+      form.onsubmit = async (e) => {
         e.preventDefault();
         const raw = input.value.trim();
         const clean = formatSlug(raw);
@@ -6381,7 +6437,7 @@ js_body = r'''(function() {
         }
 
         const shouldCreateReadme = modal.querySelector('#cambrith-opt-readme').checked;
-        const scratchAction = window.__cambrith_handleStartScratchFlow || getNativeScratchAction();
+        const scratchAction = getNativeScratchAction();
 
         if (scratchAction) {
           submitBtn.disabled = true;
@@ -6390,13 +6446,13 @@ js_body = r'''(function() {
           try {
             window.__cambrith_customProjectName = clean;
             customProjectName = clean;
-            scratchAction();
-            if (shouldCreateReadme && window.__CAMBRITH_NATIVE_BRIDGE__?.createReadme) {
-              setTimeout(() => {
-                try {
-                  window.__CAMBRITH_NATIVE_BRIDGE__.createReadme(clean, raw);
-                } catch (_) {}
-              }, 400);
+            const res = scratchAction();
+            if (res && typeof res.then === 'function') {
+              await res;
+            }
+            const bridge = getNativeBridge();
+            if (shouldCreateReadme && bridge?.createReadme) {
+              bridge.createReadme(clean, raw);
             }
             closeModal();
           } catch (err) {
@@ -6431,10 +6487,30 @@ js_body = r'''(function() {
     try {
       const btn = document.querySelector('[data-testid="sidebar-add-project-button"]');
       if (!btn) return false;
-      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber$'));
+      const fiberKey = Object.keys(btn).find(k => k.startsWith('__reactFiber'));
       if (!fiberKey) return false;
       let curr = btn[fiberKey];
       while (curr) {
+        if (!window.__cambrith_handleStartScratchFlow) {
+          let h = curr.memoizedState;
+          while (h) {
+            const val = h.memoizedState;
+            if (Array.isArray(val) && typeof val[0] === 'function') {
+              const src = val[0].toString();
+              if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+                window.__cambrith_handleStartScratchFlow = val[0];
+                break;
+              }
+            } else if (typeof val === 'function') {
+              const src = val.toString();
+              if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+                window.__cambrith_handleStartScratchFlow = val;
+                break;
+              }
+            }
+            h = h.next;
+          }
+        }
         const q = curr.memoizedProps?.value;
         if (q && typeof q.get === 'function') {
           let cust = null;
@@ -6450,7 +6526,8 @@ js_body = r'''(function() {
                   window.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__();
                 }
               } catch (_) {}
-              return origCreateScratch.apply(this, arguments);
+              const targetName = window.__cambrith_customProjectName || folderName;
+              return origCreateScratch.call(this, targetName);
             };
           }
           if (cust && typeof cust.sidebarDropdownEntrypoints === 'function' && !cust.__cambrith_entrypoints_hooked) {
@@ -6542,8 +6619,9 @@ js_body = r'''(function() {
   function getSavedCustomThemes() {
     let themes = null;
     try {
-      if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.loadCustomThemes) {
-        themes = window.__CAMBRITH_NATIVE_BRIDGE__.loadCustomThemes();
+      const bridge = typeof window !== 'undefined' ? (window.cambrithNativeBridge || window.__CAMBRITH_NATIVE_BRIDGE__) : null;
+      if (bridge?.loadCustomThemes) {
+        themes = bridge.loadCustomThemes();
       }
     } catch (_) {}
     if (!themes || !Array.isArray(themes)) {
@@ -6564,8 +6642,9 @@ js_body = r'''(function() {
       localStorage.setItem(CAMBRITH_THEMES_KEY, JSON.stringify(themes));
     } catch (_) {}
     try {
-      if (typeof window !== 'undefined' && window.__CAMBRITH_NATIVE_BRIDGE__?.saveCustomThemes) {
-        window.__CAMBRITH_NATIVE_BRIDGE__.saveCustomThemes(themes);
+      const bridge = typeof window !== 'undefined' ? (window.cambrithNativeBridge || window.__CAMBRITH_NATIVE_BRIDGE__) : null;
+      if (bridge?.saveCustomThemes) {
+        bridge.saveCustomThemes(themes);
       }
     } catch (_) {}
   }

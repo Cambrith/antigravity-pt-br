@@ -18,7 +18,7 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v19';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v20';
 
 // 1. Resolução Multiplataforma de Caminhos
 function getExecutableConfigFile() {
@@ -401,23 +401,31 @@ try {
                         try {
                             const home = os.homedir();
                             const candidateDirs = [
+                                path.join(home, 'antigravity', folderName),
                                 path.join(home, 'Documentos', 'antigravity', folderName),
                                 path.join(home, 'Documents', 'antigravity', folderName),
-                                path.join(home, 'antigravity', folderName),
                                 path.join(home, 'Documentos', folderName),
                                 path.join(home, 'Documents', folderName)
                             ];
-                            for (const targetDir of candidateDirs) {
-                                if (fs.existsSync(targetDir)) {
-                                    const readmePath = path.join(targetDir, 'README.md');
-                                    if (!fs.existsSync(readmePath)) {
-                                        const titleStr = projectName || folderName;
-                                        const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visao Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
-                                        fs.writeFileSync(readmePath, content, 'utf8');
+                            let attempts = 0;
+                            const interval = setInterval(() => {
+                                attempts++;
+                                for (const targetDir of candidateDirs) {
+                                    if (fs.existsSync(targetDir)) {
+                                        const readmePath = path.join(targetDir, 'README.md');
+                                        if (!fs.existsSync(readmePath)) {
+                                            const titleStr = projectName || folderName;
+                                            const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visão Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
+                                            fs.writeFileSync(readmePath, content, 'utf8');
+                                        }
+                                        clearInterval(interval);
+                                        return;
                                     }
-                                    break;
                                 }
-                            }
+                                if (attempts >= 20) {
+                                    clearInterval(interval);
+                                }
+                            }, 250);
                         } catch (e) {
                             console.warn('[Cambrith] Erro ao criar README:', e);
                         }
@@ -500,8 +508,11 @@ try {
                     }
                 };
                 if (typeof electron_1 !== 'undefined' && electron_1.contextBridge && electron_1.contextBridge.exposeInMainWorld) {
-                    try { electron_1.contextBridge.exposeInMainWorld('__CAMBRITH_NATIVE_BRIDGE__', nativeBridge); } catch (_) { window.__CAMBRITH_NATIVE_BRIDGE__ = nativeBridge; }
-                } else if (typeof window !== 'undefined') {
+                    try { electron_1.contextBridge.exposeInMainWorld('cambrithNativeBridge', nativeBridge); } catch (_) {}
+                    try { electron_1.contextBridge.exposeInMainWorld('__CAMBRITH_NATIVE_BRIDGE__', nativeBridge); } catch (_) {}
+                }
+                if (typeof window !== 'undefined') {
+                    window.cambrithNativeBridge = nativeBridge;
                     window.__CAMBRITH_NATIVE_BRIDGE__ = nativeBridge;
                 }
                 electron_1.webFrame.executeJavaScript(i18nCode);

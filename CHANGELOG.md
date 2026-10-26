@@ -4,6 +4,24 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.0] - 2026-10-26
+
+### Corrigido
+- **Criação de Projetos Personalizados ("Criar Projeto")**:
+  - Resolução robusta de hooks no React Fiber: eliminação da dependência de nomes de componentes minificados (`yVb`), passando a inspecionar dinamicamente hooks que contêm o manipulador de scratch (`createScratchProjectFolder` / `odc`), garantindo 100% de confiabilidade em qualquer compilação do Antigravity.
+  - Correção na exposição da bridge nativa no Electron: remoção de prefixos sublinhados proibidos pelo Chromium (`__CAMBRITH_NATIVE_BRIDGE__`) ao registrar no `contextBridge.exposeInMainWorld`, registrando como `cambrithNativeBridge` e garantindo o funcionamento do `getDocsFolder`, `createReadme` e temas customizados.
+  - Prevenção contra interceptações indevidas: remoção do `GUb` (função de desserialização binária do Protobuf) dos candidatos a gerador de nomes, evitando conflitos de rede e perda do nome do projeto digitado pelo usuário.
+  - Criação resiliente do `README.md` inicial: inclusão de tentativas com polling automático em segundo plano e suporte a múltiplos caminhos de diretório (`~/antigravity`, `~/Documentos/antigravity`, `~/Documents/antigravity`).
+  - Suporte a promises assíncronas no envio do formulário, garantindo tratamento de erros e exibição de status em tempo real.
+
+### Adicionado
+- **Tradução Completa de Permissões e Políticas Fora de Projetos**:
+  - Tradução dos textos compostos de escopo: *"when working in these conversations."* -> *"ao trabalhar nestas conversas."*, *"when working in this project."* -> *"ao trabalhar neste projeto."*, *"when working in this workspace."* -> *"ao trabalhar neste espaço de trabalho."*.
+  - Tradução dos seletores e descrições das predefinições de permissão: *"Inherits your Global Permissions when working in these conversations."* -> *"Herda suas Permissões Globais ao trabalhar nestas conversas."*.
+  - Tradução de Políticas de Revisão de Planos e Artefatos fora de projetos e em espaços de trabalho.
+  - Tradução de configurações avançadas de segurança e execução de terminal: *"Terminal commands always require review and the agent cannot access files outside of its given working folders."*, *"By default, agents work in folders you choose and ask before sensitive changes. Adjust this anytime in Settings."*, *"Proceed in Sandbox"* -> *"Prosseguir no sandbox"*.
+  - Bateria de testes automatizados dedicados em `tests/test-translations.js` e `tests/test-scratch-project-names.js`.
+
 ## [1.7.9] - 2026-10-25
 
 ### Adicionado
