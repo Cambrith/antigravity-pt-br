@@ -1424,6 +1424,19 @@ EXACT_MAP = {
     "Archive This Conversation": "Arquivar esta conversa",
     "Conversation Archived": "Conversa arquivada",
     "This chat is archived.": "Esta conversa está arquivada.",
+    "Search Across Conversations": "Pesquisar em todas as conversas",
+    "Search Across Conversations...": "Pesquisar em todas as conversas...",
+    "Search across conversations": "Pesquisar em todas as conversas",
+    "Search across conversations...": "Pesquisar em todas as conversas...",
+    "View archived in the sidebar": "Veja as arquivadas na barra lateral",
+    "View archived in the sidebar (": "Veja as arquivadas na barra lateral (",
+    "View archived in the sidebar.": "Veja as arquivadas na barra lateral.",
+    "View archived in sidebar": "Veja as arquivadas na barra lateral",
+    "View archived in sidebar (": "Veja as arquivadas na barra lateral (",
+    "View archived conversations in the sidebar": "Veja as conversas arquivadas na barra lateral",
+    "View archived conversations in the sidebar (": "Veja as conversas arquivadas na barra lateral (",
+    "View archived in the sidebar (menu)": "Veja as arquivadas na barra lateral (menu)",
+    "View archived in the sidebar (menu).": "Veja as arquivadas na barra lateral (menu).",
     "Delete Conversation": "Excluir conversa",
     "Rename Conversation": "Renomear conversa",
     "Rename This Conversation": "Renomear esta conversa",
@@ -4714,6 +4727,15 @@ js_body = r'''(function() {
     }
     if ((m = /^(\d+)\s+archived\s+conversations?$/i.exec(s))) {
       return m[1] === "1" ? "1 conversa arquivada" : `${m[1]} conversas arquivadas`;
+    }
+    if ((m = /^Search Across Conversations(\.{3})?$/i.exec(s))) {
+      return `Pesquisar em todas as conversas${m[1] || ''}`;
+    }
+    if ((m = /^View archived in the sidebar\s*\((.*)$/i.exec(s))) {
+      return `Veja as arquivadas na barra lateral (${m[1]}`;
+    }
+    if ((m = /^View archived in the sidebar(.*)$/i.exec(s))) {
+      return `Veja as arquivadas na barra lateral${m[1]}`;
     }
     if ((m = /^(?:Excluir permanentemente|Permanently delete)\s+(.+?)\s+(?:including|incluindo)\s+(.+?)\.?$/i.exec(s))) {
       const trCount = resolveConvCount(m[2]);

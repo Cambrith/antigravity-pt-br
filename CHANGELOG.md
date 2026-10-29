@@ -4,6 +4,14 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.2] - 2026-10-29
+
+### Adicionado
+- **Tradução do Popover de Busca e Histórico de Conversas**:
+  - Tradução do título *"Search Across Conversations"* -> *"Pesquisar em todas as conversas"*.
+  - Tradução resiliente da dica de conversas arquivadas com ícone inline *"View archived in the sidebar ("* -> *"Veja as arquivadas na barra lateral ("*, cobrindo fragmentos de nós de texto em torno do ícone de filtro.
+  - Adição de testes de unidade em `tests/test-translations.js`.
+
 ## [1.8.1] - 2026-10-28
 
 ### Adicionado

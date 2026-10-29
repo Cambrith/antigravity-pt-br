@@ -1231,9 +1231,14 @@ test('Tradução de Histórico de Conversas e Dashboard de Automações (v1.7.1)
 
   // Banner e avisos do Histórico de Conversas
   assert.equal(tr('This page is going away soon'), 'Esta página será descontinuada em breve');
+  assert.equal(tr('Search Across Conversations'), 'Pesquisar em todas as conversas');
+  assert.equal(tr('Search Across Conversations...'), 'Pesquisar em todas as conversas...');
   assert.equal(tr('Search conversations with'), 'Pesquise conversas com');
   assert.equal(tr('in the top left.'), 'no canto superior esquerdo.');
   assert.equal(tr('View archived in the sidebar'), 'Veja as arquivadas na barra lateral');
+  assert.equal(tr('View archived in the sidebar ('), 'Veja as arquivadas na barra lateral (');
+  assert.equal(tr('View archived in the sidebar (menu).'), 'Veja as arquivadas na barra lateral (menu).');
+  assert.equal(tr('View archived in the sidebar (menu)'), 'Veja as arquivadas na barra lateral (menu)');
   assert.equal(tr('now'), 'agora');
   assert.equal(tr('Display Options'), 'Opções de exibição');
   assert.equal(tr('No conversations found'), 'Nenhuma conversa encontrada');
