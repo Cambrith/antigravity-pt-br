@@ -86,6 +86,12 @@ test('Tradução de Ambiente, Worktree e Início de Conversa', () => {
   assert.equal(tr('Select Environment (Ctrl+.)'), 'Selecionar ambiente (Ctrl+.)');
   assert.equal(tr('Select Worktree'), 'Selecionar worktree');
   assert.equal(tr('Select Worktree (Ctrl+.)'), 'Selecionar worktree (Ctrl+.)');
+  assert.equal(tr('Local Checkout'), 'Checkout local');
+  assert.equal(tr('Local checkout'), 'Checkout local');
+  assert.equal(tr('Local Checkout (Ctrl+.)'), 'Checkout local (Ctrl+.)');
+  assert.equal(tr('Select Checkout'), 'Selecionar checkout');
+  assert.equal(tr('Select Checkout (Ctrl+.)'), 'Selecionar checkout (Ctrl+.)');
+  assert.equal(tr('Current Checkout'), 'Checkout atual');
   assert.equal(tr('Environment: Local'), 'Ambiente: Local');
 
   // Opções e descrições do dropdown

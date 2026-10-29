@@ -4,6 +4,14 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.1] - 2026-10-28
+
+### Adicionado
+- **Tradução de "Local Checkout" no Seletor de Worktree e Branches**:
+  - Tradução dos termos de checkout local na barra superior e no menu suspenso de worktrees/branches: *"Local Checkout"* -> *"Checkout local"*, *"Local checkout"* -> *"Checkout local"*, *"Select Checkout"* -> *"Selecionar checkout"*, *"Current Checkout"* -> *"Checkout atual"*.
+  - Suporte a variações com atalhos de teclado e rótulos dinâmicos (ex: *"Local Checkout (Ctrl+.)"* -> *"Checkout local (Ctrl+.)"*).
+  - Adição de testes de unidade em `tests/test-translations.js`.
+
 ## [1.8.0] - 2026-10-26
 
 ### Corrigido

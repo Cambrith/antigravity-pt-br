@@ -1357,6 +1357,15 @@ EXACT_MAP = {
     "Worktrees": "Árvores de trabalho (Worktrees)",
     "New Worktree": "Nova worktree",
     "New worktree": "Nova worktree",
+    "Local Checkout": "Checkout local",
+    "Local checkout": "Checkout local",
+    "local checkout": "checkout local",
+    "Local Checkouts": "Checkouts locais",
+    "Local checkouts": "Checkouts locais",
+    "Select Checkout": "Selecionar checkout",
+    "Select checkout": "Selecionar checkout",
+    "Current Checkout": "Checkout atual",
+    "Current checkout": "Checkout atual",
     "Previous Worktrees": "Worktrees anteriores",
     "No previous worktrees": "Nenhuma worktree anterior",
     "Project + Worktree": "Projeto + Worktree",
@@ -4987,6 +4996,12 @@ js_body = r'''(function() {
     }
     if ((m = /^Select Worktree\s*\((.+?)\)$/i.exec(s))) {
       return `Selecionar worktree (${m[1]})`;
+    }
+    if ((m = /^Select Checkout\s*\((.+?)\)$/i.exec(s))) {
+      return `Selecionar checkout (${m[1]})`;
+    }
+    if ((m = /^Local Checkout\s*\((.+?)\)$/i.exec(s))) {
+      return `Checkout local (${m[1]})`;
     }
     if ((m = /^Work locally on\s+(.+)$/i.exec(s))) {
       return `Trabalhar localmente em ${m[1]}`;
