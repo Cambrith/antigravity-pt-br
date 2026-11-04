@@ -1340,6 +1340,34 @@ test('Tradução de Permissões e Políticas em Conversas Fora de Projetos (v1.8
   assert.equal(tr('Proceed in Sandbox'), 'Prosseguir no sandbox');
 });
 
+test('Tradução do Seletor de Projetos, Espaços de Trabalho e Máquinas (v1.8.4)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Itens do seletor de projeto e submenus
+  assert.equal(tr('Recent'), 'Recentes');
+  assert.equal(tr('This Computer'), 'Este computador');
+  assert.equal(tr('Search Projects...'), 'Pesquisar projetos...');
+  assert.equal(tr('Search Projects…'), 'Pesquisar projetos…');
+  assert.equal(tr('Search projects...'), 'Pesquisar projetos...');
+  assert.equal(tr('Search Workspaces...'), 'Pesquisar espaços de trabalho...');
+  assert.equal(tr('Search Workspaces…'), 'Pesquisar espaços de trabalho…');
+  assert.equal(tr('Connect GitHub'), 'Conectar ao GitHub');
+  assert.equal(tr('GitHub Repositories'), 'Repositórios GitHub');
+  assert.equal(tr('Loading Repositories...'), 'Carregando repositórios...');
+  assert.equal(tr('Loading Repositories…'), 'Carregando repositórios…');
+  assert.equal(tr('No matching repositories'), 'Nenhum repositório correspondente');
+  assert.equal(tr('No repositories found'), 'Nenhum repositório encontrado');
+  assert.equal(tr('Remote Projects'), 'Projetos remotos');
+  assert.equal(tr('New Remote Project'), 'Novo projeto remoto');
+  assert.equal(tr('Open Link in External Browser'), 'Abrir link no navegador externo');
+  assert.equal(tr('Reopen Closed Tab'), 'Reabrir aba fechada');
+  assert.equal(tr('Close Tabs to the Left'), 'Fechar abas à esquerda');
+  assert.equal(tr('Toggle Side Panel'), 'Alternar painel lateral');
+  assert.equal(tr('Move Conversation Up'), 'Mover conversa para cima');
+  assert.equal(tr('Move Conversation Down'), 'Mover conversa para baixo');
+});
+
 
 
 

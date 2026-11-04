@@ -4,6 +4,16 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.4] - 2026-11-04
+
+### Adicionado
+- **Tradução Completa do Seletor de Projetos, Espaços de Trabalho e Recursos Remotos**:
+  - Tradução dos cabeçalhos e seções: *"Recent"* -> *"Recentes"*, *"This Computer"* -> *"Este computador"*, *"Remote Projects"* -> *"Projetos remotos"*, *"New Remote Project"* -> *"Novo projeto remoto"*.
+  - Tradução das buscas e placeholders com elipses unicode e ascii: *"Search Projects..."* / *"Search Projects…"*, *"Search projects..."* / *"Search projects…"*, *"Search Workspaces..."* / *"Search Workspaces…"*, *"Search Recent Workspaces"*, *"Search Remote..."* / *"Search Remote…"*.
+  - Integração com GitHub: *"Connect GitHub"* -> *"Conectar ao GitHub"*, *"GitHub Repositories"* -> *"Repositórios GitHub"*, *"Loading Repositories..."* -> *"Carregando repositórios..."*, *"No matching repositories"* -> *"Nenhum repositório correspondente"*, *"No repositories found"* -> *"Nenhum repositório encontrado"*.
+  - Auditoria profunda da interface: mais de 134 novos termos literais e de navegação (abas, comandos de painel lateral, voz, gravações, atalhos e downloads).
+  - Adição de testes de unidade automatizados em `tests/test-translations.js`.
+
 ## [1.8.3] - 2026-11-04
 
 ### Corrigido & Aprimorado
