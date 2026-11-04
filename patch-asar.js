@@ -577,7 +577,10 @@ function patchUtils(code) {
   if (origTitlePattern.test(out)) {
     out = out.replace(origTitlePattern, brandedTitleHandler);
   }
-  const domReadyHook = `win.webContents.on('dom-ready', () => {
+  const domReadyHook = `(() => {
+        const targetContents = (typeof hubContents !== 'undefined' && hubContents) ? hubContents : (typeof win !== 'undefined' && win ? win.webContents : null);
+        if (!targetContents) return;
+        const injectCambrithI18n = () => {
             try {
                 const fs = require('fs');
                 const path = require('path');
@@ -602,19 +605,29 @@ function patchUtils(code) {
                 }
                 const i18nPath = getI18nPath();
                 if (i18nPath && fs.existsSync(i18nPath)) {
-                    win.webContents.executeJavaScript(fs.readFileSync(i18nPath, 'utf-8')).catch(() => {});
+                    targetContents.executeJavaScript(fs.readFileSync(i18nPath, 'utf-8')).catch(() => {});
                 }
                 const controlsPath = path.join(process.resourcesPath || path.join(__dirname, '..', '..'), 'cambrith-window-controls.js');
                 if (fs.existsSync(controlsPath)) {
-                    win.webContents.executeJavaScript(fs.readFileSync(controlsPath, 'utf-8')).catch(() => {});
+                    targetContents.executeJavaScript(fs.readFileSync(controlsPath, 'utf-8')).catch(() => {});
                 }
             } catch (_) {}
-        });`;
+        };
+        targetContents.on('dom-ready', injectCambrithI18n);
+        targetContents.on('did-finish-load', injectCambrithI18n);
+        if (targetContents.isLoading && !targetContents.isLoading()) {
+            injectCambrithI18n();
+        }
+    })();`;
 
-  if (out.includes("win.webContents.on('dom-ready'")) {
-    out = out.replace(/win\.webContents\.on\('dom-ready',\s*\(\)\s*=>\s*\{[\s\S]*?\n        \}\);(?=\n        win\.webContents\.on\('did-finish-load')/, domReadyHook);
-  } else if (out.includes("win.webContents.on('did-finish-load', () => {")) {
-    out = out.replace("win.webContents.on('did-finish-load', () => {", domReadyHook + "\n        win.webContents.on('did-finish-load', () => {");
+  if (!out.includes('injectCambrithI18n')) {
+    if (out.includes("registerWindowWebContents(win, hubContents);")) {
+      out = out.replace("registerWindowWebContents(win, hubContents);", "registerWindowWebContents(win, hubContents);\n    " + domReadyHook);
+    } else if (out.includes("win.webContents.on('dom-ready'")) {
+      out = out.replace(/win\.webContents\.on\('dom-ready',\s*\(\)\s*=>\s*\{[\s\S]*?\n        \}\);(?=\n        win\.webContents\.on\('did-finish-load')/, domReadyHook);
+    } else if (out.includes("win.webContents.on('did-finish-load', () => {")) {
+      out = out.replace("win.webContents.on('did-finish-load', () => {", domReadyHook + "\n        win.webContents.on('did-finish-load', () => {");
+    }
   }
   const titleBarOverlayPattern = /titleBarOverlay: isMacOS\(\)\s*\? false\s*:\s*\{\s*color: backgroundColor,\s*symbolColor: foregroundColor,\s*height: 30,\s*\},/;
   const customControlsOverlay = `titleBarOverlay: process.platform === 'linux' || isMacOS()

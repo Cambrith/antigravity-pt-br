@@ -63,3 +63,25 @@ test('Bandeja: foca na janela aberta atual e restaura a janela mais recente quan
   assert.match(patched, /last-window-state\.json/);
   assert.equal(context.patchUtils(patched), patched);
 });
+
+test('Compatibilidade Antigravity 2.29+: injeta i18n em hubContents e registerWindowWebContents', () => {
+  const sample229 = `function createWindow() {
+  const win = new electron_1.BaseWindow({
+    titleBarOverlay: isMacOS() ? false : {
+      color: backgroundColor,
+      symbolColor: foregroundColor,
+      height: 30,
+    },
+  });
+  const hubContents = getHubWebContents(win);
+  registerWindowWebContents(win, hubContents);
+  return win;
+}`;
+  const patched = context.patchUtils(sample229);
+  new vm.Script(patched);
+  assert.match(patched, /injectCambrithI18n/);
+  assert.match(patched, /targetContents\.on\('dom-ready', injectCambrithI18n\)/);
+  assert.match(patched, /targetContents\.on\('did-finish-load', injectCambrithI18n\)/);
+  assert.match(patched, /cambrith-window-controls\.js/);
+  assert.equal(context.patchUtils(patched), patched);
+});

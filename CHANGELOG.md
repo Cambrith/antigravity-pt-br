@@ -4,6 +4,15 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.3] - 2026-11-04
+
+### Corrigido & Aprimorado
+- **Compatibilidade Completa com Google Antigravity v2.29+**:
+  - Suporte à nova arquitetura de janelas baseada em `WebContentsView` (`hubWcv`) e `BaseWindow`.
+  - Injeção resiliente de `i18n-pt-br.js` e controles de janela via `hubContents` (`registerWindowWebContents`), com escutas ativas para `dom-ready` e `did-finish-load`.
+  - Disparo imediato se o carregamento já estiver concluído, garantindo persistência sem falhas mesmo após atualizações silenciosas da IDE.
+  - Adição de testes de unidade automatizados em `tests/test-window-controls-patch.js`.
+
 ## [1.8.2] - 2026-10-29
 
 ### Adicionado
