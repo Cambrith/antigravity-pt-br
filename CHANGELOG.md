@@ -4,6 +4,19 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.5] - 2026-11-05
+
+### Adicionado
+- **Tradução Completa do Modo Voz (Gemini Live), Ditado e Controles de Áudio**:
+  - **Pílula de voz e controles de chamada**: *"Start Voice mode"* -> *"Iniciar modo de voz"*, *"Start Live Chat"* -> *"Iniciar chat ao vivo"*, *"End Voice mode"* -> *"Encerrar modo de voz"*, *"End Live chat"* -> *"Encerrar chat ao vivo"*, *"Voice mode in progress"* -> *"Modo de voz em andamento"*, *"Live chat in progress"* -> *"Chat ao vivo em andamento"*.
+  - **Microfone e áudio**: *"Unmute mic"* -> *"Ativar microfone"*, *"Mute mic"* -> *"Silenciar microfone"*, *"Unmute Antigravity"* -> *"Ativar áudio do Antigravity"*, *"Mute Antigravity"* -> *"Silenciar Antigravity"*, *"Unmute Jetski"* -> *"Ativar áudio do Jetski"*, *"Mute Jetski"* -> *"Silenciar Jetski"*, avisos de microfone (*"No mic audio detected. Switch mic"* -> *"Nenhum áudio do microfone detectado. Trocar microfone"*, *"Dismiss microphone warning"* -> *"Dispensar aviso do microfone"*).
+  - **Ditado e gravação de áudio no chat**: *"Record Audio"* -> *"Gravar áudio"*, *"Record voice memo"* -> *"Gravar memorando de voz"*, *"Stop recording"* / *"Stop Recording"* -> *"Parar gravação"*, *"Stop Recording and Send"* -> *"Parar gravação e enviar"*, *"Recording"* -> *"Gravando"*, *"Finalizing..."* / *"Finalizing…"* -> *"Finalizando..."*, *"Finalizing transcription..."* -> *"Finalizando transcrição..."*, *"Sending transcribed message..."* -> *"Enviando mensagem transcrita..."*, *"Cancel (Ctrl+D)"* -> *"Cancelar (Ctrl+D)"*, *"Cancel (⌃C)"* -> *"Cancelar (⌃C)"*.
+  - **Dock de voz**: *"Drag to move"* -> *"Arraste para mover"*, *"Add files"* -> *"Adicionar arquivos"*, *"Drop to attach"* -> *"Solte para anexar"*, *"Message this chat"* -> *"Enviar mensagem para este chat"*, *"Write a message"* -> *"Escrever uma mensagem"*, *"Close message"* -> *"Fechar mensagem"*, *"Back to chat"* -> *"Voltar ao chat"*, template dinâmico *"Back to <Nome>"* -> *"Voltar para <Nome>"*.
+  - **Seletor de vozes e timbres**: *"Choose Antigravity's Voice"* -> *"Escolha a voz do Antigravity"*, *"Choose Jetski's Voice"* -> *"Escolha a voz do Jetski"*, *"Previous voice"* / *"Next voice"* -> *"Voz anterior"* / *"Próxima voz"*, template dinâmico *"Use <Nome>"* -> *"Usar <Nome>"*, *"Voices"* -> *"Vozes"*, descrições de tom (*"Clear and friendly"*, *"Confident and clear"*, *"Warm and engaging"*, *"Warm and approachable"*, *"Deep and velvety"*, *"Light and precise"*).
+  - **Velocidade, volume e status de conexão**: *"Voice speed"* / *"Voice Speed"* -> *"Velocidade da voz"*, template dinâmico *"Voice speed, <X>x"* -> *"Velocidade da voz, <X>x"*, *"Voice volume"* -> *"Volume da voz"*, *"Connecting…"*, *"Still connecting…"*, *"Reconnecting…"*.
+  - **Gravações de chamadas e histórico**: *"Save audio recordings"*, *"Only stored on your machine."*, *"Delete all recordings?"*, templates dinâmicos de exclusão, contadores de chamadas e transcrições ao vivo / de voz.
+  - Adição de testes de unidade automatizados em `tests/test-translations.js` cobrindo 100% dos novos termos e expressões regulares dinâmicas.
+
 ## [1.8.4] - 2026-11-04
 
 ### Adicionado

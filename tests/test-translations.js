@@ -1368,6 +1368,85 @@ test('Tradução do Seletor de Projetos, Espaços de Trabalho e Máquinas (v1.8.
   assert.equal(tr('Move Conversation Down'), 'Mover conversa para baixo');
 });
 
+test('Tradução do Modo Voz, Ditado e Controles de Áudio (v1.8.5)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Botões e tooltips do modo de voz e dock
+  assert.equal(tr('Start Voice mode'), 'Iniciar modo de voz');
+  assert.equal(tr('Start Live Chat'), 'Iniciar chat ao vivo');
+  assert.equal(tr('End Voice mode'), 'Encerrar modo de voz');
+  assert.equal(tr('End Live chat'), 'Encerrar chat ao vivo');
+  assert.equal(tr('Voice mode in progress'), 'Modo de voz em andamento');
+  assert.equal(tr('Live chat in progress'), 'Chat ao vivo em andamento');
+  assert.equal(tr('Live transcript'), 'Transcrição ao vivo');
+  assert.equal(tr('Voice transcript'), 'Transcrição de voz');
+
+  // Controles de áudio e microfone
+  assert.equal(tr('Unmute mic'), 'Ativar microfone');
+  assert.equal(tr('Mute mic'), 'Silenciar microfone');
+  assert.equal(tr('Unmute Antigravity'), 'Ativar áudio do Antigravity');
+  assert.equal(tr('Mute Antigravity'), 'Silenciar Antigravity');
+  assert.equal(tr('Unmute Jetski'), 'Ativar áudio do Jetski');
+  assert.equal(tr('Mute Jetski'), 'Silenciar Jetski');
+  assert.equal(tr('Mute mic (Alt+M)'), 'Silenciar microfone (Alt+M)');
+  assert.equal(tr('Unmute mic (Alt+M)'), 'Ativar microfone (Alt+M)');
+  assert.equal(tr('Mute Antigravity (Alt+Shift+M)'), 'Silenciar Antigravity (Alt+Shift+M)');
+  assert.equal(tr('Unmute Antigravity (Alt+Shift+M)'), 'Ativar áudio do Antigravity (Alt+Shift+M)');
+  assert.equal(tr('Dismiss microphone warning'), 'Dispensar aviso do microfone');
+  assert.equal(tr('No mic audio detected'), 'Nenhum áudio do microfone detectado');
+  assert.equal(tr('No mic audio detected. Switch mic'), 'Nenhum áudio do microfone detectado. Trocar microfone');
+  assert.equal(tr('Switch mic'), 'Trocar microfone');
+  assert.equal(tr('Default mic'), 'Microfone padrão');
+
+  // Gravação de áudio e ditado
+  assert.equal(tr('Record Audio'), 'Gravar áudio');
+  assert.equal(tr('Record voice memo'), 'Gravar memorando de voz');
+  assert.equal(tr('Stop recording'), 'Parar gravação');
+  assert.equal(tr('Stop Recording'), 'Parar gravação');
+  assert.equal(tr('Stop Recording and Send'), 'Parar gravação e enviar');
+  assert.equal(tr('Recording'), 'Gravando');
+  assert.equal(tr('Finalizing...'), 'Finalizando...');
+  assert.equal(tr('Finalizing…'), 'Finalizando…');
+  assert.equal(tr('Finalizing transcription...'), 'Finalizando transcrição...');
+  assert.equal(tr('Sending transcribed message...'), 'Enviando mensagem transcrita...');
+  assert.equal(tr('Cancel (Ctrl+D)'), 'Cancelar (Ctrl+D)');
+  assert.equal(tr('Cancel (⌃C)'), 'Cancelar (⌃C)');
+
+  // Velocidade e volume
+  assert.equal(tr('Voice speed'), 'Velocidade da voz');
+  assert.equal(tr('Voice Speed'), 'Velocidade da voz');
+  assert.equal(tr('Voice Speed, 1.2x'), 'Velocidade da voz, 1.2x');
+  assert.equal(tr('Voice speed, 0.8x'), 'Velocidade da voz, 0.8x');
+  assert.equal(tr('Voice volume'), 'Volume da voz');
+  assert.equal(tr('How loud Antigravity\'s voice is.'), 'A altura do volume da voz do Antigravity.');
+
+  // Seletor de voz e tons
+  assert.equal(tr('Choose Antigravity\'s Voice'), 'Escolha a voz do Antigravity');
+  assert.equal(tr('Choose Jetski\'s Voice'), 'Escolha a voz do Jetski');
+  assert.equal(tr('Previous voice'), 'Voz anterior');
+  assert.equal(tr('Next voice'), 'Próxima voz');
+  assert.equal(tr('Use Fola'), 'Usar Fola');
+  assert.equal(tr('Use Arlo'), 'Usar Arlo');
+  assert.equal(tr('Fola, voice 1 of 9'), 'Fola, voz 1 de 9');
+  assert.equal(tr('Clear and friendly'), 'Clara e amigável');
+  assert.equal(tr('Confident and clear'), 'Confiante e clara');
+  assert.equal(tr('Warm and engaging'), 'Calorosa e envolvente');
+  assert.equal(tr('Warm and approachable'), 'Calorosa e acessível');
+  assert.equal(tr('Deep and velvety'), 'Profunda e aveludada');
+  assert.equal(tr('Light and precise'), 'Leve e precisa');
+
+  // Gravações salvas e histórico
+  assert.equal(tr('3 calls · 4.2 MB'), '3 chamadas · 4.2 MB');
+  assert.equal(tr('1 call · 1.1 MB'), '1 chamada · 1.1 MB');
+  assert.equal(tr('Deleted 2 recordings (3.5 MB)'), 'Excluída(s) 2 gravação(ões) (3.5 MB)');
+  assert.equal(tr('This deletes 3 call recordings (4.2 MB) from your machine. You can\'t undo this.'), 'Isso exclui 3 gravações de chamada (4.2 MB) de sua máquina. Você não pode desfazer isso.');
+  assert.equal(tr('Back to chat'), 'Voltar ao chat');
+  assert.equal(tr('Back to Projeto Alpha'), 'Voltar para Projeto Alpha');
+  assert.equal(tr('Started voice chat · 14:30'), 'Chat de voz iniciado · 14:30');
+  assert.equal(tr('Open Voice transcript, 14:30 · 2m 10s'), 'Abrir transcrição de voz, 14:30 · 2m 10s');
+});
+
 
 
 

@@ -5266,6 +5266,9 @@ js_body = r'''(function() {
     if ((m = /^Install\s+(.+)$/i.exec(s))) {
       return `Instalar ${m[1]}`;
     }
+    if ((m = /^Open (Live transcript|Voice transcript),\s*(.+)$/i.exec(s))) {
+      return `Abrir ${m[1].toLowerCase().includes('live') ? 'transcrição ao vivo' : 'transcrição de voz'}, ${m[2]}`;
+    }
     if ((m = /^Open\s+(.+)$/i.exec(s))) {
       return `Abrir ${m[1]}`;
     }
@@ -5329,6 +5332,59 @@ js_body = r'''(function() {
     }
     if ((m = /^Managed by plugin\s+(.+)$/i.exec(s))) {
       return `Gerenciado pelo plugin ${m[1]}`;
+    }
+
+    // Modo voz, ditado e controles de áudio (Gemini Live & Antigravity Voice)
+    if ((m = /^Voice\s+[Ss]peed,\s*(\d+(?:\.\d+)?x)$/i.exec(s))) {
+      return `Velocidade da voz, ${m[1]}`;
+    }
+    if ((m = /^Use\s+(Fola|Arlo|Cleo|Finn|Gero|Lora|Neno|Olin|Tari|[A-Z][a-z]+)$/.exec(s))) {
+      return `Usar ${m[1]}`;
+    }
+    if ((m = /^([A-Za-z0-9_-]+),\s+voice\s+(\d+)\s+of\s+(\d+)$/i.exec(s))) {
+      return `${m[1]}, voz ${m[2]} de ${m[3]}`;
+    }
+    if ((m = /^Back to (.+)$/i.exec(s))) {
+      return `Voltar para ${m[1]}`;
+    }
+    if ((m = /^Unmute mic\s+\((.+)\)$/i.exec(s))) {
+      return `Ativar microfone (${m[1]})`;
+    }
+    if ((m = /^Mute mic\s+\((.+)\)$/i.exec(s))) {
+      return `Silenciar microfone (${m[1]})`;
+    }
+    if ((m = /^Unmute Antigravity\s+\((.+)\)$/i.exec(s))) {
+      return `Ativar áudio do Antigravity (${m[1]})`;
+    }
+    if ((m = /^Mute Antigravity\s+\((.+)\)$/i.exec(s))) {
+      return `Silenciar Antigravity (${m[1]})`;
+    }
+    if ((m = /^Unmute Jetski\s+\((.+)\)$/i.exec(s))) {
+      return `Ativar áudio do Jetski (${m[1]})`;
+    }
+    if ((m = /^Mute Jetski\s+\((.+)\)$/i.exec(s))) {
+      return `Silenciar Jetski (${m[1]})`;
+    }
+    if ((m = /^This deletes (\d+) call recordings?\s+\(([^)]+)\)\s+from your machine\. You can't undo this\.$/i.exec(s))) {
+      return `Isso exclui ${m[1]} ${m[1] === '1' ? 'gravação de chamada' : 'gravações de chamada'} (${m[2]}) de sua máquina. Você não pode desfazer isso.`;
+    }
+    if ((m = /^Deleted (\d+) recordings?\s+\(([^)]+)\)$/i.exec(s))) {
+      return `Excluída(s) ${m[1]} gravação(ões) (${m[2]})`;
+    }
+    if ((m = /^(\d+)\s+calls?\s+·\s+([^·]+)$/i.exec(s))) {
+      return `${m[1]} ${m[1] === '1' ? 'chamada' : 'chamadas'} · ${m[2]}`;
+    }
+    if ((m = /^Failed to delete recordings:\s*(.+)$/i.exec(s))) {
+      return `Falha ao excluir gravações: ${m[1]}`;
+    }
+    if ((m = /^Started voice chat\s+·\s+(.+)$/i.exec(s))) {
+      return `Chat de voz iniciado · ${m[1]}`;
+    }
+    if ((m = /^Voice chat\s+·\s+(.+)$/i.exec(s))) {
+      return `Chat de voz · ${m[1]}`;
+    }
+    if ((m = /^Stopped voice chat\s+·\s+(.+)$/i.exec(s))) {
+      return `Chat de voz encerrado · ${m[1]}`;
     }
     return null;
   }
