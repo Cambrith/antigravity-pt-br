@@ -4,6 +4,16 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.6] - 2026-11-12
+
+### Adicionado
+- **Varredura Completa da Interface do Antigravity v2.31.2 (~200 novos termos e regras dinâmicas)**:
+  - **Saudações personalizadas na tela inicial**: *"Welcome back, <Nome>. Where should we pick up?"* $\rightarrow$ *"Bem-vindo de volta, <Nome>. Onde devemos continuar?"*, *"Good to see you, <Nome>. What's next?"* $\rightarrow$ *"Que bom ver você, <Nome>. Qual é o próximo passo?"*, *"Hey <Nome>, what should we build today?"* $\rightarrow$ *"Olá, <Nome>, o que devemos construir hoje?"*.
+  - **Modo Voz (permissões, alertas de login e transcrição)**: *"Allow microphone access to start Voice"*, *"Your sign-in needs an update. Sign in again to use Voice."*, *"Microphone blocked. Allow in System Settings / Privacy Settings."*, *"Nothing said yet"*, *"You said"*, *"Chime volume"*, controles de reprodução.
+  - **Projetos Remotos e Recursos na Nuvem**: *"Select Resource(s)"*, *"Add Resource"*, *"Project location"*, *"Uploaded files and connected resources are mounted in your cloud environment."*, *"Stored and mounted in your cloud environment"*, *"Connected Google Drive and GitHub resources"*, *"Work in a New Worktree"*.
+  - **Perguntas Laterais (`/btw`), Coordenadores, Navegador Integrado e Configurações**: *"Side Questions"*, *"New Coordinator"*, *"Announcements and tips"*, *"Browser downloads"*, *"Browser Use"*, *"Remote Control Instances"*, *"Accounts tab"*, *"Chat Layout"*, *"Interface Layout"*, *"Search shortcuts"*, *"Permanently delete your remote conversations..."*, *"A few things to know, and a couple settings to review."*.
+  - Adição de testes automatizados em `tests/test-translations.js` para toda a atualização v2.31.2.
+
 ## [1.8.5] - 2026-11-05
 
 ### Adicionado

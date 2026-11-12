@@ -5386,6 +5386,27 @@ js_body = r'''(function() {
     if ((m = /^Stopped voice chat\s+·\s+(.+)$/i.exec(s))) {
       return `Chat de voz encerrado · ${m[1]}`;
     }
+
+    // Saudações personalizadas da tela inicial (v2.31.2+)
+    if ((m = /^Hey (.+?), what should we build today\?$/i.exec(s))) {
+      return `Olá, ${m[1]}, o que devemos construir hoje?`;
+    }
+    if ((m = /^Welcome back, (.+?)\. Where should we pick up\?$/i.exec(s))) {
+      return `Bem-vindo de volta, ${m[1]}. Onde devemos continuar?`;
+    }
+    if ((m = /^Good to see you, (.+?)\. What's next\?$/i.exec(s))) {
+      return `Que bom ver você, ${m[1]}. Qual é o próximo passo?`;
+    }
+
+    // Permissões de microfone do Modo Voz (v2.31.2+)
+    if ((m = /^Microphone blocked\. Allow in (.+?)\.?$/i.exec(s))) {
+      const target = m[1] === 'System Settings'
+        ? 'Configurações do sistema'
+        : m[1] === 'Privacy Settings'
+          ? 'Configurações de privacidade'
+          : m[1];
+      return `Microfone bloqueado. Permita em ${target}.`;
+    }
     return null;
   }
 

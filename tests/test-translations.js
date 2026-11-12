@@ -1447,6 +1447,46 @@ test('Tradução do Modo Voz, Ditado e Controles de Áudio (v1.8.5)', () => {
   assert.equal(tr('Open Voice transcript, 14:30 · 2m 10s'), 'Abrir transcrição de voz, 14:30 · 2m 10s');
 });
 
+test('Tradução Completa Antigravity v2.31.2: Saudações, Recursos Remotos, Voz e Configurações (v1.8.6)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Saudações personalizadas da tela inicial
+  assert.equal(tr('Welcome back, Enzo. Where should we pick up?'), 'Bem-vindo de volta, Enzo. Onde devemos continuar?');
+  assert.equal(tr('Good to see you, Enzo. What\'s next?'), 'Que bom ver você, Enzo. Qual é o próximo passo?');
+  assert.equal(tr('Hey Enzo, what should we build today?'), 'Olá, Enzo, o que devemos construir hoje?');
+  assert.equal(tr('Welcome back. Where should we pick up?'), 'Bem-vindo de volta. Onde devemos continuar?');
+
+  // Criar projeto remoto e recursos em nuvem
+  assert.equal(tr('Select Resource(s)'), 'Selecionar recurso(s)');
+  assert.equal(tr('Add Resource'), 'Adicionar recurso');
+  assert.equal(tr('Project location'), 'Local do projeto');
+  assert.equal(tr('Uploaded files and connected resources are mounted in your cloud environment.'), 'Os arquivos enviados e os recursos conectados são montados em seu ambiente na nuvem.');
+  assert.equal(tr('Stored and mounted in your cloud environment'), 'Armazenado e montado no seu ambiente na nuvem');
+  assert.equal(tr('Connected Google Drive and GitHub resources'), 'Recursos conectados do Google Drive e do GitHub');
+  assert.equal(tr('Work in a New Worktree'), 'Trabalhar em um novo worktree');
+
+  // Modo voz v2.31.2: permissões de microfone, erros de login e transcrição
+  assert.equal(tr('Allow microphone access to start Voice'), 'Permita o acesso ao microfone para iniciar a Voz');
+  assert.equal(tr('Your sign-in needs an update. Sign in again to use Voice.'), 'Seu login precisa ser atualizado. Entre novamente para usar a Voz.');
+  assert.equal(tr('Your sign-in needs an update. '), 'Seu login precisa ser atualizado. ');
+  assert.equal(tr('Sign in again'), 'Entrar novamente');
+  assert.equal(tr(' to use Voice.'), ' para usar a Voz.');
+  assert.equal(tr('Microphone blocked. Allow in System Settings.'), 'Microfone bloqueado. Permita nas Configurações do sistema.');
+  assert.equal(tr('Microphone blocked. Allow in Privacy Settings.'), 'Microfone bloqueado. Permita nas Configurações de privacidade.');
+  assert.equal(tr('Microphone blocked in browser site settings.'), 'Microfone bloqueado nas configurações de site do navegador.');
+  assert.equal(tr('Nothing said yet'), 'Nada dito ainda');
+  assert.equal(tr('You said'), 'Você disse');
+
+  // Perguntas laterais, coordenadores, navegador e configurações novas
+  assert.equal(tr('Side Questions'), 'Perguntas laterais');
+  assert.equal(tr('New Coordinator'), 'Novo coordenador');
+  assert.equal(tr('Announcements and tips'), 'Anúncios e dicas');
+  assert.equal(tr('Browser downloads'), 'Downloads do navegador');
+  assert.equal(tr('Remote Control Instances'), 'Instâncias do Controle Remoto');
+  assert.equal(tr('Accounts tab'), 'Aba de Contas');
+});
+
 
 
 
