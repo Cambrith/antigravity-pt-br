@@ -4,6 +4,15 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.7] - 2026-11-13
+
+### Adicionado
+- **Varredura Profunda Completa do Bundle Frontend (320+ novas traduções e padrões dinâmicos)**:
+  - **Configurações > Modo de voz e Layout da interface**: *"Not set"* $\rightarrow$ *"Não definido"*, *"Change"* $\rightarrow$ *"Alterar"*, *"Knowledge Work"* $\rightarrow$ *"Trabalho de conhecimento"*, *"Simplified interface for research, writing, and everyday tasks."* $\rightarrow$ *"Interface simplificada para pesquisa, escrita e tarefas do dia a dia."*, *"Software Engineering"* $\rightarrow$ *"Engenharia de software"*, *"Full interface for coding, developer tools, and managing agents."* $\rightarrow$ *"Interface completa para programação, ferramentas de desenvolvimento e gerenciamento de agentes."*.
+  - **Controles de Chat, Fila, Questionários, Mídia e Navegador**: *"Collapse queued messages"*, *"Collapse subagents"*, *"Show X earlier steps"*, *"Built-in Browser"*, *"Using system default microphone"*, *"Yes, and always allow in this conversation"*, mensagens de segurança SSL/certificado, controles de vídeo/áudio (`Mute (m)`, `Play (k)`, `Fullscreen (f)`), Git/PRs/Worktrees, permissões e automações.
+  - **Regras Dinâmicas**: `Show <N> earlier step(s)`, `See all (<N>)`, `Show more (<N>)`, `Show submitted (<N>)`, `Start Best-of-<N>`, `<N>% left`, `Signed in as <usuário>`.
+  - Adição de testes automatizados em `tests/test-translations.js`.
+
 ## [1.8.6] - 2026-11-12
 
 ### Adicionado

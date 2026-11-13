@@ -5407,6 +5407,29 @@ js_body = r'''(function() {
           : m[1];
       return `Microfone bloqueado. Permita em ${target}.`;
     }
+
+    // Varredura completa da interface (v1.8.7): etapas ocultas, contadores, quotas e sessão
+    if ((m = /^Show (\d+) earlier steps?$/i.exec(s))) {
+      return `Mostrar ${m[1]} ${m[1] === '1' ? 'etapa anterior' : 'etapas anteriores'}`;
+    }
+    if ((m = /^See all \((\d+)\)$/i.exec(s))) {
+      return `Ver tudo (${m[1]})`;
+    }
+    if ((m = /^Show more \((\d+)\)$/i.exec(s))) {
+      return `Mostrar mais (${m[1]})`;
+    }
+    if ((m = /^Show submitted \((\d+)\)$/i.exec(s))) {
+      return `Mostrar enviados (${m[1]})`;
+    }
+    if ((m = /^Start Best-of-(\d+)$/i.exec(s))) {
+      return `Iniciar Melhor de ${m[1]}`;
+    }
+    if ((m = /^(\d+)% left$/i.exec(s))) {
+      return `${m[1]}% restante`;
+    }
+    if ((m = /^Signed in as\s+(.+)$/i.exec(s))) {
+      return `Conectado como ${m[1]}`;
+    }
     return null;
   }
 

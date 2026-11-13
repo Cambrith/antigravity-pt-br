@@ -1487,6 +1487,32 @@ test('Tradução Completa Antigravity v2.31.2: Saudações, Recursos Remotos, Vo
   assert.equal(tr('Accounts tab'), 'Aba de Contas');
 });
 
+test('Varredura Profunda de Configurações, Layout, Navegador e Controles (v1.8.7)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Capturas de tela do usuário: Configurações > Voz e Layout da interface
+  assert.equal(tr('Not set'), 'Não definido');
+  assert.equal(tr('Change'), 'Alterar');
+  assert.equal(tr('Knowledge Work'), 'Trabalho de conhecimento');
+  assert.equal(tr('Simplified interface for research, writing, and everyday tasks.'), 'Interface simplificada para pesquisa, escrita e tarefas do dia a dia.');
+  assert.equal(tr('Software Engineering'), 'Engenharia de software');
+  assert.equal(tr('Full interface for coding, developer tools, and managing agents.'), 'Interface completa para programação, ferramentas de desenvolvimento e gerenciamento de agentes.');
+
+  // Novos termos profundos de interface e padrões dinâmicos
+  assert.equal(tr('Using system default microphone'), 'Usando o microfone padrão do sistema');
+  assert.equal(tr('Built-in Browser'), 'Navegador integrado');
+  assert.equal(tr('Collapse queued messages'), 'Recolher mensagens na fila');
+  assert.equal(tr('Show 5 earlier steps'), 'Mostrar 5 etapas anteriores');
+  assert.equal(tr('Show 1 earlier step'), 'Mostrar 1 etapa anterior');
+  assert.equal(tr('See all (12)'), 'Ver tudo (12)');
+  assert.equal(tr('Show more (4)'), 'Ver mais (4)');
+  assert.equal(tr('Start Best-of-3'), 'Iniciar Melhor de 3');
+  assert.equal(tr('45% left'), '45% restante');
+  assert.equal(tr('Signed in as enzo@example.com'), 'Conectado como enzo@example.com');
+  assert.equal(tr('Yes, and always allow in this conversation'), 'Sim, e sempre permitir nesta conversa');
+});
+
 
 
 
