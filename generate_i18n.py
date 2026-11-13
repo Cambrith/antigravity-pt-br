@@ -5438,6 +5438,28 @@ js_body = r'''(function() {
     if ((m = /^Select model, current:\s*(.+)$/i.exec(s))) {
       return `Selecionar modelo, atual: ${m[1]}`;
     }
+    // Automações, Hooks, Personalizações e erros dinâmicos (v1.9.0)
+    if ((m = /^No handlers configured for\s+(.+?)\.?$/i.exec(s))) {
+      return `Nenhum manipulador configurado para ${m[1]}.`;
+    }
+    if ((m = /^Add New Handler to\s+(.+)$/i.exec(s))) {
+      return `Adicionar Novo Manipulador a ${m[1]}`;
+    }
+    if ((m = /^Handler\s+#(\d+)$/i.exec(s))) {
+      return `Manipulador #${m[1]}`;
+    }
+    if ((m = /^Are you sure you want to delete the hook\s+"(.+?)"\??$/i.exec(s))) {
+      return `Tem certeza de que deseja excluir o hook "${m[1]}"?`;
+    }
+    if ((m = /^Failed to delete recordings:\s*(.+)$/i.exec(s))) {
+      return `Falha ao excluir gravações: ${m[1]}`;
+    }
+    if ((m = /^Failed to delete\s+(.+?):\s*(.+)$/i.exec(s))) {
+      return `Falha ao excluir ${m[1]}: ${m[2]}`;
+    }
+    if ((m = /^Error fetching\s+(.+?):\s*(.+)$/i.exec(s))) {
+      return `Erro ao buscar ${m[1]}: ${m[2]}`;
+    }
     return null;
   }
 

@@ -1558,6 +1558,28 @@ test('Seletor de Modelos: Tooltips, níveis e cabeçalhos preservando nomes orig
   assert.equal(tr('Max'), 'Máx');
 });
 
+test('v1.9.0 — Automações, Personalizações, Hooks, MCP, Contas e Configurações', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  assert.equal(tr('+ Add Hook'), '+ Adicionar Hook');
+  assert.equal(tr('+ Add Organization policy'), '+ Adicionar política da organização');
+  assert.equal(tr('Match Condition (CEL)'), 'Condição de Correspondência (CEL)');
+  assert.equal(tr('Automation credentials expired'), 'Credenciais de automação expiradas');
+  assert.equal(tr('Create Coordinator'), 'Criar Coordenador');
+  assert.equal(tr('Are you sure you want to delete this handler?'), 'Tem certeza de que deseja excluir este manipulador?');
+  assert.equal(tr('Are you sure you want to delete this hook card?'), 'Tem certeza de que deseja excluir este cartão de hook?');
+  assert.equal(tr('Are you sure you want to delete the hook "my-hook"?'), 'Tem certeza de que deseja excluir o hook "my-hook"?');
+  assert.equal(tr('No handlers configured for PreToolUse.'), 'Nenhum manipulador configurado para PreToolUse.');
+  assert.equal(tr('Add New Handler to SessionStart'), 'Adicionar Novo Manipulador a SessionStart');
+  assert.equal(tr('Handler #2'), 'Manipulador #2');
+  assert.equal(tr('Failed to load MCP servers'), 'Falha ao carregar servidores MCP');
+  assert.equal(tr('Connect GitHub with the GitHub plugin'), 'Conecte o GitHub com o plugin do GitHub');
+  assert.equal(tr('Workspace Settings'), 'Configurações do Espaço de Trabalho');
+  assert.equal(tr('Search shortcuts...'), 'Pesquisar atalhos...');
+  assert.equal(tr('Failed to delete recordings: permission denied'), 'Falha ao excluir gravações: permission denied');
+  assert.equal(tr('Error fetching rules: timeout'), 'Erro ao buscar rules: timeout');
+});
+
 
 
 

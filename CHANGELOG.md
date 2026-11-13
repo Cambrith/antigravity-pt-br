@@ -4,6 +4,13 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.9.0] - 2026-11-13
+
+### Adicionado
+- Varredura completa da interface do Antigravity v2.31.2 com +247 entradas em `src/maps/ui.json` cobrindo **Automações** (políticas de organização/branch/issue/PR/workflow, gatilhos, agendamentos, referências e validadores CEL, credenciais de automação e Coordenadores), **Personalizações** (Hooks, manipuladores, cartões de hook, regras, workflows, skills, plugins, servidores MCP e mensagens de erro/status), **Configurações** (abas, atalhos, aparência, navegador, depuração remota, controle remoto, telemetria) e **Contas/Conexões** (GitHub, login e permissões).
+- Novos padrões dinâmicos em `translateDynamic(s)` para manipuladores de hooks (`No handlers configured for ...`, `Add New Handler to ...`, `Handler #N`, exclusão de hooks) e erros de carregamento/exclusão (`Failed to delete ...`, `Error fetching ...`).
+- Novos testes automatizados em `tests/test-translations.js` validando todas as categorias da v1.9.0.
+
 ## [1.8.9] - 2026-11-13
 
 ### Adicionado
