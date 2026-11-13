@@ -4,6 +4,14 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.8] - 2026-11-13
+
+### Alterado
+- **Preservação do Conteúdo Interno do Pensamento do Agente**:
+  - Desativada a tradução automática dos parágrafos internos dentro do bloco de raciocínio/pensamento da IA (`[data-testid="thinking-content"]`, `[class*="thought-content"]`, `[class*="thinking-content"]` e `[data-testid="thinking-collapsible-trigger"] + div`).
+  - Cabeçalhos e comandos de ação da linha do tempo (*"Pensando"*, *"Pensou por Xs"*, *"Trabalhou por Xs"*, *"Comando executado"*, *"Executando comando"*, *"Editado"*, *"Explorado"*, etc.) permanecem traduzidos para Português do Brasil.
+  - Adicionado teste de regressão em `tests/test-translations.js`.
+
 ## [1.8.7] - 2026-11-13
 
 ### Adicionado

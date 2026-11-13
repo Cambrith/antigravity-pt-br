@@ -1513,6 +1513,29 @@ test('Varredura Profunda de Configurações, Layout, Navegador e Controles (v1.8
   assert.equal(tr('Yes, and always allow in this conversation'), 'Sim, e sempre permitir nesta conversa');
 });
 
+test('Pensamento interno do agente permanece original enquanto comandos de ação são traduzidos (v1.8.8)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  // Cabeçalhos e comandos de ação continuam traduzidos normalmente
+  assert.equal(tr('Thinking'), 'Pensando');
+  assert.equal(tr('Thought for 5s'), 'Pensou por 5s');
+  assert.equal(tr('Ran command'), 'Comando executado');
+  assert.equal(tr('Running command'), 'Executando comando');
+  assert.equal(tr('Worked for 12s'), 'Trabalhou por 12s');
+
+  // scanAndTranslateAllThoughts não deve mais traduzir nós internos de pensamento
+  let touchedThought = false;
+  sandbox.document.querySelectorAll = (sel) => {
+    if (sel && sel.includes('thinking-content')) {
+      touchedThought = true;
+    }
+    return [];
+  };
+  sandbox.window.__CAMBRITH_PROCESS_THOUGHTS__();
+  assert.equal(touchedThought, false);
+});
+
 
 
 

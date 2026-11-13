@@ -2130,7 +2130,7 @@
     if (el.tagName === 'CODE') return true;
     if (SKIP_TAGS.has(el.tagName)) return true;
     if (el.isContentEditable) return true;
-    if (el.closest && el.closest('pre, code, script, style, textarea, input, [contenteditable="true"], .monaco-editor, .xterm, .katex, [data-testid="user-input-step"]')) return true;
+    if (el.closest && el.closest('pre, code, script, style, textarea, input, [contenteditable="true"], .monaco-editor, .xterm, .katex, [data-testid="user-input-step"], [data-testid="thinking-content"], [class*="thought-content"], [class*="thinking-content"], [data-testid="thinking-collapsible-trigger"] + div')) return true;
     return false;
   }
 
@@ -2847,24 +2847,10 @@
   }
 
   function scanAndTranslateAllThoughts() {
-    prefetchAllTriggers();
+    // Mantém apenas a tradução de títulos de conversas na barra lateral;
+    // o conteúdo interno do pensamento do agente permanece no idioma original,
+    // preservando a tradução dos cabeçalhos e comandos de ação (Executou, Pensando, etc.).
     translateSidebarConversations();
-
-    const triggers = document.querySelectorAll('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], button[aria-expanded], [class*="thinking"], [class*="thought"]');
-    for (const trig of triggers) {
-      const text = trig.innerText || '';
-      if (!/pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(text)) continue;
-
-      const container = trig.nextElementSibling || trig.parentElement?.querySelector('.overflow-y-auto, [role="group"], .cursor-edit, [class*="content"]');
-      if (container) {
-        processThoughtContainer(container);
-      }
-    }
-
-    const directContainers = document.querySelectorAll('[role="group"][aria-labelledby], .cursor-edit.group, [class*="cursor-edit"], [data-testid="thinking-content"], [class*="thought-content"], [class*="thinking-content"]');
-    for (const c of directContainers) {
-      processThoughtContainer(c);
-    }
   }
 
   let thoughtDebounceTimer = null;
@@ -2874,25 +2860,6 @@
       scanAndTranslateAllThoughts();
     }, delay);
   }
-
-  // Intercepta pointerdown imediatamente antes do clique do usuário
-  document.addEventListener('pointerdown', (e) => {
-    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], [data-testid="worked-for-collapsible"], button, [class*="thinking"], [class*="thought"]');
-    if (trig && /pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(trig.innerText || '')) {
-      prefetchTriggerThinking(trig);
-      scanAndTranslateAllThoughts();
-    }
-  }, { capture: true, passive: true });
-
-  document.addEventListener('click', (e) => {
-    const trig = e.target.closest && e.target.closest('[data-testid="thinking-collapsible-trigger"], button, [class*="thinking"], [class*="thought"]');
-    if (trig && /pensou por|thought for|pensando|thinking|processo de raciocínio|thought process|raciocínio|reasoning/i.test(trig.innerText || '')) {
-      scanAndTranslateAllThoughts();
-      setTimeout(scanAndTranslateAllThoughts, 10);
-      setTimeout(scanAndTranslateAllThoughts, 50);
-      setTimeout(scanAndTranslateAllThoughts, 150);
-    }
-  }, { capture: true, passive: true });
 
   // Intercepta a Notification API do navegador/Electron para traduzir notificações e toasts do sistema
   if (typeof window !== 'undefined' && window.Notification && !window.__CAMBRITH_NOTIFICATION_INTERCEPTED__) {
