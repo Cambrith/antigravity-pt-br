@@ -4,6 +4,14 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.9.1] - 2026-11-13
+
+### Corrigido e Adicionado
+- **Tradução instantânea em Personalizações**: adicionadas ao mapa estático (`src/maps/plugins.json`) todas as prateleiras/categorias do Marketplace (`Cloud Hosting & Deployment`, `Productivity & Project Management`, `Design, Creative & Media`, `Developer Tools`, `Business`, `More Plugins`, `Build with Google`, `Google Workspace` e descrições) e todas as **61 descrições** dos plugins oficiais e de parceiros, eliminando a espera por tradução assíncrona.
+- **Cache persistente (`localStorage`)**: `translatePluginNodeAsync` agora persiste traduções de eventuais novos plugins futuros em `localStorage` para resposta instantânea nas próximas aberturas.
+- **Preservação de `monday.com`**: impedida a conversão indevida de `monday.com` em `Segunda-feira.com`.
+- **Correção de `+ + Ver mais 1`**: ajustada a regex de `See X more` para não duplicar o sinal `+` quando o ícone `+` já é renderizado pela interface.
+
 ## [1.9.0] - 2026-11-13
 
 ### Adicionado

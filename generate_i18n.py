@@ -3646,9 +3646,9 @@ js_body = r'''(function() {
       .replace(/\bYesterday\b/gi, 'Ontem')
       .replace(/\bTomorrow\b/gi, 'Amanhã');
 
-    // Days of the week (full)
+    // Days of the week (full) - preserva domínios/marcas como monday.com
     res = res
-      .replace(/\bMonday\b/gi, 'Segunda-feira')
+      .replace(/(?<!\.)\bMonday\b(?!\.com)/gi, 'Segunda-feira')
       .replace(/\bTuesday\b/gi, 'Terça-feira')
       .replace(/\bWednesday\b/gi, 'Quarta-feira')
       .replace(/\bThursday\b/gi, 'Quinta-feira')
@@ -5169,7 +5169,7 @@ js_body = r'''(function() {
 
 
     // Expansões de lista, paginação e contadores no Marketplace e Personalizações (+ See X more / See less)
-    if ((m = /^\+?\s*See\s+(\d+)\s+more$/i.exec(s))) {
+    if ((m = /^\+\s*See\s+(\d+)\s+more$/i.exec(s))) {
       return `+ Ver mais ${m[1]}`;
     }
     if ((m = /^See\s+(\d+)\s+more$/i.exec(s))) {
@@ -5521,7 +5521,19 @@ js_body = r'''(function() {
     return false;
   }
 
+  const PLUGIN_CACHE_KEY = 'cambrith_plugin_desc_cache_v1';
   const pluginDescCache = new Map();
+  try {
+    const savedPluginCache = window.localStorage && window.localStorage.getItem(PLUGIN_CACHE_KEY);
+    if (savedPluginCache) {
+      const parsed = JSON.parse(savedPluginCache);
+      if (parsed && typeof parsed === 'object') {
+        for (const [k, v] of Object.entries(parsed)) {
+          if (typeof v === 'string' && v.trim()) pluginDescCache.set(k, v);
+        }
+      }
+    }
+  } catch (_) {}
   const pendingPluginTranslations = new Map();
 
   function isEnglishPluginDescription(text) {
@@ -5565,6 +5577,17 @@ js_body = r'''(function() {
           const trans = data[0].map(c => (c && c[0]) ? c[0] : '').join('');
           if (trans && trans.trim()) {
             pluginDescCache.set(trimmed, trans.trim());
+            try {
+              if (window.localStorage) {
+                const obj = {};
+                let count = 0;
+                for (const [k, v] of pluginDescCache.entries()) {
+                  obj[k] = v;
+                  if (++count >= 400) break;
+                }
+                window.localStorage.setItem(PLUGIN_CACHE_KEY, JSON.stringify(obj));
+              }
+            } catch (_) {}
             return trans.trim();
           }
         }

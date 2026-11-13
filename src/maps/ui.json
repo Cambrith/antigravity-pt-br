@@ -1710,5 +1710,10 @@
   "Microphone blocked": "Microfone bloqueado",
   "Microphone didn't respond.": "O microfone não respondeu.",
   "Microphone is in use or unavailable.": "O microfone está em uso ou indisponível.",
-  "No microphone found. Connect one.": "Nenhum microfone encontrado. Conecte um."
+  "No microphone found. Connect one.": "Nenhum microfone encontrado. Conecte um.",
+  "Agent": "Agente",
+  "Chat": "Chat",
+  "Error:": "Erro:",
+  "Google Chat": "Google Chat",
+  "Installed": "Instalado"
 }

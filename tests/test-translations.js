@@ -1580,6 +1580,25 @@ test('v1.9.0 — Automações, Personalizações, Hooks, MCP, Contas e Configura
   assert.equal(tr('Error fetching rules: timeout'), 'Erro ao buscar rules: timeout');
 });
 
+test('v1.9.1 — Personalizações instantâneas, prateleiras do Marketplace, monday.com e Ver mais sem + duplicado', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  assert.equal(tr('Cloud Hosting & Deployment'), 'Hospedagem em Nuvem e Implantação');
+  assert.equal(tr('Productivity & Project Management'), 'Produtividade e Gestão de Projetos');
+  assert.equal(tr('Design, Creative & Media'), 'Design, Criatividade e Mídia');
+  assert.equal(tr('Developer Tools'), 'Ferramentas de Desenvolvimento');
+  assert.equal(tr('Business'), 'Negócios');
+  assert.equal(tr('More Plugins'), 'Mais plugins');
+  assert.equal(tr('Build with Google'), 'Desenvolva com o Google');
+  assert.equal(tr('monday.com'), 'monday.com');
+  assert.equal(tr('See 1 more'), 'Ver mais 1');
+  assert.equal(tr('+ See 1 more'), '+ Ver mais 1');
+  assert.equal(
+    tr('Plan and track work in monday.com from Antigravity: create, update and assign items, write docs, and build forms that turn requests into items.'),
+    'Planeje e acompanhe o trabalho no monday.com pelo Antigravity: crie, atualize e atribua itens, escreva documentos e crie formulários que transformam solicitações em itens.'
+  );
+});
+
 
 
 
