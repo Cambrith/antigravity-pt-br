@@ -1536,6 +1536,28 @@ test('Pensamento interno do agente permanece original enquanto comandos de açã
   assert.equal(touchedThought, false);
 });
 
+test('Seletor de Modelos: Tooltips, níveis e cabeçalhos preservando nomes originais dos modelos (v1.8.9)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+
+  assert.equal(
+    tr('Argon that may offload routine steps to Hydrogen. Same Argon-level quality, fewer tokens used.'),
+    'Argon que pode delegar etapas rotineiras para o Hydrogen. Mesma qualidade de nível Argon, com menos tokens usados.'
+  );
+  assert.equal(
+    tr('Claude Opus that may offload routine steps to Claude Sonnet. Same Opus-level quality, fewer tokens used.'),
+    'Claude Opus que pode delegar etapas rotineiras para o Claude Sonnet. Mesma qualidade de nível Opus, com menos tokens usados.'
+  );
+  assert.equal(tr('Best of N Models'), 'Modelos Melhor de N');
+  assert.equal(tr('No models available'), 'Nenhum modelo disponível');
+  assert.equal(tr('Loading models...'), 'Carregando modelos...');
+  assert.equal(tr('Add Model'), 'Adicionar modelo');
+  assert.equal(tr('Custom models are only supported on Linux machines.'), 'Modelos personalizados são suportados apenas em máquinas Linux.');
+  assert.equal(tr('No quota information available.'), 'Nenhuma informação de cota disponível.');
+  assert.equal(tr('Select model, current: Orchestrator (Argon)'), 'Selecionar modelo, atual: Orchestrator (Argon)');
+  assert.equal(tr('Max'), 'Máx');
+});
+
 
 
 

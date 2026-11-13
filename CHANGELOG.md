@@ -4,6 +4,14 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.9] - 2026-11-13
+
+### Adicionado
+- **Tradução Completa do Seletor de Modelos (preservando os nomes originais dos modelos)**:
+  - Tooltip do **Orchestrator (Argon)** e regra dinâmica para outros modelos: *"Argon that may offload routine steps to Hydrogen. Same Argon-level quality, fewer tokens used."* $\rightarrow$ *"Argon que pode delegar etapas rotineiras para o Hydrogen. Mesma qualidade de nível Argon, com menos tokens usados."*.
+  - Cabeçalhos, estados de carregamento, níveis e avisos do seletor: *"Best of N Models"* $\rightarrow$ *"Modelos Melhor de N"*, *"No models available"* $\rightarrow$ *"Nenhum modelo disponível"*, *"Loading models..."* $\rightarrow$ *"Carregando modelos..."*, *"Add Model"* $\rightarrow$ *"Adicionar modelo"*, *"Custom models are only supported on Linux machines."*, *"No quota information available."*, *"Max"* $\rightarrow$ *"Máx"*, *"Select model, current: \<Modelo\>"*.
+  - Nomes originais dos modelos (`Orchestrator (Argon)`, `Gemini 4 Argon`, `Gemini 4 Hydrogen`, `Gemini 4 Carbon`, `Claude Opus 5.5`, `Claude Sonnet 5.5`, `GPT-OSS 120B`, etc.) preservados integralmente.
+
 ## [1.8.8] - 2026-11-13
 
 ### Alterado

@@ -5430,6 +5430,14 @@ js_body = r'''(function() {
     if ((m = /^Signed in as\s+(.+)$/i.exec(s))) {
       return `Conectado como ${m[1]}`;
     }
+
+    // Seletor de modelos: descrições dinâmicas e aria-label preservando nomes originais dos modelos (v1.8.9)
+    if ((m = /^(.+?)\s+that may offload routine steps to\s+(.+?)\.\s+Same\s+(.+?)-level quality,\s+fewer tokens used\.$/i.exec(s))) {
+      return `${m[1]} que pode delegar etapas rotineiras para o ${m[2]}. Mesma qualidade de nível ${m[3]}, com menos tokens usados.`;
+    }
+    if ((m = /^Select model, current:\s*(.+)$/i.exec(s))) {
+      return `Selecionar modelo, atual: ${m[1]}`;
+    }
     return null;
   }
 

@@ -1451,5 +1451,17 @@
   "You have a conversation in progress. Updating will interrupt it, and it will automatically resume once the update completes.": "Você tem uma conversa em andamento. Atualizar irá interrompê-la e ela será retomada automaticamente após a conclusão da atualização.",
   "Pick a model to change it.": "Escolha um modelo para alterá-lo.",
   "Select a model in the model selector": "Selecione um modelo no seletor de modelos",
-  "Pick one of these themes under Preset in Settings > Appearance.": "Escolha um destes temas em Predefinição em Configurações > Aparência."
+  "Pick one of these themes under Preset in Settings > Appearance.": "Escolha um destes temas em Predefinição em Configurações > Aparência.",
+  "Argon that may offload routine steps to Hydrogen. Same Argon-level quality, fewer tokens used.": "Argon que pode delegar etapas rotineiras para o Hydrogen. Mesma qualidade de nível Argon, com menos tokens usados.",
+  "Best of N Models": "Modelos Melhor de N",
+  "No models available": "Nenhum modelo disponível",
+  "Loading models...": "Carregando modelos...",
+  "Add Model": "Adicionar modelo",
+  "Custom models are only supported on Linux machines.": "Modelos personalizados são suportados apenas em máquinas Linux.",
+  "No quota information available.": "Nenhuma informação de cota disponível.",
+  "Refreshing...": "Atualizando...",
+  "Usage": "Uso",
+  "Max": "Máx",
+  "Select Model to Send Message": "Selecione um modelo para enviar mensagem",
+  "Select Model": "Selecionar modelo"
 }
