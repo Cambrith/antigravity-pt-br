@@ -1599,6 +1599,19 @@ test('v1.9.1 — Personalizações instantâneas, prateleiras do Marketplace, mo
   );
 });
 
+test('v1.9.2 — Aparência (Font, Verbose, Bottom Panel) e Navegador (Change..., URLs do subagente)', () => {
+  const sandbox = setupSandbox();
+  const tr = sandbox.window.__CAMBRITH_TRANSLATE_STR__;
+  assert.equal(tr('Font'), 'Fonte');
+  assert.equal(tr('Verbose'), 'Detalhado');
+  assert.equal(tr('Change...'), 'Alterar...');
+  assert.equal(tr('Bottom Panel'), 'Painel inferior');
+  assert.equal(
+    tr('Configure allowed and denied URLs for the browser subagent. It runs in the built-in browser, so no separate browser install is needed.'),
+    'Configure as URLs permitidas e negadas para o subagente do navegador. Ele roda no navegador integrado, então não é necessário instalar um navegador separado.'
+  );
+});
+
 
 
 

@@ -1715,5 +1715,10 @@
   "Chat": "Chat",
   "Error:": "Erro:",
   "Google Chat": "Google Chat",
-  "Installed": "Instalado"
+  "Installed": "Instalado",
+  "Font": "Fonte",
+  "Verbose": "Detalhado",
+  "Change...": "Alterar...",
+  "Bottom Panel": "Painel inferior",
+  "Configure allowed and denied URLs for the browser subagent. It runs in the built-in browser, so no separate browser install is needed.": "Configure as URLs permitidas e negadas para o subagente do navegador. Ele roda no navegador integrado, então não é necessário instalar um navegador separado."
 }
