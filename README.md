@@ -5,9 +5,8 @@
 [![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](LICENSE)
 [![Plataformas](https://img.shields.io/badge/suporte-Linux%20%7C%20ChromeOS%20%7C%20Windows%20%7C%20macOS-brightgreen.svg)](docs/COMPATIBILITY.md)
 [![Traduções](https://img.shields.io/badge/entradas-3.040%2B-blueviolet.svg)](#-o-que-está-traduzido)
-[![Testes Automatizados](https://img.shields.io/badge/testes-100%25%20passando-success.svg)](tests/)
 
-Sistema profissional, robusto e persistente de localização em Português do Brasil (pt-BR) para o **Google Antigravity**, projetado para funcionar de forma transparente no **Linux** (múltiplas distribuições), **ChromeOS**, **Windows** e **macOS**.
+Tradução não oficial da interface do **Google Antigravity** para o português do Brasil (pt-BR), que continua aplicada depois das atualizações do aplicativo. Funciona no **Linux**, **ChromeOS**, **Windows** e **macOS**.
 
 ---
 
@@ -16,37 +15,23 @@ Sistema profissional, robusto e persistente de localização em Português do Br
 O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
 
 Este projeto resolve essa barreira entregando:
-1. **Tradução Integral e Fiel**: Mais de 3.040 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+1. **Tradução abrangente**: Mais de 3.040 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
 2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
-3. **Multiplataforma Real**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
+3. **Multiplataforma**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
 4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.
 
 ---
 
 O acesso a **Configurações** usa o botão original no rodapé da barra lateral, em janela normal e em tela cheia. O rodapé mantém seu espaço em janelas menores, com botão de maior contraste e sem uma engrenagem flutuante sobre os controles da janela. Em telas compactas, o app inicia maximizado pela área útil do gerenciador de janelas; ao restaurar, reserva margem vertical para evitar que o rodapé fique fora da tela. Também é possível usar **Ctrl+,** (ou **⌘+,** no macOS).
 
-## 🖥️ Matriz de Sistemas e Distribuições Homologadas
+## 🖥️ Compatibilidade
 
-O projeto foi validado nas seguintes plataformas (veja a [Matriz Detalhada](docs/COMPATIBILITY.md)):
+- **Linux**
+- **ChromeOS**, pelo ambiente Linux do sistema (Crostini)
+- **Windows** 10 e 11
+- **macOS**
 
-- **Linux (Principais Distribuições do Mercado por Família)**:
-  - **Família Debian**: Debian, MX Linux, Kali Linux, Raspberry Pi OS.
-  - **Família Ubuntu**: Ubuntu (Desktop/Server), Linux Mint, Pop!_OS, Zorin OS, elementary OS.
-  - **Família Red Hat, Fedora, SUSE e RPM**: Fedora, Red Hat Enterprise Linux (RHEL), openSUSE (Leap/Tumbleweed), Rocky Linux, AlmaLinux.
-  - **Família Arch Linux**: Arch Linux, Manjaro, SteamOS (Steam Deck), EndeavourOS.
-  - **Família Slackware e Derivados Leves**: Slackware, Puppy Linux.
-  - **Família Gentoo, Void e Baseadas em Código-Fonte**: Gentoo Linux, Void Linux.
-  - **Distribuições Independentes**: Alpine Linux, NixOS, Solus.
-  - **Ambientes e Empacotamentos Universais**: Flatpak (`com.google.Antigravity`), Wayland e X11.
-- **ChromeOS**:
-  - Suporte completo e nativo no **ChromeOS**, **ChromeOS Flex** e **FydeOS** através do contêiner oficial Crostini.
-- **Windows**:
-  - **Windows 11** e **Windows 10** (instalações por usuário em `%LOCALAPPDATA%` ou por máquina em `C:\Program Files`).
-- **macOS**:
-  - **macOS Sequoia (15)**, **Sonoma (14)**, **Ventura (13)** e **Monterey (12)**.
-  - Compatível com **Apple Silicon** (M1, M2, M3, M4) e processadores **Intel (x86_64)**.
-
-👉 *Para consultar o catálogo massivo completo com todas as 395 distribuições Linux e 6 sistemas ChromeOS homologados por família técnica, consulte [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).*
+O projeto é desenvolvido e usado no dia a dia no Linux. Os testes automáticos rodam em Linux e Windows. Caminhos de instalação por sistema estão em [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md).
 
 ---
 
@@ -177,7 +162,7 @@ Para entender em detalhes como o patcher manipula o arquivo `app.asar` mantendo 
 
 ## 📱 Antigravity Mobile PWA (Controle Remoto no Celular em pt-BR)
 
-Você pode controlar o seu Google Antigravity à distância pelo celular através do **Google Chrome oficial** (ou Safari no iOS), em **4G, 5G ou qualquer rede Wi-Fi**, com a interface **100% traduzida em Português do Brasil**:
+Você pode controlar o seu Google Antigravity à distância pelo celular através do **Google Chrome oficial** (ou Safari no iOS), em **4G, 5G ou qualquer rede Wi-Fi**, com a interface **traduzida em português do Brasil**:
 
 ### Como Iniciar o Acesso Móvel:
 No terminal do seu computador (onde o Antigravity está aberto):
@@ -204,13 +189,13 @@ npm run mobile
 
 ## 🧪 Qualidade e Testes Automatizados
 
-O repositório inclui uma suíte completa de testes unitários que garantem a qualidade e a ausência de regressões:
+O repositório inclui testes unitários para pegar regressões nas traduções:
 
 ```bash
 npm test
 ```
 
-Os testes são executados automaticamente a cada Pull Request em **Linux, Windows e macOS** via **GitHub Actions CI**.
+Os testes são executados automaticamente a cada Pull Request em **Linux e Windows** via **GitHub Actions CI**.
 
 ---
 
