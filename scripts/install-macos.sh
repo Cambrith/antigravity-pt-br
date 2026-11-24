@@ -50,6 +50,18 @@ fi
 
 echo "✅ Antigravity localizado em: $ASAR_PATH"
 
+# Um .app com assinatura válida deixa de abrir se o app.asar for alterado (assinatura e verificação
+# de integridade do Electron). Sem validar esse caso no macOS, o instalador não arrisca.
+APP_BUNDLE="$(cd "$(dirname "$ASAR_PATH")/../.." 2>/dev/null && pwd)"
+if [[ "$APP_BUNDLE" == *.app ]] && command -v codesign >/dev/null 2>&1 \
+   && codesign --verify --deep --strict "$APP_BUNDLE" >/dev/null 2>&1 \
+   && [ "${ANTIGRAVITY_ALLOW_SIGNED_PATCH:-0}" != "1" ]; then
+    echo "❌ $APP_BUNDLE tem assinatura de código válida."
+    echo "   Alterar o app.asar invalida a assinatura e pode impedir o Antigravity de abrir no macOS."
+    echo "   Nada foi alterado. Para tentar mesmo assim, por sua conta, rode com ANTIGRAVITY_ALLOW_SIGNED_PATCH=1."
+    exit 1
+fi
+
 # 3. Criar diretório permanente e sincronizar arquivos
 echo "📦 Configurando arquivos permanentes em $CONFIG_I18N_DIR..."
 mkdir -p "$CONFIG_I18N_DIR"

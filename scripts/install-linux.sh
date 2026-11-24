@@ -109,10 +109,20 @@ if [[ "$ASAR_PATH" == *"$HOME/.local/opt/"* ]] && command -v systemctl >/dev/nul
     echo "🛡️ Proteção contra atualizações ativada para o Antigravity."
 fi
 
-if [ -d "$LOCAL_BIN" ] && [ -f "$SCRIPT_DIR/launcher/antigravity-launcher.sh" ]; then
+# Launcher com guarda de inicialização (rollback automático se a tradução impedir o app de abrir).
+LAUNCHER_SRC="$SCRIPT_DIR/launcher/antigravity"
+[ -f "$LAUNCHER_SRC" ] || LAUNCHER_SRC="$SCRIPT_DIR/launcher/antigravity-launcher.sh"
+if [ -d "$LOCAL_BIN" ] && [ -f "$LAUNCHER_SRC" ]; then
     echo "🚀 Configurando inicializador automático em $LOCAL_BIN/antigravity..."
+    # Um launcher que não é deste projeto (ou um link) é guardado, e o desinstalador o devolve.
+    if [ -L "$LOCAL_BIN/antigravity" ] || { [ -f "$LOCAL_BIN/antigravity" ] && ! grep -qF "personalizações Cambrith persistentes" "$LOCAL_BIN/antigravity"; }; then
+        if [ ! -e "$LOCAL_BIN/antigravity.antes-pt-br" ] && [ ! -L "$LOCAL_BIN/antigravity.antes-pt-br" ]; then
+            mv "$LOCAL_BIN/antigravity" "$LOCAL_BIN/antigravity.antes-pt-br"
+            echo "ℹ️ Launcher anterior guardado em $LOCAL_BIN/antigravity.antes-pt-br."
+        fi
+    fi
     rm -f "$LOCAL_BIN/antigravity"
-    cp "$SCRIPT_DIR/launcher/antigravity-launcher.sh" "$LOCAL_BIN/antigravity"
+    cp "$LAUNCHER_SRC" "$LOCAL_BIN/antigravity"
     chmod +x "$LOCAL_BIN/antigravity"
 fi
 

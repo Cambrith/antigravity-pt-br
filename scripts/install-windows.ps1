@@ -23,10 +23,10 @@ $ConfigI18nDir = Join-Path $env:APPDATA "Antigravity\i18n"
 # 2. Localizar app.asar no Windows
 $Candidates = @(
     (Join-Path $env:LOCALAPPDATA "Programs\antigravity\resources\app.asar"),
-    (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\resources\app.asar"),
-    (Join-Path $env:ProgramFiles "Antigravity\resources\app.asar"),
-    (Join-Path ${env:ProgramFiles(x86)} "Antigravity\resources\app.asar")
+    (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\resources\app.asar")
 )
+if ($env:ProgramFiles) { $Candidates += (Join-Path $env:ProgramFiles "Antigravity\resources\app.asar") }
+if (${env:ProgramFiles(x86)}) { $Candidates += (Join-Path ${env:ProgramFiles(x86)} "Antigravity\resources\app.asar") }
 
 $AsarPath = ""
 foreach ($p in $Candidates) {
@@ -74,6 +74,12 @@ if (Test-Path $AgentsMdSource) {
 # 4. Executar patch
 Write-Host " Aplicando tradução no app.asar..." -ForegroundColor Cyan
 & node (Join-Path $ConfigI18nDir "patch-asar.js") "--asar=$AsarPath" "--force"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host " Erro: o patcher falhou (código $LASTEXITCODE). O Antigravity não foi alterado ou continua como estava." -ForegroundColor Red
+    Write-Host " Feche o Antigravity e rode o instalador de novo; veja as mensagens acima." -ForegroundColor Yellow
+    exit $LASTEXITCODE
+}
 
 Write-Host ""
 Write-Host "========================================================" -ForegroundColor Green

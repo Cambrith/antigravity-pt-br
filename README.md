@@ -224,6 +224,10 @@ O instalador cria automaticamente uma cópia de segurança (`app.asar.bak-origin
   .\scripts\uninstall.ps1
   ```
 
+O desinstalador só restaura o backup se ele for o original **da mesma versão** do Antigravity instalada; se não for (por exemplo, o app foi atualizado por fora), ele não mexe no app e pede para reinstalar o Antigravity. No Linux ele também desliga o monitor de atualizações e remove apenas o inicializador criado por este projeto, devolvendo o que existia antes.
+
+No macOS, o instalador não altera um `Antigravity.app` com assinatura de código válida, porque isso pode impedir o app de abrir.
+
 Para mais soluções de problemas comuns, consulte o **[Guia de Resolução de Problemas (docs/TROUBLESHOOTING.md)](docs/TROUBLESHOOTING.md)**.
 
 ---
