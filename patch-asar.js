@@ -1884,7 +1884,9 @@ function run() {
     process.exit(1);
   }
 
-  // 1. Sincronizar cópia golden e cópia em resources
+  // 1. Sincronizar cópia golden e cópia em resources (não ao restaurar o original)
+  const restoringOnly = process.argv.includes('--rollback') || process.argv.includes('--restore-original');
+  if (!restoringOnly) {
   try {
     if (!fs.existsSync(GOLDEN_DIR)) {
       fs.mkdirSync(GOLDEN_DIR, { recursive: true });
@@ -1966,6 +1968,8 @@ function run() {
     log(`Aviso ao sincronizar ícones de bandeja: ${err.message}`);
   }
 
+  }
+
   // 2. Ler ASAR e verificar assinatura
   const buf = fs.readFileSync(ASAR_PATH);
   const isForce = process.argv.includes('--force');
@@ -1975,7 +1979,9 @@ function run() {
 
   // Rollback (chamado pelo launcher quando o app traduzido não chega a abrir a interface):
   // volta o app.asar original desta mesma versão e põe o patcher em quarentena.
-  if (process.argv.includes('--rollback')) {
+  // --restore-original (desinstaladores): mesma restauração validada, sem quarentena.
+  const isRestore = process.argv.includes('--restore-original');
+  if (process.argv.includes('--rollback') || isRestore) {
     if (!buf.includes(anySignature)) {
       log('Rollback: o app.asar já é o original; nada a fazer.');
       return;
@@ -1993,6 +1999,10 @@ function run() {
     const tmpRb = `${ASAR_PATH}.tmp-rollback-${process.pid}`;
     fs.writeFileSync(tmpRb, bak);
     fs.renameSync(tmpRb, ASAR_PATH);
+    if (isRestore) {
+      log(`app.asar original da versão ${currentVersion} restaurado.`);
+      return;
+    }
     try {
       fs.mkdirSync(getStateDir(), { recursive: true });
       fs.writeFileSync(patchQuarantineFile(), patchQuarantineKey(currentVersion) + '\n', 'utf8');

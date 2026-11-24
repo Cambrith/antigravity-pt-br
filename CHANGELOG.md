@@ -4,6 +4,19 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.10.1] - 2026-11-24
+
+### Corrigido
+- Os instaladores Linux instalavam o inicializador antigo (`launcher/antigravity-launcher.sh`), sem a guarda de inicialização; agora instalam `launcher/antigravity`.
+- Instaladores Linux guardam um inicializador que não é deste projeto (ou um link) em `~/.local/bin/antigravity.antes-pt-br`, e o desinstalador o devolve.
+- Desinstaladores (`scripts/uninstall.sh` e `scripts/uninstall.ps1`): restauram o `app.asar` pelo novo `patch-asar.js --restore-original`, que só aceita o backup original da mesma versão instalada; antes, copiavam o backup às cegas, inclusive um de versão antiga.
+- `scripts/uninstall.sh` desliga o monitor `antigravity-patch-after-update.path`; antes, a tradução voltava sozinha depois de desinstalada.
+- Windows: o instalador agora avisa e sai com erro quando o patcher falha (antes anunciava sucesso) e tolera a ausência de `ProgramFiles(x86)`.
+- macOS: o instalador não altera um `.app` com assinatura de código válida (pode impedir o app de abrir); `ANTIGRAVITY_ALLOW_SIGNED_PATCH=1` força, por conta do usuário.
+- Os modos `--rollback` e `--restore-original` do patcher não copiam mais o `i18n-pt-br.js` para o app.
+
+Reaproveita os pontos ainda válidos da PR #3. As partes de Windows e macOS foram conferidas apenas por análise sintática nesta versão.
+
 ## [1.10.0] - 2026-11-24
 
 ### Adicionado
