@@ -18,7 +18,144 @@ const crypto = require('crypto');
 const vm = require('vm');
 const os = require('os');
 
-const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v20';
+const PATCH_SIGNATURE = 'Cambrith pt-BR Localization Injection v23';
+
+// Pasta de estado da guarda de inicialização (mesma lógica no patcher, no app e no launcher).
+function getStateDir() {
+  const home = os.homedir();
+  if (process.platform === 'win32') {
+    return path.join(process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local'), 'antigravity-cambrith');
+  } else if (process.platform === 'darwin') {
+    return path.join(home, 'Library', 'Application Support', 'antigravity-cambrith');
+  }
+  return path.join(process.env.XDG_STATE_HOME || path.join(home, '.local', 'state'), 'antigravity-cambrith');
+}
+
+// Injetado no main.js do app. Registra que a interface abriu (boot-ok) e guarda a quarentena do
+// i18n: chave = versão do app + tamanho/data do i18n-pt-br.js. Ao trocar o i18n ou o app, ela expira.
+const BOOT_GUARD_JS = `// --- Cambrith: guarda de inicialização ---
+try {
+    const __gfs = require('fs');
+    const __gpath = require('path');
+    const __gos = require('os');
+    const __ghome = __gos.homedir();
+    const __gdir = process.platform === 'win32'
+        ? __gpath.join(process.env.LOCALAPPDATA || __gpath.join(__ghome, 'AppData', 'Local'), 'antigravity-cambrith')
+        : process.platform === 'darwin'
+            ? __gpath.join(__ghome, 'Library', 'Application Support', 'antigravity-cambrith')
+            : __gpath.join(process.env.XDG_STATE_HOME || __gpath.join(__ghome, '.local', 'state'), 'antigravity-cambrith');
+    const __gkey = (p) => {
+        const st = __gfs.statSync(p);
+        return electron_1.app.getVersion() + '|' + st.size + '|' + Math.floor(st.mtimeMs);
+    };
+    const __gwrite = (name, text) => {
+        try { __gfs.mkdirSync(__gdir, { recursive: true }); __gfs.writeFileSync(__gpath.join(__gdir, name), text + '\\n', 'utf8'); } catch (_) {}
+    };
+    global.__cambrithGuard = {
+        findI18n() {
+            const golden = process.platform === 'win32'
+                ? __gpath.join(process.env.APPDATA || __gpath.join(__ghome, 'AppData', 'Roaming'), 'Antigravity', 'i18n', 'i18n-pt-br.js')
+                : process.platform === 'darwin'
+                    ? __gpath.join(__ghome, 'Library', 'Application Support', 'Antigravity', 'i18n', 'i18n-pt-br.js')
+                    : __gpath.join(process.env.XDG_CONFIG_HOME || __gpath.join(__ghome, '.config'), 'Antigravity', 'i18n', 'i18n-pt-br.js');
+            if (__gfs.existsSync(golden)) return golden;
+            const res = __gpath.join(process.resourcesPath || '', 'i18n-pt-br.js');
+            return __gfs.existsSync(res) ? res : null;
+        },
+        isI18nQuarantined(p) {
+            try {
+                const q = __gpath.join(__gdir, 'i18n-quarantine');
+                return __gfs.existsSync(q) && __gfs.readFileSync(q, 'utf8').trim() === __gkey(p);
+            } catch (_) { return false; }
+        },
+        quarantineI18n(p) {
+            try {
+                __gwrite('i18n-quarantine', __gkey(p));
+                console.warn('[Cambrith] A tradução deixou a interface em branco nesta versão; ela fica desligada até o i18n ou o app mudarem.');
+            } catch (_) {}
+        },
+        bootOk() {
+            if (global.__cambrithBootOkWritten) return;
+            global.__cambrithBootOkWritten = true;
+            try { global.__cambrithBootDone && global.__cambrithBootDone(); } catch (_) {}
+            __gwrite('boot-ok', electron_1.app.getVersion() + ' ' + new Date().toISOString() + (global.__cambrithSafeMode ? ' modo-seguro' : ''));
+        }
+    };
+} catch (_) {}`;
+
+// Novo ponto de entrada do app (package.json "main"): carrega o main.js original e, se algo
+// quebrar ANTES de a interface abrir, grava boot-crash e sai com código 70. Sem isso o Electron
+// mostra uma caixa de erro e fica parado, e o launcher não teria como saber que precisa do rollback.
+const BOOT_ENTRY = 'dist/cambrith-boot.js';
+const BOOT_EXIT_CODE = 70;
+function buildBootWrapper(originalMain) {
+  const rel = './' + path.posix.relative('dist', originalMain);
+  return `'use strict';
+// --- ${PATCH_SIGNATURE}: inicialização protegida ---
+(function () {
+    const fs = require('fs');
+    const path = require('path');
+    const os = require('os');
+    const home = os.homedir();
+    const dir = process.platform === 'win32'
+        ? path.join(process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local'), 'antigravity-cambrith')
+        : process.platform === 'darwin'
+            ? path.join(home, 'Library', 'Application Support', 'antigravity-cambrith')
+            : path.join(process.env.XDG_STATE_HOME || path.join(home, '.local', 'state'), 'antigravity-cambrith');
+    let failed = false;
+    const fail = (err) => {
+        if (failed) return;
+        failed = true;
+        try {
+            fs.mkdirSync(dir, { recursive: true });
+            fs.writeFileSync(path.join(dir, 'boot-crash'), new Date().toISOString() + '\\n' + String((err && err.stack) || err) + '\\n', 'utf8');
+        } catch (_) {}
+        try { console.error('[Cambrith] O app traduzido falhou ao iniciar:', err); } catch (_) {}
+        try { require('electron').app.exit(${BOOT_EXIT_CODE}); } catch (_) { process.exit(${BOOT_EXIT_CODE}); }
+    };
+    const early = (err) => { if (!global.__cambrithBootOkWritten) fail(err); };
+    process.on('uncaughtException', early);
+    // Depois que a interface abre, devolve o tratamento de erros padrão do Electron.
+    global.__cambrithBootDone = () => { try { process.removeListener('uncaughtException', early); } catch (_) {} };
+    try {
+        require(${JSON.stringify(rel)});
+    } catch (err) {
+        fail(err);
+    }
+})();
+`;
+}
+
+// Lê um arquivo empacotado (ex.: package.json) de dentro de um buffer .asar.
+function readAsarEntry(buf, relPath) {
+  try {
+    const headerSize = buf.readUInt32LE(4);
+    const jsonSize = buf.readUInt32LE(12);
+    const header = JSON.parse(buf.toString('utf8', 16, 16 + jsonSize));
+    let node = header;
+    for (const part of relPath.split('/')) {
+      node = node && node.files ? node.files[part] : null;
+    }
+    if (!node || node.offset === undefined || node.unpacked) return null;
+    const start = 8 + headerSize + Number(node.offset);
+    return buf.subarray(start, start + node.size);
+  } catch (_) {
+    return null;
+  }
+}
+
+function readAsarVersion(buf) {
+  const pkg = readAsarEntry(buf, 'package.json');
+  try { return pkg ? JSON.parse(pkg.toString('utf8')).version || null : null; } catch (_) { return null; }
+}
+
+// Quarentena do patch: depois de um rollback, não reaplicar o MESMO patcher na MESMA versão do app
+// (evita o ciclo "patch -> não abre -> rollback -> patch"). Um patcher novo ou --force tenta de novo.
+function patcherFingerprint() {
+  try { return crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex').slice(0, 16); } catch (_) { return 'desconhecido'; }
+}
+function patchQuarantineFile() { return path.join(getStateDir(), 'patch-quarantine'); }
+function patchQuarantineKey(version) { return `${version}|${patcherFingerprint()}`; }
 
 // 1. Resolução Multiplataforma de Caminhos
 function getExecutableConfigFile() {
@@ -365,147 +502,21 @@ function patchPreload(code) {
 
 // --- ${PATCH_SIGNATURE} ---
 try {
-    const fs = require('fs');
-    const path = require('path');
-    const os = require('os');
-    function getI18nPath() {
-        const home = os.homedir();
-        const resPath = path.join(process.resourcesPath || path.join(__dirname, '..', '..'), 'i18n-pt-br.js');
-        let golden = '';
-        if (process.platform === 'win32') {
-            golden = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n', 'i18n-pt-br.js');
-        } else if (process.platform === 'darwin') {
-            golden = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n', 'i18n-pt-br.js');
-        } else {
-            golden = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n', 'i18n-pt-br.js');
-        }
-        if (fs.existsSync(golden)) return golden;
-        if (fs.existsSync(resPath)) return resPath;
-        return null;
-    }
-    const i18nPath = getI18nPath();
-    if (i18nPath && fs.existsSync(i18nPath)) {
-        const i18nCode = fs.readFileSync(i18nPath, 'utf-8');
+    // 2.33.0: o preload roda isolado (sandbox) e não tem fs/os/path; o acesso a disco foi para o processo principal via IPC.
+    const __nat = (fn, ...args) => {
+        try { return electron_1.ipcRenderer.sendSync('cambrith:native', fn, args); } catch (_) { return null; }
+    };
+    const i18nCode = __nat('getI18nCode');
+    if (i18nCode) {
         const runI18n = () => {
             try {
                 const nativeBridge = {
-                    getDocsFolder: () => {
-                        try {
-                            const home = os.homedir();
-                            if (fs.existsSync(path.join(home, 'Documentos'))) return 'Documentos';
-                            if (fs.existsSync(path.join(home, 'Documents'))) return 'Documents';
-                        } catch (_) {}
-                        return 'Documentos';
-                    },
-                    createReadme: (folderName, projectName) => {
-                        try {
-                            const home = os.homedir();
-                            const candidateDirs = [
-                                path.join(home, 'antigravity', folderName),
-                                path.join(home, 'Documentos', 'antigravity', folderName),
-                                path.join(home, 'Documents', 'antigravity', folderName),
-                                path.join(home, 'Documentos', folderName),
-                                path.join(home, 'Documents', folderName)
-                            ];
-                            let attempts = 0;
-                            const interval = setInterval(() => {
-                                attempts++;
-                                for (const targetDir of candidateDirs) {
-                                    if (fs.existsSync(targetDir)) {
-                                        const readmePath = path.join(targetDir, 'README.md');
-                                        if (!fs.existsSync(readmePath)) {
-                                            const titleStr = projectName || folderName;
-                                            const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visão Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
-                                            fs.writeFileSync(readmePath, content, 'utf8');
-                                        }
-                                        clearInterval(interval);
-                                        return;
-                                    }
-                                }
-                                if (attempts >= 20) {
-                                    clearInterval(interval);
-                                }
-                            }, 250);
-                        } catch (e) {
-                            console.warn('[Cambrith] Erro ao criar README:', e);
-                        }
-                    },
-                    loadCustomThemes: () => {
-                        try {
-                            const home = os.homedir();
-                            let cfgDir = '';
-                            if (process.platform === 'win32') {
-                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
-                            } else if (process.platform === 'darwin') {
-                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
-                            } else {
-                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
-                            }
-                            const filePath = path.join(cfgDir, 'custom-themes.json');
-                            if (fs.existsSync(filePath)) {
-                                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                            }
-                        } catch (_) {}
-                        return null;
-                    },
-                    saveCustomThemes: (themes) => {
-                        try {
-                            const home = os.homedir();
-                            let cfgDir = '';
-                            if (process.platform === 'win32') {
-                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
-                            } else if (process.platform === 'darwin') {
-                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
-                            } else {
-                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
-                            }
-                            fs.mkdirSync(cfgDir, { recursive: true });
-                            const filePath = path.join(cfgDir, 'custom-themes.json');
-                            fs.writeFileSync(filePath, JSON.stringify(themes, null, 2), 'utf8');
-                            return true;
-                        } catch (e) {
-                            console.warn('[Cambrith] Erro ao salvar custom-themes.json:', e);
-                            return false;
-                        }
-                    },
-                    loadActiveTheme: () => {
-                        try {
-                            const home = os.homedir();
-                            let cfgDir = '';
-                            if (process.platform === 'win32') {
-                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
-                            } else if (process.platform === 'darwin') {
-                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
-                            } else {
-                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
-                            }
-                            const filePath = path.join(cfgDir, 'active-theme.json');
-                            if (fs.existsSync(filePath)) {
-                                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                            }
-                        } catch (_) {}
-                        return null;
-                    },
-                    saveActiveTheme: (theme) => {
-                        try {
-                            const home = os.homedir();
-                            let cfgDir = '';
-                            if (process.platform === 'win32') {
-                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
-                            } else if (process.platform === 'darwin') {
-                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
-                            } else {
-                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
-                            }
-                            fs.mkdirSync(cfgDir, { recursive: true });
-                            const filePath = path.join(cfgDir, 'active-theme.json');
-                            fs.writeFileSync(filePath, JSON.stringify(theme, null, 2), 'utf8');
-                            return true;
-                        } catch (e) {
-                            console.warn('[Cambrith] Erro ao salvar active-theme.json:', e);
-                            return false;
-                        }
-                    }
+                    getDocsFolder: () => __nat('getDocsFolder') || 'Documentos',
+                    createReadme: (folderName, projectName) => { __nat('createReadme', folderName, projectName); },
+                    loadCustomThemes: () => __nat('loadCustomThemes'),
+                    saveCustomThemes: (themes) => !!__nat('saveCustomThemes', themes),
+                    loadActiveTheme: () => __nat('loadActiveTheme'),
+                    saveActiveTheme: (theme) => !!__nat('saveActiveTheme', theme)
                 };
                 if (typeof electron_1 !== 'undefined' && electron_1.contextBridge && electron_1.contextBridge.exposeInMainWorld) {
                     try { electron_1.contextBridge.exposeInMainWorld('cambrithNativeBridge', nativeBridge); } catch (_) {}
@@ -518,8 +529,7 @@ try {
                 electron_1.webFrame.executeJavaScript(i18nCode);
             } catch (e) {}
         };
-        // Cambrith: Executa imediatamente no preload para que hooks de protótipo (ex: String.prototype.split)
-        // estejam ativos antes de qualquer script da aplicação ser avaliado.
+        // Executa já no preload para os hooks de protótipo (ex.: String.prototype.split) valerem antes dos scripts do app.
         runI18n();
         if (document.readyState === 'loading') {
             window.addEventListener('DOMContentLoaded', runI18n, { once: true });
@@ -537,7 +547,11 @@ function patchUtils(code) {
   let out = code;
   // Cambrith: Garante tema escuro nativo no Electron para menus de contexto e controles
   if (!out.includes('electron_1.nativeTheme.themeSource =')) {
-    out = out.replace("const win = new electron_1.BrowserWindow({", "try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}\n    const win = new electron_1.BrowserWindow({");
+    if (out.includes("const win = new electron_1.BrowserWindow({")) {
+      out = out.replace("const win = new electron_1.BrowserWindow({", "try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}\n    const win = new electron_1.BrowserWindow({");
+    } else if (out.includes("const windowOptions = {")) {
+      out = out.replace("const windowOptions = {", "try { electron_1.nativeTheme.themeSource = 'dark'; } catch (_) {}\n    const windowOptions = {");
+    }
   }
   // Ajusta a janela inicial à área útil: painéis do desktop não podem cortar o rodapé.
   out = out.replace(/width: 1400,\s*height: 900,/, `...(() => {
@@ -555,12 +569,16 @@ function patchUtils(code) {
   out = out.replace('const height = Math.min(900, area.height);',
                     'const height = Math.min(900, Math.floor(area.height * 0.9));');
   if (!out.includes('// Cambrith: maximiza em telas compactas')) {
-    out = out.replace("win.on('page-title-updated',", `// Cambrith: maximiza em telas compactas usando a área útil do gerenciador de janelas.
+    const maxCompactSnippet = `// Cambrith: maximiza em telas compactas usando a área útil do gerenciador de janelas.
     const initialWorkArea = electron_1.screen.getPrimaryDisplay().workArea;
     if (initialWorkArea.width < 1400 || initialWorkArea.height < 900) {
         win.maximize();
+    }`;
+    if (out.includes("const handleTitleUpdate = (_event, title) => {")) {
+      out = out.replace("const handleTitleUpdate = (_event, title) => {", `${maxCompactSnippet}\n    const handleTitleUpdate = (_event, title) => {`);
+    } else {
+      out = out.replace("win.on('page-title-updated',", `${maxCompactSnippet}\n    win.on('page-title-updated',`);
     }
-    win.on('page-title-updated',`);
   }
   // Cambrith: padroniza a identificação da janela no Alt+Tab, barra de tarefas e sistema
   const origTitlePattern = /win\.on\('page-title-updated',\s*\(event,\s*title\)\s*=>\s*\{[\s\S]*?win\.setTitle\(truncated\s*\+\s*wslBadge\);\s*\}\s*\}\);/;
@@ -574,7 +592,22 @@ function patchUtils(code) {
         const fullTitle = base && !base.includes(appName) ? \`\${base} — \${appName}\` : (base || appName);
         win.setTitle(fullTitle + (wslBadge || ''));
     });`;
-  if (origTitlePattern.test(out)) {
+  const origHandleTitlePattern = /const handleTitleUpdate = \(_event, title\) => \{[\s\S]*?win\.setTitle\(truncated \+ badge\);\s*\};/;
+  const brandedHandleTitle = `const handleTitleUpdate = (_event, title) => {
+        if (win.isDestroyed?.()) {
+            return;
+        }
+        const appName = 'Google Antigravity';
+        let base = (title && typeof title === 'string') ? title.trim() : '';
+        if (base.length > 35) {
+            base = base.substring(0, 35) + '...';
+        }
+        const fullTitle = base && !base.includes(appName) ? \`\${base} — \${appName}\` : (base || appName);
+        win.setTitle(fullTitle + (badge || ''));
+    };`;
+  if (origHandleTitlePattern.test(out)) {
+    out = out.replace(origHandleTitlePattern, brandedHandleTitle);
+  } else if (origTitlePattern.test(out)) {
     out = out.replace(origTitlePattern, brandedTitleHandler);
   }
   const domReadyHook = `(() => {
@@ -604,15 +637,66 @@ function patchUtils(code) {
                     return null;
                 }
                 const i18nPath = getI18nPath();
-                if (i18nPath && fs.existsSync(i18nPath)) {
+                if (i18nPath && global.__cambrithGuard && global.__cambrithGuard.isI18nQuarantined(i18nPath)) {
+                    global.__cambrithSafeMode = true;
+                }
+                if (i18nPath && fs.existsSync(i18nPath) && !global.__cambrithSafeMode) {
                     targetContents.executeJavaScript(fs.readFileSync(i18nPath, 'utf-8')).catch(() => {});
                 }
                 const controlsPath = path.join(process.resourcesPath || path.join(__dirname, '..', '..'), 'cambrith-window-controls.js');
-                if (fs.existsSync(controlsPath)) {
+                if (__CAMBRITH_CONTROLS_ENABLED__ && fs.existsSync(controlsPath)) {
                     targetContents.executeJavaScript(fs.readFileSync(controlsPath, 'utf-8')).catch(() => {});
                 }
             } catch (_) {}
         };
+        // Modo seguro: se a página ficar em branco por ~20 s (ex.: atualização do app quebrou a tradução),
+        // desliga o JS de tradução e recarrega; o app abre em inglês, mas abre.
+        // Se a página carregar depois disso, a culpa era da tradução: ela fica em quarentena para esta
+        // versão do app + este i18n (as próximas aberturas já vêm direto em inglês, sem os 20 s em branco).
+        if (!targetContents.__cambrithWatchdog) {
+            targetContents.__cambrithWatchdog = true;
+            const wdHasContent = () => targetContents.executeJavaScript("(function(){var b=document.body;return !!(b&&b.innerText&&b.innerText.trim().length>20);})()");
+            const wdIsHub = () => (targetContents.getURL() || '').indexOf('https://127.0.0.1') === 0;
+            let wdTicks = 0;
+            const wdTimer = setInterval(async () => {
+                wdTicks++;
+                try {
+                    if (targetContents.isDestroyed()) { clearInterval(wdTimer); return; }
+                    if (wdIsHub() && await wdHasContent()) {
+                        clearInterval(wdTimer);
+                        try { global.__cambrithGuard && global.__cambrithGuard.bootOk(); } catch (_) {}
+                        return;
+                    }
+                } catch (_) {}
+                if (wdTicks >= 10) {
+                    clearInterval(wdTimer);
+                    try {
+                        if (wdIsHub() && !global.__cambrithSafeMode) {
+                            global.__cambrithSafeMode = true;
+                            console.warn('[Cambrith] Tela em branco: ativando modo seguro (sem tradução) e recarregando.');
+                            targetContents.reload();
+                            let sfTicks = 0;
+                            const sfTimer = setInterval(async () => {
+                                sfTicks++;
+                                try {
+                                    if (targetContents.isDestroyed()) { clearInterval(sfTimer); return; }
+                                    if (wdIsHub() && await wdHasContent()) {
+                                        clearInterval(sfTimer);
+                                        try {
+                                            const qp = global.__cambrithGuard && global.__cambrithGuard.findI18n();
+                                            if (qp && global.__cambrithGuard) global.__cambrithGuard.quarantineI18n(qp);
+                                            global.__cambrithGuard && global.__cambrithGuard.bootOk();
+                                        } catch (_) {}
+                                        return;
+                                    }
+                                } catch (_) {}
+                                if (sfTicks >= 15) clearInterval(sfTimer);
+                            }, 2000);
+                        }
+                    } catch (_) {}
+                }
+            }, 2000);
+        }
         targetContents.on('dom-ready', injectCambrithI18n);
         targetContents.on('did-finish-load', injectCambrithI18n);
         if (targetContents.isLoading && !targetContents.isLoading()) {
@@ -629,7 +713,7 @@ function patchUtils(code) {
       out = out.replace("win.webContents.on('did-finish-load', () => {", domReadyHook + "\n        win.webContents.on('did-finish-load', () => {");
     }
   }
-  const titleBarOverlayPattern = /titleBarOverlay: isMacOS\(\)\s*\? false\s*:\s*\{\s*color: backgroundColor,\s*symbolColor: foregroundColor,\s*height: 30,\s*\},/;
+  const titleBarOverlayPattern = /titleBarOverlay: isMacOS\(\)\s*\? false\s*:\s*\{\s*color: backgroundColor,\s*symbolColor: foregroundColor,\s*height: (?:30|windowState_1\.DEFAULT_TITLE_BAR_OVERLAY_HEIGHT),\s*\},/;
   const customControlsOverlay = `titleBarOverlay: process.platform === 'linux' || isMacOS()
             ? false
             : {
@@ -637,12 +721,18 @@ function patchUtils(code) {
                 symbolColor: foregroundColor,
                 height: 30,
             },`;
+  // Os controles próprios da janela só entram se a barra nativa puder ser desligada; se o código
+  // do app mudou, segue sem eles (antes isso abortava a tradução inteira, como na 2.34.0).
+  let controlsEnabled = true;
   if (!out.includes("titleBarOverlay: process.platform === 'linux' || isMacOS()")) {
-    if (!titleBarOverlayPattern.test(out)) {
-      throw new Error('Não foi possível localizar a configuração original dos controles da janela.');
+    if (titleBarOverlayPattern.test(out)) {
+      out = out.replace(titleBarOverlayPattern, customControlsOverlay);
+    } else {
+      controlsEnabled = false;
+      log('AVISO: configuração original dos controles da janela não encontrada; mantendo os controles nativos.');
     }
-    out = out.replace(titleBarOverlayPattern, customControlsOverlay);
   }
+  out = out.split('__CAMBRITH_CONTROLS_ENABLED__').join(controlsEnabled ? 'true' : 'false');
 
   // Cambrith: Ativação infalível da janela no Linux/KDE Wayland/X11 e outras plataformas
   // - Se houver janela aberta (visível), foca/ativa exatamente a janela atual onde ela está.
@@ -706,10 +796,14 @@ function patchUtils(code) {
             tryBin(0);
         } catch (_) {}
     }
-    const allWins = electron_1.BrowserWindow.getAllWindows().filter((w) => w && !w.isDestroyed());
+    const allWins = (typeof electron_1.BaseWindow?.getAllWindows === 'function'
+        ? electron_1.BaseWindow.getAllWindows()
+        : electron_1.BrowserWindow.getAllWindows()).filter((w) => w && !w.isDestroyed() && (typeof isPopupWindow !== 'function' || !isPopupWindow(w)));
     const visibleWins = allWins.filter((w) => w.isVisible());
     if (visibleWins.length > 0) {
-        const focused = electron_1.BrowserWindow.getFocusedWindow();
+        const focused = (typeof electron_1.BaseWindow?.getFocusedWindow === 'function'
+            ? electron_1.BaseWindow.getFocusedWindow()
+            : null) ?? electron_1.BrowserWindow.getFocusedWindow();
         let win = (focused && visibleWins.includes(focused)) ? focused : null;
         if (!win && global.__cambrithLastFocusedWindow && visibleWins.includes(global.__cambrithLastFocusedWindow)) {
             win = global.__cambrithLastFocusedWindow;
@@ -777,6 +871,11 @@ exports.showOrCreateWindow = showOrCreateWindow;`;
     out = out.replace(
       "createNewWindow: () => {\n            void createWindow(url, storageManager);\n        },",
       "createNewWindow: () => {\n            global.__cambrithSkipRestoreNextWindow = true;\n            void createWindow(url, storageManager);\n        },"
+    );
+  } else if (out.includes("createNewWindow: () => {") && !out.includes("global.__cambrithSkipRestoreNextWindow = true;")) {
+    out = out.replace(
+      "createNewWindow: () => {",
+      "createNewWindow: () => {\n            global.__cambrithSkipRestoreNextWindow = true;"
     );
   }
 
@@ -916,12 +1015,48 @@ exports.showOrCreateWindow = showOrCreateWindow;`;
         }
     } catch (_) {}
     global.__cambrithSkipRestoreNextWindow = false;
-    void win.loadURL(targetLoadUrl);`;
+    if (typeof loadHubWindowUrl === 'function') {
+        void loadHubWindowUrl(win, targetLoadUrl, { skipBootstrapMint: typeof skipBootstrapMint !== 'undefined' ? skipBootstrapMint : false });
+    } else {
+        void win.loadURL(targetLoadUrl);
+    }
+    // Proteção anti-tela-preta: se a rota restaurada não renderizar nada (ex.: rota que quebra
+    // depois de uma atualização do app), volta para a tela inicial e esquece a rota salva.
+    if (targetLoadUrl !== url) {
+        let __probeCount = 0;
+        const __probe = setInterval(async () => {
+            __probeCount++;
+            try {
+                if (win.isDestroyed()) { clearInterval(__probe); return; }
+                const rendered = await win.webContents.executeJavaScript(
+                    "(function(){var b=document.body;return !!(b&&b.innerText&&b.innerText.trim().length>20);})()"
+                );
+                if (rendered) { clearInterval(__probe); return; }
+            } catch (_) {}
+            if (__probeCount >= 6) {
+                clearInterval(__probe);
+                try {
+                    const f = getCambrithStateFile();
+                    const prev = readCambrithWindowState() || {};
+                    if (f) require('fs').writeFileSync(f, JSON.stringify({ route: '/', isMaximized: !!prev.isMaximized, bounds: prev.bounds || null, updatedAt: Date.now() }), 'utf8');
+                    if (!win.isDestroyed()) {
+                        if (typeof loadHubWindowUrl === 'function') {
+                            void loadHubWindowUrl(win, url, { skipBootstrapMint: typeof skipBootstrapMint !== 'undefined' ? skipBootstrapMint : false });
+                        } else {
+                            void win.loadURL(url);
+                        }
+                    }
+                } catch (_) {}
+            }
+        }, 2000);
+    }`;
 
   if (!out.includes('saveCambrithWindowState')) {
     const prevInjectedPattern = /win\.on\('close',[\s\S]*?void win\.loadURL\(url\);/;
     if (prevInjectedPattern.test(out)) {
       out = out.replace(prevInjectedPattern, winCloseAndLoadBlock);
+    } else if (out.includes('void loadHubWindowUrl(win, url, { skipBootstrapMint });')) {
+      out = out.replace('void loadHubWindowUrl(win, url, { skipBootstrapMint });', winCloseAndLoadBlock);
     } else if (out.includes('void win.loadURL(url);')) {
       out = out.replace('void win.loadURL(url);', winCloseAndLoadBlock);
     }
@@ -958,6 +1093,182 @@ if (process.platform === 'linux') {
     );
   }
 
+  if (!out.includes("__cambrithGuard")) {
+    out = out.replace(
+      'const electron_1 = require("electron");',
+      () => `const electron_1 = require("electron");
+${BOOT_GUARD_JS}`
+    );
+  }
+
+  if (!out.includes("cambrith:native")) {
+    out = out.replace(
+      'const electron_1 = require("electron");',
+      () => `const electron_1 = require("electron");
+// --- Cambrith: ponte nativa (IPC) para o preload isolado ---
+try {
+    const fs = require('fs');
+    const path = require('path');
+    const os = require('os');
+    function getI18nPath() {
+        const home = os.homedir();
+        const resPath = path.join(process.resourcesPath || path.join(__dirname, '..', '..'), 'i18n-pt-br.js');
+        let golden = '';
+        if (process.platform === 'win32') {
+            golden = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n', 'i18n-pt-br.js');
+        } else if (process.platform === 'darwin') {
+            golden = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n', 'i18n-pt-br.js');
+        } else {
+            golden = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n', 'i18n-pt-br.js');
+        }
+        if (fs.existsSync(golden)) return golden;
+        if (fs.existsSync(resPath)) return resPath;
+        return null;
+    }
+
+                const nativeBridge = {
+                    getDocsFolder: () => {
+                        try {
+                            const home = os.homedir();
+                            if (fs.existsSync(path.join(home, 'Documentos'))) return 'Documentos';
+                            if (fs.existsSync(path.join(home, 'Documents'))) return 'Documents';
+                        } catch (_) {}
+                        return 'Documentos';
+                    },
+                    createReadme: (folderName, projectName) => {
+                        try {
+                            const home = os.homedir();
+                            const candidateDirs = [
+                                path.join(home, 'antigravity', folderName),
+                                path.join(home, 'Documentos', 'antigravity', folderName),
+                                path.join(home, 'Documents', 'antigravity', folderName),
+                                path.join(home, 'Documentos', folderName),
+                                path.join(home, 'Documents', folderName)
+                            ];
+                            let attempts = 0;
+                            const interval = setInterval(() => {
+                                attempts++;
+                                for (const targetDir of candidateDirs) {
+                                    if (fs.existsSync(targetDir)) {
+                                        const readmePath = path.join(targetDir, 'README.md');
+                                        if (!fs.existsSync(readmePath)) {
+                                            const titleStr = projectName || folderName;
+                                            const content = '# ' + titleStr + '\\n\\nProjeto criado no Google Antigravity.\\n\\n## Visão Geral\\n\\nAmbiente inicializado via Cambrith OS.\\n';
+                                            fs.writeFileSync(readmePath, content, 'utf8');
+                                        }
+                                        clearInterval(interval);
+                                        return;
+                                    }
+                                }
+                                if (attempts >= 20) {
+                                    clearInterval(interval);
+                                }
+                            }, 250);
+                        } catch (e) {
+                            console.warn('[Cambrith] Erro ao criar README:', e);
+                        }
+                    },
+                    loadCustomThemes: () => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            const filePath = path.join(cfgDir, 'custom-themes.json');
+                            if (fs.existsSync(filePath)) {
+                                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                            }
+                        } catch (_) {}
+                        return null;
+                    },
+                    saveCustomThemes: (themes) => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            fs.mkdirSync(cfgDir, { recursive: true });
+                            const filePath = path.join(cfgDir, 'custom-themes.json');
+                            fs.writeFileSync(filePath, JSON.stringify(themes, null, 2), 'utf8');
+                            return true;
+                        } catch (e) {
+                            console.warn('[Cambrith] Erro ao salvar custom-themes.json:', e);
+                            return false;
+                        }
+                    },
+                    loadActiveTheme: () => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            const filePath = path.join(cfgDir, 'active-theme.json');
+                            if (fs.existsSync(filePath)) {
+                                return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                            }
+                        } catch (_) {}
+                        return null;
+                    },
+                    saveActiveTheme: (theme) => {
+                        try {
+                            const home = os.homedir();
+                            let cfgDir = '';
+                            if (process.platform === 'win32') {
+                                cfgDir = path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), 'Antigravity', 'i18n');
+                            } else if (process.platform === 'darwin') {
+                                cfgDir = path.join(home, 'Library', 'Application Support', 'Antigravity', 'i18n');
+                            } else {
+                                cfgDir = path.join(process.env.XDG_CONFIG_HOME || path.join(home, '.config'), 'Antigravity', 'i18n');
+                            }
+                            fs.mkdirSync(cfgDir, { recursive: true });
+                            const filePath = path.join(cfgDir, 'active-theme.json');
+                            fs.writeFileSync(filePath, JSON.stringify(theme, null, 2), 'utf8');
+                            return true;
+                        } catch (e) {
+                            console.warn('[Cambrith] Erro ao salvar active-theme.json:', e);
+                            return false;
+                        }
+                    }
+                };
+    electron_1.ipcMain.on('cambrith:native', (event, fn, args) => {
+        try {
+            if (fn === 'getI18nCode') {
+                if (global.__cambrithSafeMode) { event.returnValue = null; return; }
+                const p = getI18nPath();
+                if (p && global.__cambrithGuard && global.__cambrithGuard.isI18nQuarantined(p)) {
+                    global.__cambrithSafeMode = true;
+                    event.returnValue = null;
+                    return;
+                }
+                event.returnValue = (p && fs.existsSync(p)) ? fs.readFileSync(p, 'utf-8') : null;
+                return;
+            }
+            const f = nativeBridge[fn];
+            const r = f ? f(...(Array.isArray(args) ? args : [])) : null;
+            event.returnValue = (r === undefined ? null : r);
+        } catch (_) {
+            event.returnValue = null;
+        }
+    });
+} catch (_) {}`
+    );
+  }
+
   if (!out.includes("electron_1.app.isQuitting = true;")) {
     out = out.replace(
       "electron_1.app.on('before-quit', async (event) => {",
@@ -965,8 +1276,8 @@ if (process.platform === 'linux') {
     electron_1.app.isQuitting = true;
     try {
         if (typeof global.__cambrithSaveWindowState === 'function') {
-            const wins = electron_1.BrowserWindow.getAllWindows().filter((w) => w && !w.isDestroyed());
-            const targetWin = electron_1.BrowserWindow.getFocusedWindow() || global.__cambrithLastFocusedWindow || global.__cambrithLastClosedWindow || wins[0];
+            const wins = (typeof electron_1.BaseWindow?.getAllWindows === 'function' ? electron_1.BaseWindow.getAllWindows() : electron_1.BrowserWindow.getAllWindows()).filter((w) => w && !w.isDestroyed());
+            const targetWin = (typeof electron_1.BaseWindow?.getFocusedWindow === 'function' ? electron_1.BaseWindow.getFocusedWindow() : null) || electron_1.BrowserWindow.getFocusedWindow() || global.__cambrithLastFocusedWindow || global.__cambrithLastClosedWindow || wins[0];
             if (targetWin) global.__cambrithSaveWindowState(targetWin);
         }
     } catch (_) {}`
@@ -1466,8 +1777,8 @@ function linuxQuitAndInstall() {
       `${linuxUpdaterBlock}\nfunction checkForUpdates(isManual = false) {\n    if (process.platform === 'linux' && !process.env.APPIMAGE) {\n        return linuxCheckForUpdates(isManual);\n    }`
     );
     out = out.replace(
-      "function quitAndInstall() {",
-      "function quitAndInstall() {\n    if (process.platform === 'linux' && !process.env.APPIMAGE) {\n        return linuxQuitAndInstall();\n    }"
+      /((?:async\s+)?function quitAndInstall\([^)]*\)\s*\{)/,
+      "$1\n    if (process.platform === 'linux' && !process.env.APPIMAGE) {\n        return linuxQuitAndInstall();\n    }"
     );
     if (!out.includes('return linuxCheckForUpdates(isManual)') || !out.includes('return linuxQuitAndInstall()')) {
       log('AVISO: não foi possível injetar o atualizador Linux em dist/updater.js (código do app mudou?).');
@@ -1478,6 +1789,13 @@ function linuxQuitAndInstall() {
 
 function patchIpcHandlers(code) {
   let out = code;
+  // TITLEBAR_LINUX_GUARD (2.34.0): no Linux o overlay da barra é desligado de propósito (controles próprios);
+  // o app novo chama 'window:set-title-bar-overlay' mesmo assim e o Electron lança "Titlebar overlay is not enabled",
+  // o que derrubava a interface. No Linux o handler agora simplesmente ignora a chamada.
+  out = out.replace(
+    /(electron_1\.ipcMain\.handle\('window:set-title-bar-overlay'[\s\S]*?)if \(win && !\(0, utils_1\.isMacOS\)\(\)\) \{/,
+    "$1if (win && !(0, utils_1.isMacOS)() && process.platform !== 'linux') {"
+  );
   // Cambrith: Garante tema escuro do GTK/Electron antes de abrir o menu de contexto nativo
   if (!out.includes("electron_1.nativeTheme.themeSource = 'dark'")) {
     out = out.replace(
@@ -1651,25 +1969,81 @@ function run() {
   // 2. Ler ASAR e verificar assinatura
   const buf = fs.readFileSync(ASAR_PATH);
   const isForce = process.argv.includes('--force');
+  const backupPath = `${ASAR_PATH}.bak-original`;
+  const anySignature = Buffer.from('Cambrith pt-BR Localization Injection');
+  const currentVersion = readAsarVersion(buf);
+
+  // Rollback (chamado pelo launcher quando o app traduzido não chega a abrir a interface):
+  // volta o app.asar original desta mesma versão e põe o patcher em quarentena.
+  if (process.argv.includes('--rollback')) {
+    if (!buf.includes(anySignature)) {
+      log('Rollback: o app.asar já é o original; nada a fazer.');
+      return;
+    }
+    if (!fs.existsSync(backupPath)) {
+      log('Rollback impossível: backup original não encontrado.');
+      process.exit(2);
+    }
+    const bak = fs.readFileSync(backupPath);
+    const bakVersion = readAsarVersion(bak);
+    if (bak.includes(anySignature) || !bakVersion || bakVersion !== currentVersion) {
+      log(`Rollback impossível: o backup não é o original da versão ${currentVersion} (backup: ${bakVersion || 'desconhecida'}).`);
+      process.exit(2);
+    }
+    const tmpRb = `${ASAR_PATH}.tmp-rollback-${process.pid}`;
+    fs.writeFileSync(tmpRb, bak);
+    fs.renameSync(tmpRb, ASAR_PATH);
+    try {
+      fs.mkdirSync(getStateDir(), { recursive: true });
+      fs.writeFileSync(patchQuarantineFile(), patchQuarantineKey(currentVersion) + '\n', 'utf8');
+    } catch (_) {}
+    log(`Rollback concluído: app.asar original da versão ${currentVersion} restaurado; tradução em quarentena para esta versão.`);
+    return;
+  }
+
   if (buf.includes(Buffer.from(PATCH_SIGNATURE)) && !isForce) {
     log(`O arquivo app.asar já está traduzido (${PATCH_SIGNATURE}).`);
     return;
   }
 
+  try {
+    if (isForce) {
+      fs.rmSync(patchQuarantineFile(), { force: true });
+    } else if (!buf.includes(anySignature) && fs.existsSync(patchQuarantineFile()) &&
+               fs.readFileSync(patchQuarantineFile(), 'utf8').trim() === patchQuarantineKey(currentVersion)) {
+      log(`Tradução em quarentena para a versão ${currentVersion} (este patcher impediu o app de abrir). Use --force para tentar de novo.`);
+      return;
+    }
+  } catch (_) {}
+
   log(`Aplicando tradução em ${ASAR_PATH}...`);
   const startMs = Date.now();
 
   // Backup do original
-  const backupPath = `${ASAR_PATH}.bak-original`;
-  if (!buf.includes(Buffer.from('Cambrith pt-BR Localization Injection'))) {
+  let backupFresh = false;
+  if (!buf.includes(anySignature)) {
     try {
       fs.copyFileSync(ASAR_PATH, backupPath);
+      backupFresh = true;
       log(`Backup do arquivo original salvo em: ${backupPath}`);
-    } catch (_) {}
+    } catch (err) {
+      log(`Aviso: não foi possível salvar o backup original: ${err.message}`);
+    }
   }
 
-  // Sempre que houver backup original limpo e for force rebuild, usar a base original para evitar deriva de offsets
-  const srcBuf = (fs.existsSync(backupPath) && !backupPath.includes('.tmp')) ? fs.readFileSync(backupPath) : buf;
+  // Base do patch: o asar original. Se o atual já é original, usa ele; senão, o backup — mas só se o
+  // backup for limpo e da MESMA versão (um backup de versão antiga montaria um app misturado).
+  let srcBuf = buf;
+  if (buf.includes(anySignature)) {
+    const bak = fs.existsSync(backupPath) ? fs.readFileSync(backupPath) : null;
+    if (!bak || bak.includes(anySignature) || readAsarVersion(bak) !== currentVersion) {
+      log(`Erro: o app.asar já tem um patch antigo e não há backup original da versão ${currentVersion}. Reinstale o app ou restaure o original.`);
+      process.exit(1);
+    }
+    srcBuf = bak;
+  } else if (!backupFresh) {
+    log('Aviso: seguindo sem backup do original; o rollback automático não estará disponível.');
+  }
   const headerSize = srcBuf.readUInt32LE(4);
   const jsonSize = srcBuf.readUInt32LE(12);
   const dataOffset = 8 + headerSize;
@@ -1685,9 +2059,38 @@ function run() {
     'dist/updater.js': patchUpdater,
     'dist/services/settingsService.js': patchSettingsService,
   };
+  const CORE_MODULES = new Set(['dist/preload.js', 'dist/utils.js', 'dist/ipcHandlers.js', 'dist/main.js']);
 
+  const NATIVE_STRINGS = [
+    ["'Antigravity opened on Windows instead.'", "'O Antigravity foi aberto no Windows.'"],
+    ["'New Window'", "'Nova janela'"],
+    ["'Folder is on the Windows filesystem'", "'A pasta está no sistema de arquivos do Windows'"],
+    ["'Open workspace'", "'Abrir workspace'"],
+    ["'Open workspaces'", "'Abrir workspaces'"],
+    ["'Select Download Folder'", "'Selecionar pasta de downloads'"],
+    ["label: item.label || 'Zoom In'", "label: item.label || 'Aumentar zoom'"],
+    ["label: 'Zoom In'", "label: 'Aumentar zoom'"],
+  ];
   const chunks = [];
   let currentOffset = 0;
+  const patchedOut = {};
+
+  // Inicialização protegida: só quando o "main" original é um arquivo empacotado em dist/.
+  let originalMain = null;
+  try {
+    const pkgBuf = readAsarEntry(srcBuf, 'package.json');
+    const mainField = pkgBuf ? JSON.parse(pkgBuf.toString('utf8')).main : null;
+    const distFiles = header.files && header.files.dist && header.files.dist.files;
+    if (typeof mainField === 'string' && /^dist\/[\w.\/-]+\.js$/.test(mainField) && mainField !== BOOT_ENTRY &&
+        readAsarEntry(srcBuf, mainField) && distFiles && !distFiles['cambrith-boot.js']) {
+      originalMain = mainField;
+      distFiles['cambrith-boot.js'] = { size: 0, offset: '0', __cambrithNew: true };
+    } else {
+      log('AVISO: ponto de entrada do app não reconhecido; seguindo sem a inicialização protegida.');
+    }
+  } catch (err) {
+    log(`AVISO: inicialização protegida desativada (${err.message}).`);
+  }
 
   function traverse(node, relPath) {
     if (node.files) {
@@ -1703,7 +2106,22 @@ function run() {
       const oldOffset = Number(node.offset);
       let fileBuf = srcBuf.subarray(dataOffset + oldOffset, dataOffset + oldOffset + node.size);
 
-      if (relPath === 'icon.png') {
+      if (node.__cambrithNew) {
+        delete node.__cambrithNew;
+        fileBuf = Buffer.from(buildBootWrapper(originalMain), 'utf8');
+        new vm.Script(fileBuf.toString('utf8'), { filename: relPath });
+        node.size = fileBuf.length;
+        node.integrity = calcIntegrity(fileBuf);
+        patchedOut[relPath] = fileBuf.toString('utf8');
+        log(`Adicionado: ${relPath} (inicialização protegida)`);
+      } else if (relPath === 'package.json' && originalMain) {
+        const pkg = JSON.parse(fileBuf.toString('utf8'));
+        pkg.main = BOOT_ENTRY;
+        fileBuf = Buffer.from(JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+        node.size = fileBuf.length;
+        node.integrity = calcIntegrity(fileBuf);
+        patchedOut[relPath] = fileBuf.toString('utf8');
+      } else if (relPath === 'icon.png') {
         const customIconPath = path.join(GOLDEN_DIR, 'icon.png');
         if (fs.existsSync(customIconPath)) {
           fileBuf = fs.readFileSync(customIconPath);
@@ -1722,8 +2140,20 @@ function run() {
         }
       } else if (patchers[relPath]) {
         const origStr = fileBuf.toString('utf8');
-        const patchedStr = patchers[relPath](origStr);
-        new vm.Script(patchedStr, { filename: relPath });
+        let patchedStr;
+        try {
+          patchedStr = patchers[relPath](origStr);
+          // Textos nativos que sobraram em inglês (2.33.0): troca só literais entre aspas simples.
+          for (const [en, pt] of NATIVE_STRINGS) patchedStr = patchedStr.split(en).join(pt);
+          new vm.Script(patchedStr, { filename: relPath });
+        } catch (err) {
+          // Núcleo da tradução (preload/main/utils/ipcHandlers) depende um do outro: falha aborta tudo
+          // e o app.asar fica intacto. Os demais são opcionais: ficam como o original e o resto segue.
+          if (CORE_MODULES.has(relPath)) throw err;
+          log(`AVISO: ${relPath} mantido original (${err.message}).`);
+          patchedStr = origStr;
+        }
+        patchedOut[relPath] = patchedStr;
         if (patchedStr !== origStr) {
           fileBuf = Buffer.from(patchedStr, 'utf8');
           node.size = fileBuf.length;
@@ -1739,6 +2169,19 @@ function run() {
   }
 
   traverse(header, '');
+
+  // Coerência do núcleo: o preload chama a ponte 'cambrith:native' do main e a guarda precisa existir.
+  // Se algum ponto de ancoragem sumiu numa atualização, não grava nada (o app abre original, em inglês).
+  const coreChecks = [
+    ['dist/preload.js', PATCH_SIGNATURE],
+    ['dist/main.js', "ipcMain.on('cambrith:native'"],
+    ['dist/main.js', '__cambrithGuard = {'],
+  ];
+  for (const [file, needle] of coreChecks) {
+    if (!patchedOut[file] || !patchedOut[file].includes(needle)) {
+      throw new Error(`Ponto de ancoragem ausente em ${file} (${needle}); o código do app mudou. Nada foi alterado.`);
+    }
+  }
 
   const newJsonBuf = Buffer.from(JSON.stringify(header), 'utf8');
   const jsonLen = newJsonBuf.length;

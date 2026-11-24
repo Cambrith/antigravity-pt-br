@@ -1,4 +1,4 @@
-import os, json
+import os, json, re
 
 EXACT_MAP = {
 
@@ -3504,7 +3504,8 @@ js_body = r'''(function() {
           }
 
           // 2. Localizar dinamicamente qualquer função no window que gere nomes scratch
-          const candidateNames = ['odc'];
+          // 2.34.0: não fixar nomes minificados (ex.: 'odc' virou a lista da paleta de comandos); a detecção é por conteúdo.
+          const candidateNames = [];
           for (const key of Object.getOwnPropertyNames(window)) {
             try {
               if (key.startsWith('__') || candidateNames.includes(key) || key === 'GUb') continue;
@@ -3512,8 +3513,8 @@ js_body = r'''(function() {
               if (typeof fn === 'function' && fn.length === 1) {
                 const src = fn.toString();
                 if (src.includes('$$binaryReaderFn') || src.includes('protobuf')) continue;
-                if ((src.includes('Math.random()') && src.includes('Math.floor(') && src.includes('-')) ||
-                    (src.includes('createScratchProjectFolder') || (src.includes('.map(') && src.includes('.toLowerCase().replace(')))) {
+                // 2.33.0: regra estrita (antes pegava por engano a função de planos de tarefas e quebrava conversas antigas).
+                if (src.includes('Math.random()') && src.includes('Math.floor(') && src.includes('.toLowerCase().replace(') && src.includes('.includes(')) {
                   candidateNames.push(key);
                 }
               }
@@ -5474,6 +5475,16 @@ js_body = r'''(function() {
     if (EXACT_MAP[normalized]) {
       return raw.replace(trimmed, EXACT_MAP[normalized]);
     }
+    // Reticências: o app usa ora "…" (um caractere), ora "..."; o dicionário pode ter a outra forma.
+    if (normalized.includes('…') || normalized.includes('...')) {
+      const toDots = normalized.replace(/…/g, '...');
+      const toChar = normalized.replace(/\.\.\./g, '…');
+      const alt = EXACT_MAP[toDots] || EXACT_MAP[toChar];
+      if (alt) {
+        const useChar = normalized.includes('…');
+        return raw.replace(trimmed, useChar ? alt.replace(/\.\.\./g, '…') : alt.replace(/…/g, '...'));
+      }
+    }
     const dyn = translateDynamic(trimmed) || translateDynamic(normalized);
     if (dyn) {
       return raw.replace(trimmed, dyn);
@@ -5605,9 +5616,31 @@ js_body = r'''(function() {
     });
   }
 
+  // Frases montadas em pedaços (ex.: "No ", "automations", " yet" viram 3 nós de texto irmãos):
+  // se o elemento só tem nós de texto e a frase inteira está no dicionário, traduz a frase toda
+  // no primeiro nó e esvazia os demais. Só age quando há tradução para a frase completa.
+  function translateCompositeText(parent) {
+    const kids = parent.childNodes;
+    if (kids.length < 2 || kids.length > 6) return false;
+    let joined = '';
+    for (const k of kids) {
+      if (k.nodeType !== 3) return false;
+      joined += k.nodeValue || '';
+    }
+    if (!joined.trim() || joined.length > 400) return false;
+    if (parent.__cambrithCompositeOut === joined) return true;
+    const tr = translateString(joined);
+    if (!tr || tr === joined) return false;
+    kids[0].nodeValue = tr;
+    for (let i = 1; i < kids.length; i++) kids[i].nodeValue = '';
+    parent.__cambrithCompositeOut = tr;
+    return true;
+  }
+
   function translateTextNode(node) {
     const parent = node.parentElement;
     if (!parent || shouldSkipElement(parent)) return;
+    if (translateCompositeText(parent)) return;
     const val = node.nodeValue;
     if (!val || val.length > 4000) return;
     const trimmed = val.trim();
@@ -6319,12 +6352,12 @@ js_body = r'''(function() {
           const val = h.memoizedState;
           if (Array.isArray(val) && typeof val[0] === 'function') {
             const src = val[0].toString();
-            if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+            if (src.includes('createScratchProjectFolder')) {
               return val[0];
             }
           } else if (typeof val === 'function') {
             const src = val.toString();
-            if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+            if (src.includes('createScratchProjectFolder')) {
               return val;
             }
           }
@@ -6654,13 +6687,13 @@ js_body = r'''(function() {
             const val = h.memoizedState;
             if (Array.isArray(val) && typeof val[0] === 'function') {
               const src = val[0].toString();
-              if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+              if (src.includes('createScratchProjectFolder')) {
                 window.__cambrith_handleStartScratchFlow = val[0];
                 break;
               }
             } else if (typeof val === 'function') {
               const src = val.toString();
-              if (src.includes('createScratchProjectFolder') || src.includes('odc')) {
+              if (src.includes('createScratchProjectFolder')) {
                 window.__cambrith_handleStartScratchFlow = val;
                 break;
               }
@@ -7414,13 +7447,34 @@ js_body = r'''(function() {
 })();
 '''
 
+# Regras dinâmicas (regex -> tradução com $1, $2...) de src/maps/dynamic.json,
+# inseridas no início de translateDynamic(). Cada grupo capturado passa pelo EXACT_MAP.
+DYN_ANCHOR = "  function translateDynamic(s) {\n    let m;\n"
+dynamic_map_file = os.path.join(os.path.dirname(__file__), "src", "maps", "dynamic.json")
+if os.path.exists(dynamic_map_file):
+    with open(dynamic_map_file, "r", encoding="utf-8") as _f:
+        _dyn = json.load(_f)
+    if DYN_ANCHOR not in js_body:
+        raise SystemExit("ERRO: não achei translateDynamic no template; regras dinâmicas não inseridas")
+    for _rule in _dyn:
+        re.compile(_rule["en"])  # falha cedo se a regex for inválida
+    _items = "\n".join("      [/%s/, %s]," % (r["en"].replace("/", "\\/"), json.dumps(r["pt"], ensure_ascii=False)) for r in _dyn)
+    _rules_js = (
+        "    // --- Regras dinâmicas (src/maps/dynamic.json) ---\n"
+        "    const __trName = (x) => (EXACT_MAP[x] ? EXACT_MAP[x] : x);\n"
+        "    const __DYN = [\n" + _items + "\n    ];\n"
+        "    for (const [__re, __rep] of __DYN) {\n"
+        "      const __mm = __re.exec(s);\n"
+        "      if (__mm) return __rep.replace(/\\$(\\d)/g, (_x, n) => __trName(__mm[+n]));\n"
+        "    }\n"
+    )
+    js_body = js_body.replace(DYN_ANCHOR, DYN_ANCHOR + _rules_js, 1)
+
+import sys, glob, shutil
+script_dir = os.path.dirname(os.path.abspath(__file__))
 out_paths = [
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "i18n-pt-br.js"),
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist", "i18n-pt-br.js"),
-    os.path.expanduser("~/.local/opt/antigravity/resources/i18n-pt-br.js"),
-    os.path.expanduser("~/.local/opt/Antigravity-x64/resources/i18n-pt-br.js"),
-    os.path.expanduser("~/.local/opt/Antigravity/resources/i18n-pt-br.js"),
-    os.path.expanduser("~/.config/Antigravity/i18n/i18n-pt-br.js"),
+    os.path.join(script_dir, "i18n-pt-br.js"),
+    os.path.join(script_dir, "dist", "i18n-pt-br.js"),
 ]
 for out_path in out_paths:
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
@@ -7428,15 +7482,17 @@ for out_path in out_paths:
         f.write(js_body)
     print("Generated:", out_path, "with", len(EXACT_MAP), "exact entries!")
 
-import glob, shutil
-script_dir = os.path.dirname(os.path.abspath(__file__))
-tray_icons = glob.glob(os.path.join(script_dir, "trayIcon*.png"))
-for out_path in out_paths:
-    dest_dir = os.path.dirname(out_path)
-    if os.path.isdir(dest_dir):
-        for tray_icon in tray_icons:
-            dest_file = os.path.join(dest_dir, os.path.basename(tray_icon))
-            try:
-                shutil.copy2(tray_icon, dest_file)
-            except Exception:
-                pass
+# Só toca na instalação local com --install: copia para a pasta "golden"
+# (~/.config/Antigravity/i18n no Linux), de onde o patch-asar.js sincroniza o resources do app.
+if "--install" in sys.argv:
+    if sys.platform == "win32":
+        golden = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~\\AppData\\Roaming")), "Antigravity", "i18n")
+    elif sys.platform == "darwin":
+        golden = os.path.expanduser("~/Library/Application Support/Antigravity/i18n")
+    else:
+        golden = os.path.join(os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")), "Antigravity", "i18n")
+    os.makedirs(golden, exist_ok=True)
+    shutil.copy2(out_paths[0], os.path.join(golden, "i18n-pt-br.js"))
+    for tray_icon in glob.glob(os.path.join(script_dir, "trayIcon*.png")):
+        shutil.copy2(tray_icon, os.path.join(golden, os.path.basename(tray_icon)))
+    print("Instalado em:", golden)

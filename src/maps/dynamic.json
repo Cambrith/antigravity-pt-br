@@ -1,0 +1,830 @@
+[
+  {
+    "en": "^Add shortcut for (.+)$",
+    "pt": "Adicionar atalho para $1"
+  },
+  {
+    "en": "^Remove shortcut (.+?) for (.+)$",
+    "pt": "Remover atalho $1 para $2"
+  },
+  {
+    "en": "^Shortcut (.+?) for (.+)$",
+    "pt": "Atalho $1 para $2"
+  },
+  {
+    "en": "^Recording shortcut for (.+?)\\. Press keys to bind, Enter to save, Escape to cancel\\.$",
+    "pt": "Gravando atalho para $1. Pressione as teclas para vincular, Enter para salvar, Escape para cancelar."
+  },
+  {
+    "en": "^Select project, current: (.+)$",
+    "pt": "Selecionar projeto, atual: $1"
+  },
+  {
+    "en": "^Where the agent runs, current: (.+)$",
+    "pt": "Onde o agente é executado, atual: $1"
+  },
+  {
+    "en": "^Agent permissions preset selector, current: (.+)$",
+    "pt": "Seletor de predefinição de permissões do agente, atual: $1"
+  },
+  {
+    "en": "^Branch, current: (.+)$",
+    "pt": "Branch, atual: $1"
+  },
+  {
+    "en": "^Details for (.+)$",
+    "pt": "Detalhes de $1"
+  },
+  {
+    "en": "^Plugins in (.+)$",
+    "pt": "Plugins em $1"
+  },
+  {
+    "en": "^More actions for (.+)$",
+    "pt": "Mais ações para $1"
+  },
+  {
+    "en": "^More for (.+)$",
+    "pt": "Mais para $1"
+  },
+  {
+    "en": "^Delete cookies for (.+)$",
+    "pt": "Excluir cookies de $1"
+  },
+  {
+    "en": "^Delete side question: (.+)$",
+    "pt": "Excluir pergunta paralela: $1"
+  },
+  {
+    "en": "^Edit comment: (.+)$",
+    "pt": "Editar comentário: $1"
+  },
+  {
+    "en": "^Go to page (\\d+)$",
+    "pt": "Ir para a página $1"
+  },
+  {
+    "en": "^Go to slide (\\d+)$",
+    "pt": "Ir para o slide $1"
+  },
+  {
+    "en": "^Go to turn (\\d+) of (\\d+)$",
+    "pt": "Ir para a interação $1 de $2"
+  },
+  {
+    "en": "^Comment on page (\\d+)$",
+    "pt": "Comentar na página $1"
+  },
+  {
+    "en": "^Search match on page (\\d+)$",
+    "pt": "Resultado da pesquisa na página $1"
+  },
+  {
+    "en": "^Bounding box on page (\\d+)$",
+    "pt": "Caixa delimitadora na página $1"
+  },
+  {
+    "en": "^Scroll to: (.+?) on page (\\d+)$",
+    "pt": "Rolar para: $1 na página $2"
+  },
+  {
+    "en": "^Connected to (.+)$",
+    "pt": "Conectado a $1"
+  },
+  {
+    "en": "^Couldn't connect to (.+)$",
+    "pt": "Não foi possível conectar a $1"
+  },
+  {
+    "en": "^Failed to create project: (.+)$",
+    "pt": "Falha ao criar projeto: $1"
+  },
+  {
+    "en": "^Failed to save settings: (.+)$",
+    "pt": "Falha ao salvar configurações: $1"
+  },
+  {
+    "en": "^Failed to save project settings: (.+)$",
+    "pt": "Falha ao salvar configurações do projeto: $1"
+  },
+  {
+    "en": "^Failed to save project permissions: (.+)$",
+    "pt": "Falha ao salvar permissões do projeto: $1"
+  },
+  {
+    "en": "^Failed to save cloud permission settings: (.+)$",
+    "pt": "Falha ao salvar configurações de permissão na nuvem: $1"
+  },
+  {
+    "en": "^Failed to select workspace: (.+)$",
+    "pt": "Falha ao selecionar workspace: $1"
+  },
+  {
+    "en": "^Failed to resolve folder: (.+)$",
+    "pt": "Falha ao resolver pasta: $1"
+  },
+  {
+    "en": "^Fix with Agent: (.+)$",
+    "pt": "Corrigir com o agente: $1"
+  },
+  {
+    "en": "^Help us improve (.+?)\\.$",
+    "pt": "Ajude-nos a melhorar $1."
+  },
+  {
+    "en": "^Message from (.+)$",
+    "pt": "Mensagem de $1"
+  },
+  {
+    "en": "^Open Subagent: (.+)$",
+    "pt": "Abrir subagente: $1"
+  },
+  {
+    "en": "^Open URL in system browser: (.+)$",
+    "pt": "Abrir URL no navegador do sistema: $1"
+  },
+  {
+    "en": "^Plan, (\\d+) of (\\d+) steps done$",
+    "pt": "Plano, $1 de $2 etapas concluídas"
+  },
+  {
+    "en": "^Remove context from (.+)$",
+    "pt": "Remover contexto de $1"
+  },
+  {
+    "en": "^Move to Group: (.+)$",
+    "pt": "Mover para o grupo: $1"
+  },
+  {
+    "en": "^Label for (.+)$",
+    "pt": "Rótulo para $1"
+  },
+  {
+    "en": "^View Diff for (.+)$",
+    "pt": "Ver diff de $1"
+  },
+  {
+    "en": "^Unfold lines (\\d+)-(\\d+)$",
+    "pt": "Expandir linhas $1-$2"
+  },
+  {
+    "en": "^Voice [Ss]peed, (.+)$",
+    "pt": "Velocidade da voz, $1"
+  },
+  {
+    "en": "^Filter skills and rules: (.+)$",
+    "pt": "Filtrar skills e regras: $1"
+  },
+  {
+    "en": "^Auth code for (.+)$",
+    "pt": "Código de autenticação para $1"
+  },
+  {
+    "en": "^Authorization code for (.+)$",
+    "pt": "Código de autorização para $1"
+  },
+  {
+    "en": "^Secret for a new (.+) account$",
+    "pt": "Segredo para uma nova conta $1"
+  },
+  {
+    "en": "^Secret for (.+)$",
+    "pt": "Segredo para $1"
+  },
+  {
+    "en": "^Keep: (.+)$",
+    "pt": "Manter: $1"
+  },
+  {
+    "en": "^Cost summary: (.+)$",
+    "pt": "Resumo de custo: $1"
+  },
+  {
+    "en": "^Account this MCP server uses: (.+)$",
+    "pt": "Conta usada por este servidor MCP: $1"
+  },
+  {
+    "en": "^App view for (.+)$",
+    "pt": "Visualização do app para $1"
+  },
+  {
+    "en": "^Microphone access for (.+) was denied\\. Quit and reopen the app to be asked again\\.$",
+    "pt": "O acesso ao microfone para $1 foi negado. Feche e reabra o app para ser perguntado novamente."
+  },
+  {
+    "en": "^The browser blocked the download of (.+)$",
+    "pt": "O navegador bloqueou o download de $1"
+  },
+  {
+    "en": "^Using default (.+) name$",
+    "pt": "Usando nome padrão de $1"
+  },
+  {
+    "en": "^Detached at (.+)$",
+    "pt": "Desanexado em $1"
+  },
+  {
+    "en": "^This window's agents, files, and terminals are on (.+)\\.$",
+    "pt": "Os agentes, arquivos e terminais desta janela estão em $1."
+  },
+  {
+    "en": "^(\\d+) seconds$",
+    "pt": "$1 segundos"
+  },
+  {
+    "en": "^(\\d+) days$",
+    "pt": "$1 dias"
+  },
+  {
+    "en": "^Playback speed (.+)x$",
+    "pt": "Velocidade de reprodução $1x"
+  },
+  {
+    "en": "^Zoom (\\d+)%, reset to fit$",
+    "pt": "Zoom $1%, redefinir para ajustar"
+  },
+  {
+    "en": "^(.+) \\(Default\\)$",
+    "pt": "$1 (Padrão)"
+  },
+  {
+    "en": "^(.+) \\(experimental\\)$",
+    "pt": "$1 (experimental)"
+  },
+  {
+    "en": "^(.+) \\(Remote\\)$",
+    "pt": "$1 (Remoto)"
+  },
+  {
+    "en": "^(.+) \\(unavailable\\)$",
+    "pt": "$1 (indisponível)"
+  },
+  {
+    "en": "^(.+) \\(latest\\)$",
+    "pt": "$1 (mais recente)"
+  },
+  {
+    "en": "^System default \\((.+)\\)$",
+    "pt": "Padrão do sistema ($1)"
+  },
+  {
+    "en": "^(.+)\\. View site information$",
+    "pt": "$1. Ver informações do site"
+  },
+  {
+    "en": "^Downloads, (\\d+)% complete$",
+    "pt": "Downloads, $1% concluído"
+  },
+  {
+    "en": "^(.+) download progress$",
+    "pt": "Progresso do download de $1"
+  },
+  {
+    "en": "^Show (.+) in folder$",
+    "pt": "Mostrar $1 na pasta"
+  },
+  {
+    "en": "^Remove (.+) from list$",
+    "pt": "Remover $1 da lista"
+  },
+  {
+    "en": "^(.+) could not find the requested page\\.$",
+    "pt": "$1 não encontrou a página solicitada."
+  },
+  {
+    "en": "^(.+) is currently unable to handle this request\\.$",
+    "pt": "$1 não consegue atender a esta solicitação no momento."
+  },
+  {
+    "en": "^When toggled on, (.+) collects usage data to help Google enhance performance and features\\.$",
+    "pt": "Quando ativado, o $1 coleta dados de uso para ajudar o Google a melhorar o desempenho e os recursos."
+  },
+  {
+    "en": "^Receive product updates, tips, and promotions from Google (.+) via email\\.$",
+    "pt": "Receba por e-mail novidades, dicas e promoções do Google $1."
+  },
+  {
+    "en": "^Sign in from the (.+) panel\\.$",
+    "pt": "Faça login pelo painel $1."
+  },
+  {
+    "en": "^Sign in to use (.+)!$",
+    "pt": "Faça login para usar o $1!"
+  },
+  {
+    "en": "^Exited with code (.+)\\.$",
+    "pt": "Encerrado com o código $1."
+  },
+  {
+    "en": "^Manage (.+) app settings\\.$",
+    "pt": "Gerencie as configurações do app $1."
+  },
+  {
+    "en": "^Deleted cookies for (.+)$",
+    "pt": "Cookies de $1 excluídos"
+  },
+  {
+    "en": "^Reset (.+) to default$",
+    "pt": "Redefinir $1 para o padrão"
+  },
+  {
+    "en": "^(.+): ([\\d.,]+[KMB]?) tokens$",
+    "pt": "$1: $2 tokens"
+  },
+  {
+    "en": "^Failed to save project: (.+)$",
+    "pt": "Falha ao salvar o projeto: $1"
+  },
+  {
+    "en": "^Duplicate (.+) name$",
+    "pt": "Nome de $1 duplicado"
+  },
+  {
+    "en": "^Cannot add folder: \"(.+)\" is not a valid folder location\\.$",
+    "pt": "Não é possível adicionar a pasta: \"$1\" não é um local de pasta válido."
+  },
+  {
+    "en": "^Edit (.+) name$",
+    "pt": "Editar nome de $1"
+  },
+  {
+    "en": "^Remove (.+) from Recent$",
+    "pt": "Remover $1 dos recentes"
+  },
+  {
+    "en": "^Removed (.+) from Recent$",
+    "pt": "$1 removido dos recentes"
+  },
+  {
+    "en": "^Couldn't remove (.+) from Recent$",
+    "pt": "Não foi possível remover $1 dos recentes"
+  },
+  {
+    "en": "^Hide (.+) from this list$",
+    "pt": "Ocultar $1 desta lista"
+  },
+  {
+    "en": "^Show (.+) in the list again$",
+    "pt": "Mostrar $1 na lista novamente"
+  },
+  {
+    "en": "^Showing (.+) again$",
+    "pt": "Mostrando $1 novamente"
+  },
+  {
+    "en": "^(\\d+) lines added, (\\d+) lines removed$",
+    "pt": "$1 linhas adicionadas, $2 linhas removidas"
+  },
+  {
+    "en": "^Amended commit on (.+)\\.$",
+    "pt": "Commit corrigido (amend) em $1."
+  },
+  {
+    "en": "^A file already exists at (.+)\\.$",
+    "pt": "Já existe um arquivo em $1."
+  },
+  {
+    "en": "^Can’t create this path — “(.+)” is a file, not a folder\\.$",
+    "pt": "Não é possível criar este caminho — “$1” é um arquivo, não uma pasta."
+  },
+  {
+    "en": "^The folder “(.+)” does not exist\\. Would you like to create it\\?$",
+    "pt": "A pasta “$1” não existe. Deseja criá-la?"
+  },
+  {
+    "en": "^“(.+)” isn’t a valid folder name\\.$",
+    "pt": "“$1” não é um nome de pasta válido."
+  },
+  {
+    "en": "^Show (\\d+) More$",
+    "pt": "Mostrar mais $1"
+  },
+  {
+    "en": "^Failed to unarchive project: (.+)$",
+    "pt": "Falha ao desarquivar o projeto: $1"
+  },
+  {
+    "en": "^Line (\\d+) → (\\d+)$",
+    "pt": "Linha $1 → $2"
+  },
+  {
+    "en": "^(\\d+) comments$",
+    "pt": "$1 comentários"
+  },
+  {
+    "en": "^Environment paused\\. Click to resume it and load the (.+)\\.$",
+    "pt": "Ambiente pausado. Clique para retomá-lo e carregar: $1."
+  },
+  {
+    "en": "^Showing latest (\\d+) browser steps$",
+    "pt": "Mostrando as últimas $1 etapas do navegador"
+  },
+  {
+    "en": "^(\\d+) folders in this project could not be loaded because their locations are invalid\\.$",
+    "pt": "$1 pastas deste projeto não puderam ser carregadas porque os locais delas são inválidos."
+  },
+  {
+    "en": "^Thinking for (.+)s$",
+    "pt": "Pensando por $1s"
+  },
+  {
+    "en": "^Typing '(.+)' in Browser$",
+    "pt": "Digitando '$1' no navegador"
+  },
+  {
+    "en": "^Typed '(.+)' in Browser$",
+    "pt": "'$1' digitado no navegador"
+  },
+  {
+    "en": "^(\\d+) questions?$",
+    "pt": "$1 pergunta(s)"
+  },
+  {
+    "en": "^Using browser · (.+)$",
+    "pt": "Usando o navegador · $1"
+  },
+  {
+    "en": "^Review permissions for (.+)$",
+    "pt": "Revisar permissões de $1"
+  },
+  {
+    "en": "^Enabled \"(.+)\"\\.$",
+    "pt": "\"$1\" ativado."
+  },
+  {
+    "en": "^Started \"(.+)\"\\.$",
+    "pt": "\"$1\" iniciado."
+  },
+  {
+    "en": "^Failed to start \"(.+)\"\\.$",
+    "pt": "Falha ao iniciar \"$1\"."
+  },
+  {
+    "en": "^Restarted \"(.+)\"\\.$",
+    "pt": "\"$1\" reiniciado."
+  },
+  {
+    "en": "^Failed to update \"(.+)\"$",
+    "pt": "Falha ao atualizar \"$1\""
+  },
+  {
+    "en": "^\\+(\\d+) more$",
+    "pt": "+$1 mais"
+  },
+  {
+    "en": "^Sort and filter conversations \\((\\d+) active\\)$",
+    "pt": "Ordenar e filtrar conversas ($1 ativos)"
+  },
+  {
+    "en": "^Marked (\\d+) conversations as read$",
+    "pt": "$1 conversas marcadas como lidas"
+  },
+  {
+    "en": "^Fold lines (\\d+)-(\\d+)$",
+    "pt": "Recolher linhas $1-$2"
+  },
+  {
+    "en": "^Worked for (.+)$",
+    "pt": "Trabalhou por $1"
+  },
+  {
+    "en": "^Sent response: (.+)$",
+    "pt": "Resposta enviada: $1"
+  },
+  {
+    "en": "^Review (.+) before installing$",
+    "pt": "Revise $1 antes de instalar"
+  },
+  {
+    "en": "^(.+) needs you to sign in before it can be used\\.$",
+    "pt": "$1 precisa que você faça login antes de ser usado."
+  },
+  {
+    "en": "^Sign in to (.+) remotely$",
+    "pt": "Fazer login em $1 remotamente"
+  },
+  {
+    "en": "^Rule (\\d+)$",
+    "pt": "Regra $1"
+  },
+  {
+    "en": "^(.+), setup required$",
+    "pt": "$1, configuração necessária"
+  },
+  {
+    "en": "^Disable Word Wrap(.*)$",
+    "pt": "Desativar quebra de linha$1"
+  },
+  {
+    "en": "^Enable Word Wrap(.*)$",
+    "pt": "Ativar quebra de linha$1"
+  },
+  {
+    "en": "^Pin Entire (.+)$",
+    "pt": "Fixar $1 inteiro"
+  },
+  {
+    "en": "^Side question failed: (.+)$",
+    "pt": "A pergunta paralela falhou: $1"
+  },
+  {
+    "en": "^Question (\\d+) of (\\d+)$",
+    "pt": "Pergunta $1 de $2"
+  },
+  {
+    "en": "^Agent permissions preset: (.+), (.+)$",
+    "pt": "Predefinição de permissões do agente: $1, $2"
+  },
+  {
+    "en": "^(.+)\\. Starting in local workspace\\.$",
+    "pt": "$1. Iniciando no espaço de trabalho local."
+  },
+  {
+    "en": "^\\+(\\d+) attachments$",
+    "pt": "+$1 anexos"
+  },
+  {
+    "en": "^(.+) Sends after agent finishes working\\. Actions available: Send Now, Edit, Delete\\.$",
+    "pt": "$1 Será enviada quando o agente terminar. Ações disponíveis: Enviar agora, Editar, Excluir."
+  },
+  {
+    "en": "^Attachment error: (.+)$",
+    "pt": "Erro no anexo: $1"
+  },
+  {
+    "en": "^Upload error: (.+)$",
+    "pt": "Erro no envio: $1"
+  },
+  {
+    "en": "^MCP error: (.+)$",
+    "pt": "Erro de MCP: $1"
+  },
+  {
+    "en": "^(.+)\\. Disabling or removing the bundle applies only to the ones it installed\\.$",
+    "pt": "$1. Desativar ou remover o pacote afeta apenas os itens instalados por ele."
+  },
+  {
+    "en": "^Deleted \"(.+)\"\\.$",
+    "pt": "\"$1\" excluído."
+  },
+  {
+    "en": "^Opens the New Conversation screen for this (.+)$",
+    "pt": "Abre a tela de nova conversa para este $1"
+  },
+  {
+    "en": "^Switch environment \\((.+)\\)$",
+    "pt": "Trocar de ambiente ($1)"
+  },
+  {
+    "en": "^(.+), showing (\\d+) of (\\d+)$",
+    "pt": "$1, exibindo $2 de $3"
+  },
+  {
+    "en": "^No visible messages in last (\\d+) steps\\. Activate Load older messages to continue\\.$",
+    "pt": "Nenhuma mensagem visível nas últimas $1 etapas. Ative Carregar mensagens anteriores para continuar."
+  },
+  {
+    "en": "^Turn (\\d+) of (\\d+)$",
+    "pt": "Interação $1 de $2"
+  },
+  {
+    "en": "^Moved conversation (.+)$",
+    "pt": "Conversa movida $1"
+  },
+  {
+    "en": "^Failed to archive (.+)$",
+    "pt": "Falha ao arquivar $1"
+  },
+  {
+    "en": "^Search Google for \"(.+)\"$",
+    "pt": "Pesquisar \"$1\" no Google"
+  },
+  {
+    "en": "^Failed to save \"(.+)\"$",
+    "pt": "Falha ao salvar \"$1\""
+  },
+  {
+    "en": "^Enter (.+) name\\.\\.\\.$",
+    "pt": "Digite o nome de $1..."
+  },
+  {
+    "en": "^Created automation \"(.+)\"\\.$",
+    "pt": "Automação \"$1\" criada."
+  },
+  {
+    "en": "^Live preview unavailable · (.+)$",
+    "pt": "Prévia ao vivo indisponível · $1"
+  },
+  {
+    "en": "^Failed to load page (\\d+): (.+)$",
+    "pt": "Falha ao carregar a página $1: $2"
+  },
+  {
+    "en": "^Page (\\d+) failed to load$",
+    "pt": "Falha ao carregar a página $1"
+  },
+  {
+    "en": "^SSH: (.+)$",
+    "pt": "SSH: $1"
+  },
+  {
+    "en": "^Committed to (.+)\\.$",
+    "pt": "Commit feito em $1."
+  },
+  {
+    "en": "^(.+)\\. This commit is already pushed; amending will require a force push\\.$",
+    "pt": "$1. Este commit já foi enviado; corrigi-lo (amend) exigirá um force push."
+  },
+  {
+    "en": "^Push (\\d+) commits? to (.+)$",
+    "pt": "Enviar $1 commit(s) para $2"
+  },
+  {
+    "en": "^Publish (.+) to origin$",
+    "pt": "Publicar $1 no origin"
+  },
+  {
+    "en": "^Pushed (\\d+) commits? to (.+)\\.$",
+    "pt": "$1 commit(s) enviado(s) para $2."
+  },
+  {
+    "en": "^Pushed to (.+)\\.$",
+    "pt": "Enviado para $1."
+  },
+  {
+    "en": "^Published (.+) to origin\\.$",
+    "pt": "$1 publicado no origin."
+  },
+  {
+    "en": "^All changes since (.+)$",
+    "pt": "Todas as alterações desde $1"
+  },
+  {
+    "en": "^See all \\((\\d+)\\)$",
+    "pt": "Ver tudo ($1)"
+  },
+  {
+    "en": "^Stop (.+) selected$",
+    "pt": "Parar $1 selecionado(s)"
+  },
+  {
+    "en": "^The preview did not respond on port (\\d+)\\.$",
+    "pt": "A prévia não respondeu na porta $1."
+  },
+  {
+    "en": "^Nothing is running on port (\\d+)$",
+    "pt": "Nada está rodando na porta $1"
+  },
+  {
+    "en": "^Resume the conversation to start its workspace again, then start the server on port (\\d+) and retry\\.$",
+    "pt": "Retome a conversa para iniciar o espaço de trabalho de novo, depois inicie o servidor na porta $1 e tente novamente."
+  },
+  {
+    "en": "^No server is listening on port (\\d+) inside the remote workspace\\. Start it, or ask the agent to, then retry\\.$",
+    "pt": "Nenhum servidor está escutando na porta $1 dentro do espaço de trabalho remoto. Inicie-o (ou peça ao agente) e tente novamente."
+  },
+  {
+    "en": "^Show (\\d+) earlier steps$",
+    "pt": "Mostrar $1 etapas anteriores"
+  },
+  {
+    "en": "^Welcome to (.+)!$",
+    "pt": "Boas-vindas ao $1!"
+  },
+  {
+    "en": "^You have (\\d+) conversations in progress\\. Updating will interrupt them, and they will automatically resume once the update completes\\.$",
+    "pt": "Você tem $1 conversas em andamento. Atualizar vai interrompê-las, e elas serão retomadas automaticamente quando a atualização terminar."
+  },
+  {
+    "en": "^You have (\\d+) conversations in progress\\. Updating will cancel them and you'll need to manually restart them\\.$",
+    "pt": "Você tem $1 conversas em andamento. Atualizar vai cancelá-las e você precisará reiniciá-las manualmente."
+  },
+  {
+    "en": "^Step (\\d+) of (\\d+)$",
+    "pt": "Etapa $1 de $2"
+  },
+  {
+    "en": "^Send all \\((\\d+)\\)$",
+    "pt": "Enviar tudo ($1)"
+  },
+  {
+    "en": "^Retrying transcription \\(attempt (\\d+)\\)…$",
+    "pt": "Tentando transcrever de novo (tentativa $1)…"
+  },
+  {
+    "en": "^Compare responses from (\\d+) models side-by-side to find the best result\\.$",
+    "pt": "Compare lado a lado as respostas de $1 modelos para encontrar o melhor resultado."
+  },
+  {
+    "en": "^Relaunch (.+) to finish Screen Recording\\.$",
+    "pt": "Reabra o $1 para concluir a Gravação de tela."
+  },
+  {
+    "en": "^Choose (.+)'s Voice$",
+    "pt": "Escolher a voz do $1"
+  },
+  {
+    "en": "^Select (.+) Theme$",
+    "pt": "Selecionar tema $1"
+  },
+  {
+    "en": "^Preview unavailable — (.+)$",
+    "pt": "Prévia indisponível — $1"
+  },
+  {
+    "en": "^Forked from (.+)$",
+    "pt": "Ramificado de $1"
+  },
+  {
+    "en": "^Show (\\d+) more subagents?$",
+    "pt": "Mostrar mais $1 subagente(s)"
+  },
+  {
+    "en": "^Showing first (\\d+) references$",
+    "pt": "Mostrando as primeiras $1 referências"
+  },
+  {
+    "en": "^Connect an account for (.+) so the agent can run automations\\.$",
+    "pt": "Conecte uma conta de $1 para que o agente possa executar automações."
+  },
+  {
+    "en": "^You're signing in on (.+)\\. Your sign-in stays on that machine\\.$",
+    "pt": "Você está fazendo login em $1. O login fica salvo naquela máquina."
+  },
+  {
+    "en": "^This plugin in (.+) may have looser code review\\. Review its contents before adding the bundle\\.$",
+    "pt": "Este plugin em $1 pode ter uma revisão de código menos rigorosa. Revise o conteúdo antes de adicionar o pacote."
+  },
+  {
+    "en": "^These plugins in (.+) may have looser code review\\. Review their contents before adding the bundle\\.$",
+    "pt": "Estes plugins em $1 podem ter uma revisão de código menos rigorosa. Revise o conteúdo antes de adicionar o pacote."
+  },
+  {
+    "en": "^Skip \\((.+)\\), Skip All \\((.+)\\)$",
+    "pt": "Pular ($1), pular todas ($2)"
+  },
+  {
+    "en": "^Cancel Questionnaire and Stop the Agent \\((.+)\\)$",
+    "pt": "Cancelar o questionário e parar o agente ($1)"
+  },
+  {
+    "en": "^Submit \\((.+)\\)$",
+    "pt": "Enviar ($1)"
+  },
+  {
+    "en": "^Continue \\((.+)\\)$",
+    "pt": "Continuar ($1)"
+  },
+  {
+    "en": "^\\+(\\d+) more \\(Show all\\)$",
+    "pt": "+$1 (mostrar tudo)"
+  },
+  {
+    "en": "^No connectors match “(.+)”$",
+    "pt": "Nenhum conector corresponde a “$1”"
+  },
+  {
+    "en": "^Loading (.+)\\.\\.\\.$",
+    "pt": "Carregando $1..."
+  },
+  {
+    "en": "^Source (\\d+)$",
+    "pt": "Fonte $1"
+  },
+  {
+    "en": "^Select model with (.+)$",
+    "pt": "Selecionar modelo com $1"
+  },
+  {
+    "en": "^Show (.+) breakdown$",
+    "pt": "Mostrar detalhamento de $1"
+  },
+  {
+    "en": "^Available for (.+) project$",
+    "pt": "Disponível para o projeto $1"
+  },
+  {
+    "en": "^(\\d+) selected$",
+    "pt": "$1 selecionado(s)"
+  },
+  {
+    "en": "^Add (\\d+) resources$",
+    "pt": "Adicionar $1 recursos"
+  },
+  {
+    "en": "^Show (\\d+) more\\.\\.\\.$",
+    "pt": "Mostrar mais $1..."
+  },
+  {
+    "en": "^Google (.+) Terms of Service$",
+    "pt": "Termos de Serviço do Google $1"
+  },
+  {
+    "en": "^An automation with the ID “(.+)” already exists\\.$",
+    "pt": "Já existe uma automação com o ID “$1”."
+  },
+  {
+    "en": "^(\\d+) of (\\d+)$",
+    "pt": "$1 de $2"
+  }
+]

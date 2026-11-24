@@ -4,7 +4,7 @@
 [![Segurança](https://github.com/Cambrith/antigravity-pt-br/actions/workflows/security.yml/badge.svg)](https://github.com/Cambrith/antigravity-pt-br/actions)
 [![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](LICENSE)
 [![Plataformas](https://img.shields.io/badge/suporte-Linux%20%7C%20ChromeOS%20%7C%20Windows%20%7C%20macOS-brightgreen.svg)](docs/COMPATIBILITY.md)
-[![Traduções](https://img.shields.io/badge/entradas-3.040%2B-blueviolet.svg)](#-o-que-está-traduzido)
+[![Traduções](https://img.shields.io/badge/entradas-5.900%2B-blueviolet.svg)](#-o-que-está-traduzido)
 
 Tradução não oficial da interface do **Google Antigravity** para o português do Brasil (pt-BR), que continua aplicada depois das atualizações do aplicativo. Funciona no **Linux**, **ChromeOS**, **Windows** e **macOS**.
 
@@ -15,7 +15,7 @@ Tradução não oficial da interface do **Google Antigravity** para o português
 O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
 
 Este projeto resolve essa barreira entregando:
-1. **Tradução abrangente**: Mais de 3.040 termos literais e dezenas de regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+1. **Tradução abrangente**: Mais de 5.900 termos literais e cerca de 200 regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
 2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
 3. **Multiplataforma**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
 4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.
@@ -154,6 +154,17 @@ curl -sSL https://github.com/Cambrith/antigravity-pt-br/archive/refs/heads/main.
 O inicializador reaplica o patcher antes de abrir o aplicativo e sincroniza os arquivos mestres guardados em `~/.config/Antigravity/i18n`. Na instalação padrão do usuário, o instalador também habilita uma unidade `systemd --user` que observa alterações na pasta `resources` e reaplica as personalizações depois que o `app.asar` estabiliza. Assim, a tradução, o acesso às configurações, o dimensionamento inicial da janela e os controles personalizados permanecem disponíveis após atualizações. O monitor pode ser desativado com `systemctl --user disable --now antigravity-patch-after-update.path`; o inicializador continua fazendo a verificação antes de abrir o app.
 
 Os controles da janela ficam em `cambrith-window-controls.js`, fora do pacote do Antigravity. O patcher mantém esse arquivo e o reaplica junto com a tradução, sem depender de mudanças feitas manualmente dentro do `app.asar`.
+
+### O app sempre abre, mesmo quando uma atualização quebra a tradução
+
+Uma atualização do Antigravity pode mudar o código em que o patch se apoia. Para que isso nunca deixe o app sem abrir, há quatro camadas (estado em `~/.local/state/antigravity-cambrith`):
+
+1. **Antes de gravar**: se um ponto de ancoragem essencial sumiu, o patcher não altera nada e o app abre original. Partes opcionais (menu, bandeja, atualizador, botões da janela) que falharem ficam como o original sem impedir o resto.
+2. **Ao abrir**: o app traduzido inicia por `dist/cambrith-boot.js`. Se o processo principal falhar antes de a interface aparecer, ele sai com o código 70 e o inicializador restaura o `app.asar` original **da mesma versão** e reabre o app na hora, sem tradução.
+3. **Na interface**: se a tela ficar em branco por cerca de 20 s, o app recarrega sem a tradução. Se assim ele abrir, a tradução fica em quarentena para aquela versão (as próximas aberturas já vêm direto, sem a espera).
+4. **Sem ciclos**: depois de um rollback, o mesmo patcher não é reaplicado na mesma versão. Um patcher ou um `i18n-pt-br.js` novos tentam de novo sozinhos; para forçar, use `antigravity --patch --force`.
+
+Para regenerar a tradução a partir de `src/maps/` e instalá-la: `python3 generate_i18n.py --install` (sem `--install`, só gera os arquivos do repositório).
 
 ## 🛡️ Arquitetura e Engenharia de Persistência
 

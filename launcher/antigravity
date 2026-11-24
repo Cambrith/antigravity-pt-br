@@ -4,22 +4,30 @@ set -u
 
 CONFIG_FILE="$HOME/.config/Antigravity/executable.conf"
 PATCHER="${ANTIGRAVITY_PATCHER:-$HOME/.config/Antigravity/i18n/patch-asar.js}"
-LOG_DIR="$HOME/.local/state/antigravity-cambrith"
+LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/antigravity-cambrith"
 LOG_FILE="$LOG_DIR/update-guard.log"
 
 mkdir -p "$LOG_DIR"
+
+# Garante acesso ao node mesmo quando iniciado por menu de desktop / atalho
+export PATH="$HOME/.local/bin:${PATH:-}"
+for cand_node_dir in "$HOME/.nvm/versions/node/"*"/bin" "/usr/local/bin" "/opt/bin"; do
+    if [[ -d "$cand_node_dir" ]]; then
+        export PATH="$cand_node_dir:$PATH"
+    fi
+done
 
 # 1. Comandos administrativos rápidos
 if [[ $# -gt 0 ]]; then
     case "$1" in
         --patch)
             shift
-            exec "$HOME/.local/bin/antigravity-patch" "$@"
+            exec node "$PATCHER" "$@"
             ;;
         --set-executable=*|--set-app-dir=*)
             raw_target="${1#*=}"
             shift
-            "$HOME/.local/bin/antigravity-patch" --save "$raw_target"
+            node "$PATCHER" --save "$raw_target"
             ;;
         --status)
             printf "=== Status do Google Antigravity (Cambrith) ===\n"
@@ -113,17 +121,23 @@ if [[ ! -f "$ASAR" && -f "$APP_DIR/app.asar" ]]; then
     ASAR="$APP_DIR/app.asar"
 fi
 
+# Roda o patcher com o node do sistema ou, na falta dele, com o próprio Electron do app.
+run_patcher() {
+    if command -v node >/dev/null 2>&1; then
+        node "$PATCHER" "$@"
+    else
+        ELECTRON_RUN_AS_NODE=1 ELECTRON_NO_ASAR=1 "$TARGET_BIN" "$PATCHER" "$@"
+    fi
+}
+
+log_line() {
+    printf '[%s] %s\n' "$(date -Is)" "$1" >>"$LOG_FILE"
+}
+
 if [[ -f "$ASAR" && -f "$PATCHER" ]]; then
-    # Garante acesso ao node mesmo quando iniciado por menu de desktop / atalho
-    export PATH="$HOME/.local/bin:${PATH:-}"
-    for cand_node_dir in "$HOME/.nvm/versions/node/"*"/bin" "/usr/local/bin" "/opt/bin"; do
-        if [[ -d "$cand_node_dir" ]]; then
-            export PATH="$cand_node_dir:$PATH"
-        fi
-    done
     # Executa o patcher: ele só regrava se a assinatura estiver ausente
-    if ! node "$PATCHER" "--asar=$ASAR" >>"$LOG_FILE" 2>&1; then
-        printf '[%s] Falha ao verificar ou reaplicar as personalizações em %s.\n' "$(date -Is)" "$ASAR" >>"$LOG_FILE"
+    if ! run_patcher "--asar=$ASAR" >>"$LOG_FILE" 2>&1; then
+        log_line "Falha ao verificar ou reaplicar as personalizações em $ASAR."
     fi
 fi
 
@@ -137,10 +151,70 @@ if [[ -z "${GTK_THEME:-}" ]]; then
 fi
 
 # 5. Inicialização da aplicação
+APP_ARGS=(--enable-features=WebUIDarkMode --force-dark-mode)
+has_lang=0
 for argument in "$@"; do
-    if [[ "$argument" == --lang=* ]]; then
-        exec "$TARGET_BIN" --enable-features=WebUIDarkMode --force-dark-mode "$@"
-    fi
+    [[ "$argument" == --lang=* ]] && has_lang=1
 done
+((has_lang)) || APP_ARGS+=(--lang=pt-BR)
+APP_ARGS+=("$@")
 
-exec "$TARGET_BIN" --enable-features=WebUIDarkMode --force-dark-mode --lang=pt-BR "$@"
+# Já existe uma instância aberta? (trava de instância única do Chromium: link "host-PID")
+app_running() {
+    local lock pid
+    lock="$(readlink "${XDG_CONFIG_HOME:-$HOME/.config}/Antigravity/SingletonLock" 2>/dev/null)" || return 1
+    pid="${lock##*-}"
+    [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null
+}
+
+# 6. Guarda de inicialização: se o app TRADUZIDO fechar com erro antes de mostrar a interface,
+#    restaura o app.asar original desta versão (rollback) e reabre na hora, sem tradução.
+#    O patcher fica em quarentena para esta versão até um patcher novo ou "antigravity --patch --force".
+SIGNATURE='Cambrith pt-BR Localization Injection'
+BOOT_CRASH="$LOG_DIR/boot-crash"
+
+rollback_and_open() {
+    log_line "$1"
+    [[ -f "$BOOT_CRASH" ]] && log_line "Erro registrado pelo app: $(head -c 600 "$BOOT_CRASH" | tr '\n' ' ')"
+    if run_patcher --rollback "--asar=$ASAR" >>"$LOG_FILE" 2>&1 && ! grep -qaF "$SIGNATURE" "$ASAR"; then
+        rm -f "$BOOT_CRASH"
+        if command -v notify-send >/dev/null 2>&1; then
+            notify-send -a "Antigravity" -i antigravity "Antigravity aberto sem tradução" \
+                "A tradução pt-BR impediu esta versão do app de abrir e foi desativada automaticamente. Depois de atualizar a tradução, rode: antigravity --patch --force" || true
+        fi
+        exec "$TARGET_BIN" "${APP_ARGS[@]}"
+    fi
+    log_line "Rollback não foi possível; veja as mensagens acima."
+}
+
+if app_running || [[ ! -f "$ASAR" ]] || ! grep -qaF "$SIGNATURE" "$ASAR"; then
+    exec "$TARGET_BIN" "${APP_ARGS[@]}"
+fi
+
+# Uma abertura anterior (mesmo fora deste launcher) já falhou com o app.asar atual.
+if [[ -f "$BOOT_CRASH" && "$BOOT_CRASH" -nt "$ASAR" ]]; then
+    rollback_and_open "A última abertura do app traduzido falhou; restaurando o original antes de abrir."
+fi
+
+BOOT_OK="$LOG_DIR/boot-ok"
+rm -f "$BOOT_OK"
+"$TARGET_BIN" "${APP_ARGS[@]}" &
+APP_PID=$!
+for ((i = 0; i < 180; i++)); do
+    [[ -f "$BOOT_OK" ]] && exit 0
+    kill -0 "$APP_PID" 2>/dev/null || break
+    sleep 0.5
+done
+# Ainda em execução (abrindo devagar ou em modo seguro): o watchdog interno cuida do resto.
+kill -0 "$APP_PID" 2>/dev/null && exit 0
+
+wait "$APP_PID"
+status=$?
+# 70 = falha registrada pela inicialização protegida do patch; 134/139 = abort/segfault na abertura.
+# Qualquer outra saída (0, outra instância assumiu, SIGTERM do logout...) não é culpa da tradução.
+if [[ -f "$BOOT_OK" ]] || [[ $status -ne 70 && $status -ne 134 && $status -ne 139 ]]; then
+    exit "$status"
+fi
+
+rollback_and_open "O app traduzido fechou com código $status antes de abrir a interface; restaurando o original."
+exit "$status"

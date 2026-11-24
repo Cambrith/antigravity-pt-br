@@ -67,18 +67,25 @@ test('Início Rápido: Nomes em Português do Brasil são interceptados e gerado
   const nomeComColisao = win.__ANTIGRAVITY_GERAR_NOME_PTBR__([nomeGerado]);
   assert.notEqual(nomeComColisao, nomeGerado, 'Nome gerado deve ser diferente de projeto existente');
 
-  // Testa hook dinâmico em window.odc e window.GUb
+  // 2.34.0: o gerador é achado pelo conteúdo (nome minificado muda a cada versão; ex.: Zac).
+  // Funções com nome antigo mas outro papel (odc virou a lista da paleta de comandos) não podem ser trocadas.
+  win.Zac = function(a) {
+    a = a.map(d => d.trim().toLowerCase().replace(/\s+/g, "-"));
+    const b = `x${Math.floor(Math.random() * 3)}-y`;
+    return a.includes(b) ? b + "-2" : "original-english-zac";
+  };
   win.odc = function(list) { return "original-english-odc"; };
   win.GUb = function(list) { return "original-english-gub"; };
   win.__CAMBRITH_APPLY_SCRATCH_NAMES_PTBR__();
 
-  const odcResultado = win.odc([]);
-  assert.notEqual(odcResultado, "original-english-odc", 'window.odc deve ser interceptado');
-  assert.match(odcResultado, /^[a-z-]+-[a-z-]+$/);
+  assert.equal(win.odc([]), "original-english-odc", 'window.odc (outra função) não deve ser trocado');
+  const zacResultado = win.Zac([]);
+  assert.notEqual(zacResultado, "original-english-zac", 'O gerador de nomes deve ser interceptado');
+  assert.match(zacResultado, /^[a-z-]+-[a-z-]+$/);
 
   // Testa override de nome personalizado
   win.__cambrith_customProjectName = "meu-projeto-criativo";
-  const customResultado = win.odc([]);
+  const customResultado = win.Zac([]);
   assert.equal(customResultado, "meu-projeto-criativo", 'Nome customizado deve ser respeitado');
   assert.equal(win.__cambrith_customProjectName, null, 'Nome customizado deve ser consumido');
 });
