@@ -666,5 +666,165 @@
   {
     "en": "^Stop (.+) selected$",
     "pt": "Parar $1 selecionado(s)"
+  },
+  {
+    "en": "^The preview did not respond on port (\\d+)\\.$",
+    "pt": "A prévia não respondeu na porta $1."
+  },
+  {
+    "en": "^Nothing is running on port (\\d+)$",
+    "pt": "Nada está rodando na porta $1"
+  },
+  {
+    "en": "^Resume the conversation to start its workspace again, then start the server on port (\\d+) and retry\\.$",
+    "pt": "Retome a conversa para iniciar o espaço de trabalho de novo, depois inicie o servidor na porta $1 e tente novamente."
+  },
+  {
+    "en": "^No server is listening on port (\\d+) inside the remote workspace\\. Start it, or ask the agent to, then retry\\.$",
+    "pt": "Nenhum servidor está escutando na porta $1 dentro do espaço de trabalho remoto. Inicie-o (ou peça ao agente) e tente novamente."
+  },
+  {
+    "en": "^Show (\\d+) earlier steps$",
+    "pt": "Mostrar $1 etapas anteriores"
+  },
+  {
+    "en": "^Welcome to (.+)!$",
+    "pt": "Boas-vindas ao $1!"
+  },
+  {
+    "en": "^You have (\\d+) conversations in progress\\. Updating will interrupt them, and they will automatically resume once the update completes\\.$",
+    "pt": "Você tem $1 conversas em andamento. Atualizar vai interrompê-las, e elas serão retomadas automaticamente quando a atualização terminar."
+  },
+  {
+    "en": "^You have (\\d+) conversations in progress\\. Updating will cancel them and you'll need to manually restart them\\.$",
+    "pt": "Você tem $1 conversas em andamento. Atualizar vai cancelá-las e você precisará reiniciá-las manualmente."
+  },
+  {
+    "en": "^Step (\\d+) of (\\d+)$",
+    "pt": "Etapa $1 de $2"
+  },
+  {
+    "en": "^Send all \\((\\d+)\\)$",
+    "pt": "Enviar tudo ($1)"
+  },
+  {
+    "en": "^Retrying transcription \\(attempt (\\d+)\\)…$",
+    "pt": "Tentando transcrever de novo (tentativa $1)…"
+  },
+  {
+    "en": "^Compare responses from (\\d+) models side-by-side to find the best result\\.$",
+    "pt": "Compare lado a lado as respostas de $1 modelos para encontrar o melhor resultado."
+  },
+  {
+    "en": "^Relaunch (.+) to finish Screen Recording\\.$",
+    "pt": "Reabra o $1 para concluir a Gravação de tela."
+  },
+  {
+    "en": "^Choose (.+)'s Voice$",
+    "pt": "Escolher a voz do $1"
+  },
+  {
+    "en": "^Select (.+) Theme$",
+    "pt": "Selecionar tema $1"
+  },
+  {
+    "en": "^Preview unavailable — (.+)$",
+    "pt": "Prévia indisponível — $1"
+  },
+  {
+    "en": "^Forked from (.+)$",
+    "pt": "Ramificado de $1"
+  },
+  {
+    "en": "^Show (\\d+) more subagents?$",
+    "pt": "Mostrar mais $1 subagente(s)"
+  },
+  {
+    "en": "^Showing first (\\d+) references$",
+    "pt": "Mostrando as primeiras $1 referências"
+  },
+  {
+    "en": "^Connect an account for (.+) so the agent can run automations\\.$",
+    "pt": "Conecte uma conta de $1 para que o agente possa executar automações."
+  },
+  {
+    "en": "^You're signing in on (.+)\\. Your sign-in stays on that machine\\.$",
+    "pt": "Você está fazendo login em $1. O login fica salvo naquela máquina."
+  },
+  {
+    "en": "^This plugin in (.+) may have looser code review\\. Review its contents before adding the bundle\\.$",
+    "pt": "Este plugin em $1 pode ter uma revisão de código menos rigorosa. Revise o conteúdo antes de adicionar o pacote."
+  },
+  {
+    "en": "^These plugins in (.+) may have looser code review\\. Review their contents before adding the bundle\\.$",
+    "pt": "Estes plugins em $1 podem ter uma revisão de código menos rigorosa. Revise o conteúdo antes de adicionar o pacote."
+  },
+  {
+    "en": "^Skip \\((.+)\\), Skip All \\((.+)\\)$",
+    "pt": "Pular ($1), pular todas ($2)"
+  },
+  {
+    "en": "^Cancel Questionnaire and Stop the Agent \\((.+)\\)$",
+    "pt": "Cancelar o questionário e parar o agente ($1)"
+  },
+  {
+    "en": "^Submit \\((.+)\\)$",
+    "pt": "Enviar ($1)"
+  },
+  {
+    "en": "^Continue \\((.+)\\)$",
+    "pt": "Continuar ($1)"
+  },
+  {
+    "en": "^\\+(\\d+) more \\(Show all\\)$",
+    "pt": "+$1 (mostrar tudo)"
+  },
+  {
+    "en": "^No connectors match “(.+)”$",
+    "pt": "Nenhum conector corresponde a “$1”"
+  },
+  {
+    "en": "^Loading (.+)\\.\\.\\.$",
+    "pt": "Carregando $1..."
+  },
+  {
+    "en": "^Source (\\d+)$",
+    "pt": "Fonte $1"
+  },
+  {
+    "en": "^Select model with (.+)$",
+    "pt": "Selecionar modelo com $1"
+  },
+  {
+    "en": "^Show (.+) breakdown$",
+    "pt": "Mostrar detalhamento de $1"
+  },
+  {
+    "en": "^Available for (.+) project$",
+    "pt": "Disponível para o projeto $1"
+  },
+  {
+    "en": "^(\\d+) selected$",
+    "pt": "$1 selecionado(s)"
+  },
+  {
+    "en": "^Add (\\d+) resources$",
+    "pt": "Adicionar $1 recursos"
+  },
+  {
+    "en": "^Show (\\d+) more\\.\\.\\.$",
+    "pt": "Mostrar mais $1..."
+  },
+  {
+    "en": "^Google (.+) Terms of Service$",
+    "pt": "Termos de Serviço do Google $1"
+  },
+  {
+    "en": "^An automation with the ID “(.+)” already exists\\.$",
+    "pt": "Já existe uma automação com o ID “$1”."
+  },
+  {
+    "en": "^(\\d+) of (\\d+)$",
+    "pt": "$1 de $2"
   }
 ]

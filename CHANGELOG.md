@@ -7,7 +7,10 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ## [1.10.0] - 2026-11-24
 
 ### Adicionado
-- Compatibilidade com o **Antigravity 2.34.0**: +328 textos fixos e +110 regras dinâmicas, levantados do bundle da interface (`main.js`) e conferidos um a um contra o texto original. Cobre as configurações do **Orchestrator** (modelo orquestrador e executor), permissões do terminal e do sandbox, filtros e decorações da barra lateral, Git (commit, push, publicar), aprovações de permissão, visualizador de PDF/imagens, prévia ao vivo, downloads do navegador, conexão SSH e mensagens de erro de pastas e projetos.
+- Compatibilidade com o **Antigravity 2.34.0**: +498 textos fixos e +150 regras dinâmicas (5923 e 207 no total), levantados do bundle da interface (`main.js`) e conferidos um a um contra o texto original. Cobre as configurações do **Orchestrator** (modelo orquestrador e executor), permissões do terminal e do sandbox, filtros e decorações da barra lateral, Git (commit, push, publicar), aprovações de permissão, visualizador de PDF/imagens, prévia ao vivo, downloads do navegador, conexão SSH e mensagens de erro de pastas e projetos.
+- Frases montadas em pedaços (ex.: `"No "`, `"automations"`, `" yet"` em nós de texto separados) agora são traduzidas inteiras: `Nenhuma automação ainda`.
+- Reticências: `Change…` (um caractere) passa a casar com `Change...` do dicionário, e vice-versa.
+- Rótulos dos blocos de destaque nas respostas (`NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION`).
 - `src/maps/dynamic.json`: regras dinâmicas (regex → tradução com `$1`, `$2`) carregadas pelo `generate_i18n.py`.
 - **Guarda de inicialização** (patch v23): inicialização protegida `dist/cambrith-boot.js`, rollback automático para o `app.asar` original da mesma versão, quarentena do patcher e do i18n e registro em `~/.local/state/antigravity-cambrith`. Detalhes no README.
 - Comando `--rollback` no `patch-asar.js`.

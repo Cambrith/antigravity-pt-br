@@ -4,7 +4,7 @@
 [![Segurança](https://github.com/Cambrith/antigravity-pt-br/actions/workflows/security.yml/badge.svg)](https://github.com/Cambrith/antigravity-pt-br/actions)
 [![Licença MIT](https://img.shields.io/badge/licença-MIT-blue.svg)](LICENSE)
 [![Plataformas](https://img.shields.io/badge/suporte-Linux%20%7C%20ChromeOS%20%7C%20Windows%20%7C%20macOS-brightgreen.svg)](docs/COMPATIBILITY.md)
-[![Traduções](https://img.shields.io/badge/entradas-5.700%2B-blueviolet.svg)](#-o-que-está-traduzido)
+[![Traduções](https://img.shields.io/badge/entradas-5.900%2B-blueviolet.svg)](#-o-que-está-traduzido)
 
 Tradução não oficial da interface do **Google Antigravity** para o português do Brasil (pt-BR), que continua aplicada depois das atualizações do aplicativo. Funciona no **Linux**, **ChromeOS**, **Windows** e **macOS**.
 
@@ -15,7 +15,7 @@ Tradução não oficial da interface do **Google Antigravity** para o português
 O **Google Antigravity** é um dos ambientes de pair programming e automação mais avançados do mercado, porém toda a sua interface, modais de configuração, catálogo de servidores MCP e avisos de sistema são originalmente fornecidos apenas em inglês.
 
 Este projeto resolve essa barreira entregando:
-1. **Tradução abrangente**: Mais de 5.700 termos literais e mais de 160 regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
+1. **Tradução abrangente**: Mais de 5.900 termos literais e cerca de 200 regras dinâmicas que traduzem desde menus e configurações até avisos complexos de cotas e todos os 99 servidores MCP.
 2. **Persistência Contra Atualizações**: Uma arquitetura em camadas que impede que as traduções se percam quando o Antigravity for atualizado automaticamente.
 3. **Multiplataforma**: Instaladores e patchers dedicados para Linux, ChromeOS, macOS e Windows com zero dependências externas compiladas.
 4. **Respeito à Linguagem Natural**: Proteção do texto de prompts e respostas do chat, garantindo que palavras do português (como a preposição *"no"*) nunca sofram alterações indevidas.

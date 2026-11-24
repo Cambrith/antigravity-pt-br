@@ -5475,6 +5475,16 @@ js_body = r'''(function() {
     if (EXACT_MAP[normalized]) {
       return raw.replace(trimmed, EXACT_MAP[normalized]);
     }
+    // Reticências: o app usa ora "…" (um caractere), ora "..."; o dicionário pode ter a outra forma.
+    if (normalized.includes('…') || normalized.includes('...')) {
+      const toDots = normalized.replace(/…/g, '...');
+      const toChar = normalized.replace(/\.\.\./g, '…');
+      const alt = EXACT_MAP[toDots] || EXACT_MAP[toChar];
+      if (alt) {
+        const useChar = normalized.includes('…');
+        return raw.replace(trimmed, useChar ? alt.replace(/\.\.\./g, '…') : alt.replace(/…/g, '...'));
+      }
+    }
     const dyn = translateDynamic(trimmed) || translateDynamic(normalized);
     if (dyn) {
       return raw.replace(trimmed, dyn);
@@ -5606,9 +5616,31 @@ js_body = r'''(function() {
     });
   }
 
+  // Frases montadas em pedaços (ex.: "No ", "automations", " yet" viram 3 nós de texto irmãos):
+  // se o elemento só tem nós de texto e a frase inteira está no dicionário, traduz a frase toda
+  // no primeiro nó e esvazia os demais. Só age quando há tradução para a frase completa.
+  function translateCompositeText(parent) {
+    const kids = parent.childNodes;
+    if (kids.length < 2 || kids.length > 6) return false;
+    let joined = '';
+    for (const k of kids) {
+      if (k.nodeType !== 3) return false;
+      joined += k.nodeValue || '';
+    }
+    if (!joined.trim() || joined.length > 400) return false;
+    if (parent.__cambrithCompositeOut === joined) return true;
+    const tr = translateString(joined);
+    if (!tr || tr === joined) return false;
+    kids[0].nodeValue = tr;
+    for (let i = 1; i < kids.length; i++) kids[i].nodeValue = '';
+    parent.__cambrithCompositeOut = tr;
+    return true;
+  }
+
   function translateTextNode(node) {
     const parent = node.parentElement;
     if (!parent || shouldSkipElement(parent)) return;
+    if (translateCompositeText(parent)) return;
     const val = node.nodeValue;
     if (!val || val.length > 4000) return;
     const trimmed = val.trim();
