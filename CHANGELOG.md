@@ -4,6 +4,21 @@ Todas as alterações notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.10.0] - 2026-11-24
+
+### Adicionado
+- Compatibilidade com o **Antigravity 2.34.0**: +328 textos fixos e +110 regras dinâmicas, levantados do bundle da interface (`main.js`) e conferidos um a um contra o texto original. Cobre as configurações do **Orchestrator** (modelo orquestrador e executor), permissões do terminal e do sandbox, filtros e decorações da barra lateral, Git (commit, push, publicar), aprovações de permissão, visualizador de PDF/imagens, prévia ao vivo, downloads do navegador, conexão SSH e mensagens de erro de pastas e projetos.
+- `src/maps/dynamic.json`: regras dinâmicas (regex → tradução com `$1`, `$2`) carregadas pelo `generate_i18n.py`.
+- **Guarda de inicialização** (patch v23): inicialização protegida `dist/cambrith-boot.js`, rollback automático para o `app.asar` original da mesma versão, quarentena do patcher e do i18n e registro em `~/.local/state/antigravity-cambrith`. Detalhes no README.
+- Comando `--rollback` no `patch-asar.js`.
+
+### Corrigido
+- Sincronizadas no repositório as correções das versões 2.33/2.34 que estavam só na instalação local: detecção do gerador de nomes por conteúdo (o nome `odc` passou a ser a paleta de comandos) e regra mais rígida para não trocar a função de planos de tarefas.
+- Uma mudança nos botões da janela não aborta mais a tradução inteira (foi o que aconteceu na atualização para a 2.34.0); o app segue com os controles nativos.
+- O patch só monta o app a partir de um backup original da **mesma versão**, nunca de um backup antigo.
+- `antigravity --patch` chamava `~/.local/bin/antigravity-patch`, que nenhum instalador cria; agora chama o patcher diretamente. Sem `node` no sistema, o inicializador usa o próprio Electron do app.
+- `generate_i18n.py` não grava mais direto nas pastas do app instalado; só com `--install`.
+
 ## [1.9.2] - 2026-11-13
 
 ### Adicionado
