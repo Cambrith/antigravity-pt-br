@@ -2474,23 +2474,66 @@
     });
   }
 
+  function restoreCompositeChildren(parent) {
+    if (!parent || !parent.childNodes) return;
+    for (const k of parent.childNodes) {
+      if (k.nodeType === 3 && k.__cambrithCompVal !== undefined) {
+        if (k.nodeValue === k.__cambrithCompVal) {
+          k.nodeValue = k.__cambrithOrigVal;
+        }
+        delete k.__cambrithCompVal;
+        delete k.__cambrithOrigVal;
+      }
+    }
+    delete parent.__cambrithCompositeJoined;
+    delete parent.__cambrithCompositeOut;
+  }
+
   // Frases montadas em pedaços (ex.: "No ", "automations", " yet" viram 3 nós de texto irmãos):
   // se o elemento só tem nós de texto e a frase inteira está no dicionário, traduz a frase toda
-  // no primeiro nó e esvazia os demais. Só age quando há tradução para a frase completa.
+  // no primeiro nó e esvazia os demais. Preserva o valor original de cada nó para evitar acúmulo
+  // quando frameworks reativos (React) atualizam apenas parte dos nós filhos.
   function translateCompositeText(parent) {
     const kids = parent.childNodes;
-    if (kids.length < 2 || kids.length > 6) return false;
+    if (kids.length < 2 || kids.length > 6) {
+      restoreCompositeChildren(parent);
+      return false;
+    }
+    const origs = [];
     let joined = '';
     for (const k of kids) {
-      if (k.nodeType !== 3) return false;
-      joined += k.nodeValue || '';
+      if (k.nodeType !== 3) {
+        restoreCompositeChildren(parent);
+        return false;
+      }
+      const cur = k.nodeValue || '';
+      const orig = (k.__cambrithCompVal !== undefined && cur === k.__cambrithCompVal)
+        ? k.__cambrithOrigVal
+        : cur;
+      origs.push(orig);
+      joined += orig;
     }
-    if (!joined.trim() || joined.length > 400) return false;
-    if (parent.__cambrithCompositeOut === joined) return true;
+    if (!joined.trim() || joined.length > 400) {
+      restoreCompositeChildren(parent);
+      return false;
+    }
+    if (parent.__cambrithCompositeJoined === joined && kids[0].nodeValue === parent.__cambrithCompositeOut) {
+      return true;
+    }
     const tr = translateString(joined);
-    if (!tr || tr === joined) return false;
-    kids[0].nodeValue = tr;
-    for (let i = 1; i < kids.length; i++) kids[i].nodeValue = '';
+    if (!tr || tr === joined) {
+      restoreCompositeChildren(parent);
+      return false;
+    }
+    for (let i = 0; i < kids.length; i++) {
+      const nextVal = i === 0 ? tr : '';
+      kids[i].__cambrithOrigVal = origs[i];
+      kids[i].__cambrithCompVal = nextVal;
+      if (kids[i].nodeValue !== nextVal) {
+        kids[i].nodeValue = nextVal;
+      }
+    }
+    parent.__cambrithCompositeJoined = joined;
     parent.__cambrithCompositeOut = tr;
     return true;
   }

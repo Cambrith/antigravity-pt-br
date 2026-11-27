@@ -65,3 +65,93 @@ test('generate_i18n.py só grava fora do repositório com --install', () => {
   assert.ok(py.includes('if "--install" in sys.argv:'));
   assert.ok(!py.includes('~/.local/opt/Antigravity-x64/resources/i18n-pt-br.js'));
 });
+
+test('Regressão: troca de modelos no Orchestrator não acumula nomes repetidos', () => {
+  const noop = () => {};
+  let observerCb = null;
+  const makeEl = (tag = 'SPAN') => ({
+    nodeType: 1,
+    tagName: tag,
+    childNodes: [],
+    style: {},
+    setAttribute: noop,
+    getAttribute: () => null,
+    hasAttribute: () => false,
+    appendChild(c) { c.parentElement = this; this.childNodes.push(c); return c; },
+    addEventListener: noop,
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    closest: () => null,
+    matches: () => false,
+    classList: { contains: () => false }
+  });
+  const makeText = (val) => ({ nodeType: 3, nodeValue: val, isConnected: true, parentElement: null });
+  const createTreeWalker = (root) => {
+    const nodes = [];
+    const visit = (n) => {
+      if (!n) return;
+      if (n !== root) nodes.push(n);
+      if (n.childNodes) n.childNodes.forEach(visit);
+    };
+    visit(root);
+    let idx = 0;
+    return { nextNode: () => (idx < nodes.length ? nodes[idx++] : null) };
+  };
+  const docEl = makeEl('HTML');
+  const document = {
+    readyState: 'complete',
+    addEventListener: noop,
+    createElement: makeEl,
+    getElementById: () => null,
+    querySelector: () => null,
+    querySelectorAll: () => [],
+    documentElement: docEl,
+    head: makeEl('HEAD'),
+    body: makeEl('BODY'),
+    createTreeWalker
+  };
+  const window = {
+    document,
+    addEventListener: noop,
+    removeEventListener: noop,
+    location: { href: 'https://127.0.0.1/' },
+    localStorage: { getItem: () => null, setItem: noop },
+    matchMedia: () => ({ matches: false, addEventListener: noop }),
+    MutationObserver: class {
+      constructor(cb) { observerCb = cb; }
+      observe() {}
+      disconnect() {}
+    },
+    NodeFilter: { SHOW_ELEMENT: 1, SHOW_TEXT: 4 },
+    setTimeout: noop,
+    setInterval: noop,
+    clearTimeout: noop
+  };
+  window.window = window;
+  const ctx = vm.createContext(Object.assign(window, { console }));
+  vm.runInContext(read('i18n-pt-br.js'), ctx);
+  assert.ok(observerCb, 'MutationObserver deve estar registrado');
+
+  const span = makeEl('SPAN');
+  const t1 = makeText('Orchestrator ');
+  const t2 = makeText('Gemini 4 Argon Medium');
+  span.appendChild(t1);
+  span.appendChild(t2);
+
+  observerCb([{ type: 'childList', addedNodes: [span] }]);
+  assert.equal(span.childNodes.map((n) => n.nodeValue).join(''), 'Orchestrator Gemini 4 Argon Médio');
+
+  t2.nodeValue = 'Gemini 4 Argon High';
+  observerCb([{ type: 'characterData', target: t2 }]);
+  assert.equal(span.childNodes.map((n) => n.nodeValue).join(''), 'Orchestrator Gemini 4 Argon Alto');
+
+  t2.nodeValue = 'Gemini 4 Neon High';
+  observerCb([{ type: 'characterData', target: t2 }]);
+  assert.equal(span.childNodes.map((n) => n.nodeValue).join(''), 'Orchestrator Gemini 4 Neon Alto');
+
+  // Redução para 1 único nó de texto (remoção do prefixo pelo React)
+  t2.nodeValue = 'Gemini 4 Hydrogen Low';
+  span.childNodes = [t2];
+  observerCb([{ type: 'characterData', target: t2 }]);
+  assert.equal(span.childNodes.map((n) => n.nodeValue).join(''), 'Gemini 4 Hydrogen Baixo');
+});
